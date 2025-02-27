@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.1" />
+      <PackageReference Include="Serilog" Version="4.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\ErrorMessage.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessage.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\ErrorMessage.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessage.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\ErrorMessage.ru-by.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessage.ru-by.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\ErrorMessage.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessage.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

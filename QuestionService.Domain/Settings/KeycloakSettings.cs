@@ -1,0 +1,11 @@
+namespace QuestionService.Domain.Settings;
+
+public class KeycloakSettings
+{
+    public string Host { get; set; }
+    public string Realm { get; set; }
+    public string ClientId { get; set; }
+    public string Audience { get; set; }
+    public string ServiceAudience { get; set; }
+    public string MetadataAddress => $"{Host}/realms/{Realm}/.well-known/openid-configuration";
+}

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>ce6c3b64-56b5-4e65-b182-2199cf90d643</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\QuestionService.DAL\QuestionService.DAL.csproj" />
+      <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
+    </ItemGroup>
+
+</Project>
