@@ -1,0 +1,31 @@
+query GetAllUsers{
+    users{
+        id
+        keycloakId
+        username
+        email
+        lastLoginAt
+        reputation
+        roles {
+            name
+        }
+        createdAt
+        reputationEarnedToday
+    }
+}
+
+query GetUserById($id: Long!){
+    users(where: {id: {eq: $id}}){
+        id
+        keycloakId
+        username
+        email
+        lastLoginAt
+        reputation
+        roles {
+            name
+        }
+        createdAt
+        reputationEarnedToday
+    }
+}

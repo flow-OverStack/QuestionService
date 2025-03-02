@@ -1,0 +1,214 @@
+schema {
+  query: Queries
+}
+
+"The user type."
+type User {
+  "The ID of the user."
+  id: Long!
+  "The ID of the user in keycloak identity server."
+  keycloakId: UUID!
+  "The name of the user."
+  username: String!
+  "The email address of the user."
+  email: String!
+  "The last login time of the user."
+  lastLoginAt: DateTime!
+  "The reputation of the user."
+  reputation: Int!
+  "The roles of the user."
+  roles: [Role!]!
+  "User creation time."
+  createdAt: DateTime!
+  reputationEarnedToday: Int!
+}
+
+"The role type."
+type Role {
+  "The ID of the role."
+  id: Long!
+  "The name of the role."
+  name: String!
+  "Users who have the role."
+  users: [User!]!
+}
+
+"Defines when a policy shall be executed."
+enum ApplyPolicy {
+  "Before the resolver was executed."
+  BEFORE_RESOLVER
+  "After the resolver was executed."
+  AFTER_RESOLVER
+  "The policy is applied in the validation step before the execution."
+  VALIDATION
+}
+
+type Queries {
+  "Returns a list of all users"
+  users(where: UserFilterInput order: [UserSortInput!]): [User!]!
+  "Returns a list of all roles"
+  roles(where: RoleFilterInput order: [RoleSortInput!]): [Role!]!
+}
+
+"The `Long` scalar type represents non-fractional signed whole 64-bit numeric values. Long can represent values between -(2^63) and 2^63 - 1."
+scalar Long
+
+scalar UUID
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+input UserFilterInput {
+  and: [UserFilterInput!]
+  or: [UserFilterInput!]
+  keycloakId: UuidOperationFilterInput
+  username: StringOperationFilterInput
+  email: StringOperationFilterInput
+  lastLoginAt: DateTimeOperationFilterInput
+  userToken: UserTokenFilterInput
+  reputation: IntOperationFilterInput
+  reputationEarnedToday: IntOperationFilterInput
+  roles: ListFilterInputTypeOfRoleFilterInput
+  createdAt: DateTimeOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+input UserSortInput {
+  keycloakId: SortEnumType
+  username: SortEnumType
+  email: SortEnumType
+  lastLoginAt: SortEnumType
+  userToken: UserTokenSortInput
+  reputation: SortEnumType
+  reputationEarnedToday: SortEnumType
+  createdAt: SortEnumType
+  id: SortEnumType
+}
+
+input RoleFilterInput {
+  and: [RoleFilterInput!]
+  or: [RoleFilterInput!]
+  name: StringOperationFilterInput
+  users: ListFilterInputTypeOfUserFilterInput
+  id: LongOperationFilterInput
+}
+
+input RoleSortInput {
+  name: SortEnumType
+  id: SortEnumType
+}
+
+input UuidOperationFilterInput {
+  eq: UUID
+  neq: UUID
+  in: [UUID]
+  nin: [UUID]
+  gt: UUID
+  ngt: UUID
+  gte: UUID
+  ngte: UUID
+  lt: UUID
+  nlt: UUID
+  lte: UUID
+  nlte: UUID
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String
+  neq: String
+  contains: String
+  ncontains: String
+  in: [String]
+  nin: [String]
+  startsWith: String
+  nstartsWith: String
+  endsWith: String
+  nendsWith: String
+}
+
+input DateTimeOperationFilterInput {
+  eq: DateTime
+  neq: DateTime
+  in: [DateTime]
+  nin: [DateTime]
+  gt: DateTime
+  ngt: DateTime
+  gte: DateTime
+  ngte: DateTime
+  lt: DateTime
+  nlt: DateTime
+  lte: DateTime
+  nlte: DateTime
+}
+
+input UserTokenFilterInput {
+  and: [UserTokenFilterInput!]
+  or: [UserTokenFilterInput!]
+  refreshToken: StringOperationFilterInput
+  refreshTokenExpiryTime: DateTimeOperationFilterInput
+  user: UserFilterInput
+  userId: LongOperationFilterInput
+  id: LongOperationFilterInput
+}
+
+input IntOperationFilterInput {
+  eq: Int
+  neq: Int
+  in: [Int]
+  nin: [Int]
+  gt: Int
+  ngt: Int
+  gte: Int
+  ngte: Int
+  lt: Int
+  nlt: Int
+  lte: Int
+  nlte: Int
+}
+
+input ListFilterInputTypeOfRoleFilterInput {
+  all: RoleFilterInput
+  none: RoleFilterInput
+  some: RoleFilterInput
+  any: Boolean
+}
+
+input LongOperationFilterInput {
+  eq: Long
+  neq: Long
+  in: [Long]
+  nin: [Long]
+  gt: Long
+  ngt: Long
+  gte: Long
+  ngte: Long
+  lt: Long
+  nlt: Long
+  lte: Long
+  nlte: Long
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+input UserTokenSortInput {
+  refreshToken: SortEnumType
+  refreshTokenExpiryTime: SortEnumType
+  user: UserSortInput
+  userId: SortEnumType
+  id: SortEnumType
+}
+
+input ListFilterInputTypeOfUserFilterInput {
+  all: UserFilterInput
+  none: UserFilterInput
+  some: UserFilterInput
+  any: Boolean
+}
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION

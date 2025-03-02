@@ -1,9 +1,14 @@
 using QuestionService.Api;
 using QuestionService.Api.Middlewares;
 using QuestionService.DAL.DependencyInjection;
+using QuestionService.Domain.Settings;
+using QuestionService.GraphQlClient.DependencyInjection;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<KeycloakSettings>(builder.Configuration.GetSection(nameof(KeycloakSettings)));
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
@@ -15,6 +20,7 @@ builder.Services.AddSwagger();
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddDataAccessLayer(builder.Configuration);
+builder.Services.AddGraphQlClient();
 
 var app = builder.Build();
 

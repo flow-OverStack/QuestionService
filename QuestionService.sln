@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.DAL", "QuestionService.DAL\QuestionService.DAL.csproj", "{6B6058F8-F22F-4BC6-B6D5-1D693E24CE97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.GraphQlClient", "QuestionService.GraphQlClient\QuestionService.GraphQlClient.csproj", "{099E4C62-721E-476C-9685-F414C03067A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,7 @@ Global
 		{50E32C02-7908-463C-AD43-9E7D2B0AFA04} = {AF0BBE1D-93C1-48EF-8285-C5778B63A8D0}
 		{C5540D77-3FB1-4203-8EEE-A7E7080F64E5} = {AF0BBE1D-93C1-48EF-8285-C5778B63A8D0}
 		{6B6058F8-F22F-4BC6-B6D5-1D693E24CE97} = {2007777B-BACA-4F38-A88E-D12A80648B68}
+		{099E4C62-721E-476C-9685-F414C03067A3} = {2007777B-BACA-4F38-A88E-D12A80648B68}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{672FB5AA-F527-4C51-975B-32A528319331}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -48,5 +51,9 @@ Global
 		{6B6058F8-F22F-4BC6-B6D5-1D693E24CE97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B6058F8-F22F-4BC6-B6D5-1D693E24CE97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B6058F8-F22F-4BC6-B6D5-1D693E24CE97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{099E4C62-721E-476C-9685-F414C03067A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{099E4C62-721E-476C-9685-F414C03067A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{099E4C62-721E-476C-9685-F414C03067A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{099E4C62-721E-476C-9685-F414C03067A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

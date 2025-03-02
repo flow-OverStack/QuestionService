@@ -6,4 +6,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
+      <ProjectReference Include="..\QuestionService.GraphQlClient\QuestionService.GraphQlClient.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="14.0.0" />
+    </ItemGroup>
+
 </Project>

@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>ce6c3b64-56b5-4e65-b182-2199cf90d643</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,6 +32,7 @@
     <ItemGroup>
       <ProjectReference Include="..\QuestionService.DAL\QuestionService.DAL.csproj" />
       <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
+      <ProjectReference Include="..\QuestionService.GraphQlClient\QuestionService.GraphQlClient.csproj" />
     </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+      <PackageReference Include="StrawberryShake.Core" Version="15.0.3" />
     </ItemGroup>
 
     <ItemGroup>
