@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using QuestionService.DAL.Result;
 using QuestionService.Domain.Dtos.GraphQl;
 using QuestionService.Domain.Dtos.Question;
@@ -10,6 +11,7 @@ using QuestionService.Domain.Interfaces.GraphQlClients;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Resources;
+using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services;
 
@@ -17,15 +19,11 @@ public class QuestionService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<Vote> voteRepository,
     IGraphQlClient<UserDto> userClient,
+    IOptions<BusinessRules> businessRules,
     IMapper mapper)
     : IQuestionService
 {
-    private const int TitleMinLength = 20;
-    private const int BodyMinLength = 50;
-    private const int MinReputationToUpvote = 15;
-    private const int MinReputationToDownvote = 125;
-    private const int DownvoteReputationChange = -1;
-    private const int UpvoteReputationChange = 1;
+    private readonly BusinessRules _businessRules = businessRules.Value;
 
     public async Task<BaseResult<QuestionDto>> AskQuestion(AskQuestionDto dto)
     {
@@ -103,14 +101,14 @@ public class QuestionService(
         if (question == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
-        if (initiator.Reputation < MinReputationToUpvote)
+        if (initiator.Reputation < _businessRules.MinReputationToUpvote)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation, (int)ErrorCodes.TooLowReputation);
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
-        if (vote is { ReputationChange: >= UpvoteReputationChange })
+        if (vote == null || vote.ReputationChange >= _businessRules.UpvoteReputationChange)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven, (int)ErrorCodes.VoteAlreadyGiven);
 
-        vote!.ReputationChange = UpvoteReputationChange;
+        vote.ReputationChange = _businessRules.UpvoteReputationChange;
         voteRepository.Update(vote);
         await voteRepository.SaveChangesAsync();
 
@@ -132,14 +130,14 @@ public class QuestionService(
         if (question == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
-        if (initiator.Reputation < MinReputationToDownvote)
+        if (initiator.Reputation < _businessRules.MinReputationToDownvote)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation, (int)ErrorCodes.TooLowReputation);
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
-        if (vote is { ReputationChange: <= DownvoteReputationChange })
+        if (vote == null || vote.ReputationChange <= _businessRules.DownvoteReputationChange)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven, (int)ErrorCodes.VoteAlreadyGiven);
 
-        vote!.ReputationChange = DownvoteReputationChange;
+        vote.ReputationChange = _businessRules.DownvoteReputationChange;
         voteRepository.Update(vote);
         await voteRepository.SaveChangesAsync();
 
@@ -155,17 +153,17 @@ public class QuestionService(
                || toQuestion.UserId == initiator.Id;
     }
 
-    private static bool IsDtoPropsLengthValid(EditQuestionDto dto)
+    private bool IsDtoPropsLengthValid(EditQuestionDto dto)
     {
-        return StringHelper.HasMinimumLength(TitleMinLength, dto.Title)
-               && StringHelper.HasMinimumLength(BodyMinLength, dto.Body)
+        return StringHelper.HasMinimumLength(_businessRules.TitleMinLength, dto.Title)
+               && StringHelper.HasMinimumLength(_businessRules.BodyMinLength, dto.Body)
                && dto.TagNames.Any();
     }
 
-    private static bool IsDtoPropsLengthValid(AskQuestionDto dto)
+    private bool IsDtoPropsLengthValid(AskQuestionDto dto)
     {
-        return StringHelper.HasMinimumLength(TitleMinLength, dto.Title)
-               && StringHelper.HasMinimumLength(BodyMinLength, dto.Body)
+        return StringHelper.HasMinimumLength(_businessRules.TitleMinLength, dto.Title)
+               && StringHelper.HasMinimumLength(_businessRules.BodyMinLength, dto.Body)
                && dto.TagNames.Any();
     }
 }
