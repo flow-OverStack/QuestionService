@@ -19,6 +19,21 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="InternalServerError" xml:space="preserve">
-        <value />
+        <value>Internal server error</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>User not found</value>
+    </data>
+    <data name="QuestionNotFound" xml:space="preserve">
+        <value>Question not found</value>
+    </data>
+    <data name="OperationForbidden" xml:space="preserve">
+        <value>Operation forbidden</value>
+    </data>
+    <data name="ValueConnotBeNullOrEmpty" xml:space="preserve">
+        <value>Value cannot be null or empty</value>
+    </data>
+    <data name="LengthOutOfRange" xml:space="preserve">
+        <value>Length out of range</value>
     </data>
 </root>

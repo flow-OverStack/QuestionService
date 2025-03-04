@@ -1,5 +1,6 @@
 using QuestionService.Api;
 using QuestionService.Api.Middlewares;
+using QuestionService.Application.DependencyInjection;
 using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
 using QuestionService.GraphQlClient.DependencyInjection;
@@ -21,6 +22,7 @@ builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Confi
 
 builder.Services.AddDataAccessLayer(builder.Configuration);
 builder.Services.AddGraphQlClient();
+builder.Services.AddApplication();
 
 var app = builder.Build();
 

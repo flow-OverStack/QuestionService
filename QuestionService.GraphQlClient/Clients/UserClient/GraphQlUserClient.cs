@@ -2,7 +2,6 @@ using AutoMapper;
 using QuestionService.Domain.Dtos.GraphQl;
 using QuestionService.Domain.Exceptions.GraphQl;
 using QuestionService.Domain.Interfaces.GraphQlClients;
-using QuestionService.GraphQlClient.Interfaces;
 using StrawberryShake;
 
 namespace QuestionService.GraphQlClient.Clients.UserClient;
@@ -33,7 +32,8 @@ public class GraphQlUserClient(GraphQlClient.UserClient userClient, IMapper mapp
 
         if (users.Data is { Users.Count: 0 })
             return null;
-        
-        return mapper.Map<UserDto>(users.Data!.Users.Single());
+
+
+        return mapper.Map<UserDto>(users.Data!.Users[0]); //First and single user
     }
 }

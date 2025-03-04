@@ -60,11 +60,56 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Internal server error.
         /// </summary>
         public static string InternalServerError {
             get {
                 return ResourceManager.GetString("InternalServerError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length out of range.
+        /// </summary>
+        public static string LengthOutOfRange {
+            get {
+                return ResourceManager.GetString("LengthOutOfRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation forbidden.
+        /// </summary>
+        public static string OperationForbidden {
+            get {
+                return ResourceManager.GetString("OperationForbidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question not found.
+        /// </summary>
+        public static string QuestionNotFound {
+            get {
+                return ResourceManager.GetString("QuestionNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User not found.
+        /// </summary>
+        public static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value cannot be null or empty.
+        /// </summary>
+        public static string ValueConnotBeNullOrEmpty {
+            get {
+                return ResourceManager.GetString("ValueConnotBeNullOrEmpty", resourceCulture);
             }
         }
     }
