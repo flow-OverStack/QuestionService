@@ -10,7 +10,7 @@ public interface IQuestionService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<QuestionDto>> AskQuestion(AskQuestionDto dto);
+    Task<BaseResult<QuestionDto>> AskQuestion(long initiatorId, AskQuestionDto dto);
 
     /// <summary>
     /// Edits question

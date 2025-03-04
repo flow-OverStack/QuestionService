@@ -25,16 +25,17 @@ public class QuestionService(
 {
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-    public async Task<BaseResult<QuestionDto>> AskQuestion(AskQuestionDto dto)
+    public async Task<BaseResult<QuestionDto>> AskQuestion(long initiatorId, AskQuestionDto dto)
     {
         if (!IsDtoPropsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
-        var user = await userClient.GetByIdAsync(dto.UserId);
+        var user = await userClient.GetByIdAsync(initiatorId);
         if (user == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
         var question = mapper.Map<Question>(dto);
+        question.UserId = initiatorId;
 
         await questionRepository.CreateAsync(question);
         await questionRepository.SaveChangesAsync();
