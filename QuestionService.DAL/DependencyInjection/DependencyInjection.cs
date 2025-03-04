@@ -34,5 +34,6 @@ public static class DependencyInjection
         services.AddScoped<IBaseRepository<Question>, BaseRepository<Question>>();
         services.AddScoped<IBaseRepository<Tag>, BaseRepository<Tag>>();
         services.AddScoped<IBaseRepository<QuestionTag>, BaseRepository<QuestionTag>>();
+        services.AddScoped<IBaseRepository<Vote>, BaseRepository<Vote>>();
     }
 }
