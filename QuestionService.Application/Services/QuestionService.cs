@@ -15,12 +15,17 @@ namespace QuestionService.Application.Services;
 
 public class QuestionService(
     IBaseRepository<Question> questionRepository,
+    IBaseRepository<Vote> voteRepository,
     IGraphQlClient<UserDto> userClient,
     IMapper mapper)
     : IQuestionService
 {
     private const int TitleMinLength = 20;
     private const int BodyMinLength = 50;
+    private const int MinReputationToUpvote = 15;
+    private const int MinReputationToDownvote = 125;
+    private const int DownvoteReputationChange = -1;
+    private const int UpvoteReputationChange = 1;
 
     public async Task<BaseResult<QuestionDto>> AskQuestion(AskQuestionDto dto)
     {
@@ -46,10 +51,11 @@ public class QuestionService(
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
         var initiator = await userClient.GetByIdAsync(initiatorId);
+        var question = await questionRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id);
+
         if (initiator == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var question = await questionRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id);
         if (question == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
@@ -67,10 +73,11 @@ public class QuestionService(
     public async Task<BaseResult<QuestionDto>> DeleteQuestion(long initiatorId, long questionId)
     {
         var question = await questionRepository.GetAll().FirstOrDefaultAsync(x => x.Id == questionId);
+        var initiator = await userClient.GetByIdAsync(initiatorId);
+
         if (question == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
-        var initiator = await userClient.GetByIdAsync(initiatorId);
         if (initiator == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
@@ -83,14 +90,62 @@ public class QuestionService(
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
 
-    public Task<BaseResult<VoteQuestionDto>> UpvoteQuestion(long initiatorId, long questionId)
+    public async Task<BaseResult<VoteQuestionDto>> UpvoteQuestion(long initiatorId, long questionId)
     {
-        throw new NotImplementedException();
+        var initiator = await userClient.GetByIdAsync(initiatorId);
+        var question = await questionRepository.GetAll()
+            .Include(x => x.Votes)
+            .FirstOrDefaultAsync(x => x.Id == questionId);
+
+        if (initiator == null)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
+
+        if (question == null)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
+
+        if (initiator.Reputation < MinReputationToUpvote)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation, (int)ErrorCodes.TooLowReputation);
+
+        var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
+        if (vote is { ReputationChange: >= UpvoteReputationChange })
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven, (int)ErrorCodes.VoteAlreadyGiven);
+
+        vote!.ReputationChange = UpvoteReputationChange;
+        voteRepository.Update(vote);
+        await voteRepository.SaveChangesAsync();
+
+        var dto = mapper.Map<VoteQuestionDto>(question);
+
+        return BaseResult<VoteQuestionDto>.Success(dto);
     }
 
-    public Task<BaseResult<VoteQuestionDto>> DownvoteQuestion(long initiatorId, long questionId)
+    public async Task<BaseResult<VoteQuestionDto>> DownvoteQuestion(long initiatorId, long questionId)
     {
-        throw new NotImplementedException();
+        var initiator = await userClient.GetByIdAsync(initiatorId);
+        var question = await questionRepository.GetAll()
+            .Include(x => x.Votes)
+            .FirstOrDefaultAsync(x => x.Id == questionId);
+
+        if (initiator == null)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
+
+        if (question == null)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
+
+        if (initiator.Reputation < MinReputationToDownvote)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation, (int)ErrorCodes.TooLowReputation);
+
+        var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
+        if (vote is { ReputationChange: <= DownvoteReputationChange })
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven, (int)ErrorCodes.VoteAlreadyGiven);
+
+        vote!.ReputationChange = DownvoteReputationChange;
+        voteRepository.Update(vote);
+        await voteRepository.SaveChangesAsync();
+
+        var dto = mapper.Map<VoteQuestionDto>(question);
+
+        return BaseResult<VoteQuestionDto>.Success(dto);
     }
 
     private static bool HasAccess(UserDto initiator, Question toQuestion)

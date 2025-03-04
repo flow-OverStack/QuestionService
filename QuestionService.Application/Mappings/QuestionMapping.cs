@@ -11,5 +11,6 @@ public class QuestionMapping : Profile
         CreateMap<Question, QuestionDto>().ReverseMap();
         CreateMap<Question, AskQuestionDto>().ReverseMap();
         CreateMap<Question, EditQuestionDto>().ReverseMap();
+        CreateMap<Question, VoteQuestionDto>().ReverseMap();
     }
 }

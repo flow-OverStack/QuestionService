@@ -36,4 +36,10 @@
     <data name="LengthOutOfRange" xml:space="preserve">
         <value>Length out of range</value>
     </data>
+    <data name="TooLowReputation" xml:space="preserve">
+        <value>Too low reputation</value>
+    </data>
+    <data name="VoteAlreadyGiven" xml:space="preserve">
+        <value>Vote already given</value>
+    </data>
 </root>

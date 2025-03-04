@@ -36,4 +36,10 @@
     <data name="LengthOutOfRange" xml:space="preserve">
         <value>Длина вне диапозона</value>
     </data>
+    <data name="TooLowReputation" xml:space="preserve">
+        <value>Репутация слишком малая</value>
+    </data>
+    <data name="VoteAlreadyGiven" xml:space="preserve">
+        <value>Голос уже дан</value>
+    </data>
 </root>

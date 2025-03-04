@@ -96,6 +96,15 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Too low reputation.
+        /// </summary>
+        public static string TooLowReputation {
+            get {
+                return ResourceManager.GetString("TooLowReputation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User not found.
         /// </summary>
         public static string UserNotFound {
@@ -110,6 +119,15 @@ namespace QuestionService.Domain.Resources {
         public static string ValueConnotBeNullOrEmpty {
             get {
                 return ResourceManager.GetString("ValueConnotBeNullOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vote already given.
+        /// </summary>
+        public static string VoteAlreadyGiven {
+            get {
+                return ResourceManager.GetString("VoteAlreadyGiven", resourceCulture);
             }
         }
     }
