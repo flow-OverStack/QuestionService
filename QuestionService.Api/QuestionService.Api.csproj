@@ -33,7 +33,7 @@
         <ProjectReference Include="..\QuestionService.Application\QuestionService.Application.csproj"/>
       <ProjectReference Include="..\QuestionService.DAL\QuestionService.DAL.csproj" />
       <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
-      <ProjectReference Include="..\QuestionService.GraphQlClient\QuestionService.GraphQlClient.csproj" />
+        <ProjectReference Include="..\QuestionService.Grpc\QuestionService.Grpc.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
-      <ProjectReference Include="..\QuestionService.GraphQlClient\QuestionService.GraphQlClient.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -3,7 +3,7 @@ using QuestionService.Api.Middlewares;
 using QuestionService.Application.DependencyInjection;
 using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
-using QuestionService.GraphQlClient.DependencyInjection;
+using QuestionService.Grpc.DependencyInjection;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +18,11 @@ builder.Services.AddControllers();
 builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
+builder.Services.AddGrpcClients();
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddDataAccessLayer(builder.Configuration);
-builder.Services.AddGraphQlClient();
 builder.Services.AddApplication();
 
 var app = builder.Build();

@@ -7,7 +7,7 @@ using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.GraphQlClients;
+using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Resources;
@@ -18,7 +18,7 @@ namespace QuestionService.Application.Services;
 public class QuestionService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<Vote> voteRepository,
-    IGraphQlClient<UserDto> userClient,
+    IEntityProvider<UserDto> userClient,
     IOptions<BusinessRules> businessRules,
     IMapper mapper)
     : IQuestionService
