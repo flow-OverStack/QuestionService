@@ -5,17 +5,8 @@ using ILogger = Serilog.ILogger;
 
 namespace QuestionService.Api.Middlewares;
 
-public class WarningHandlingMiddleware
+public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
 {
-    private readonly ILogger _logger;
-    private readonly RequestDelegate _next;
-
-    public WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
-    {
-        _logger = logger;
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext httpContext)
     {
         // Save the original response body stream
@@ -28,7 +19,7 @@ public class WarningHandlingMiddleware
             // Redirect response output from httpContext.Response.Body to swapStream
             httpContext.Response.Body = swapStream;
 
-            await _next(httpContext);
+            await next(httpContext);
 
             swapStream.Seek(0, SeekOrigin.Begin);
 
@@ -40,7 +31,7 @@ public class WarningHandlingMiddleware
 
                 var data = JsonConvert.DeserializeObject<BaseResult>(responseBody)!; // Object means any type
 
-                _logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
+                logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
                     data.ErrorMessage!,
                     httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
             }

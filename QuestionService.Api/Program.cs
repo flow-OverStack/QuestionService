@@ -27,8 +27,15 @@ builder.Services.AddApplication();
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<WarningHandlingMiddleware>();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseMiddleware<ClaimsValidationMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -37,11 +44,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
 app.MapControllers();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 await builder.Services.MigrateDatabaseAsync();
 

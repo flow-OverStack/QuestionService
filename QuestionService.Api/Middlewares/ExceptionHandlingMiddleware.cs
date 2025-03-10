@@ -5,22 +5,13 @@ using ILogger = Serilog.ILogger;
 
 namespace QuestionService.Api.Middlewares;
 
-public class ExceptionHandlingMiddleware
+public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
 {
-    private readonly ILogger _logger;
-    private readonly RequestDelegate _next;
-
-    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
         {
-            await _next(httpContext);
+            await next(httpContext);
 
             switch (httpContext.Response.StatusCode)
             {
@@ -39,7 +30,7 @@ public class ExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
-        _logger.Error(exception, "Error: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}", exception.Message,
+        logger.Error(exception, "Error: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}", exception.Message,
             httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
 
 
