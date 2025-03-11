@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mime;
 using Newtonsoft.Json;
 using QuestionService.Api.Auth;
 
@@ -20,6 +21,7 @@ public class ClaimsValidationMiddleware(RequestDelegate next)
             else
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = MediaTypeNames.Text.Plain;
                 await context.Response.WriteAsync("Invalid claims");
             }
         }
