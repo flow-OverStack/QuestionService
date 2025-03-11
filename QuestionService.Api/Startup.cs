@@ -1,7 +1,6 @@
 using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -35,13 +34,12 @@ public static class Startup
             var keycloakSettings =
                 services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
 
+            options.MapInboundClaims = false; // For userId because sub mapped into the same ClaimsType
             options.RequireHttpsMetadata = false;
             options.MetadataAddress = keycloakSettings.MetadataAddress;
-            options.Audience = keycloakSettings.Audience; //Default audience
+            options.Audience = keycloakSettings.Audience;
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidAudiences =
-                    [keycloakSettings.Audience, keycloakSettings.ServiceAudience], //Additional valid service audience
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
