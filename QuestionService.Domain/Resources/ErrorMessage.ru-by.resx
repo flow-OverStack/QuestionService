@@ -42,4 +42,7 @@
     <data name="VoteAlreadyGiven" xml:space="preserve">
         <value>Голос уже дан</value>
     </data>
+    <data name="TagsNotFound" xml:space="preserve">
+        <value>Тэги не найдены</value>
+    </data>
 </root>

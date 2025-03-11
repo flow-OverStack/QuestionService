@@ -7,6 +7,7 @@ public enum ErrorCodes
     //User: 21-30
     //Authorization: 31-40
     //Question: 41-50
+    //Tags: 51-60
 
     LengthOutOfRange = 1,
 
@@ -18,4 +19,6 @@ public enum ErrorCodes
 
     QuestionNotFound = 41,
     VoteAlreadyGiven = 42,
+
+    TagsNotFound = 51
 }

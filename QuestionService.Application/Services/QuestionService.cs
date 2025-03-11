@@ -18,6 +18,7 @@ namespace QuestionService.Application.Services;
 public class QuestionService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<Vote> voteRepository,
+    IBaseRepository<Tag> tagRepository,
     IEntityProvider<UserDto> userClient,
     IOptions<BusinessRules> businessRules,
     IMapper mapper)
@@ -34,8 +35,13 @@ public class QuestionService(
         if (user == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
+        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
+        if (tags.Count != dto.TagNames.Count)
+            return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
+
         var question = mapper.Map<Question>(dto);
         question.UserId = initiatorId;
+        question.Tags = tags;
 
         await questionRepository.CreateAsync(question);
         await questionRepository.SaveChangesAsync();
@@ -61,7 +67,12 @@ public class QuestionService(
         if (!HasAccess(initiator, question))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.OperationForbidden, (int)ErrorCodes.OperationForbidden);
 
+        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
+        if (tags.Count != dto.TagNames.Count)
+            return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
+
         question = mapper.Map<Question>(dto);
+        question.Tags = tags;
 
         questionRepository.Update(question);
         await questionRepository.SaveChangesAsync();
