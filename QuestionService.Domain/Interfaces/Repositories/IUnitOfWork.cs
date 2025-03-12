@@ -10,5 +10,7 @@ public interface IUnitOfWork : IStateSaveChanges
 
     IBaseRepository<QuestionTag> QuestionTags { get; set; }
 
+    IBaseRepository<Tag> Tags { get; set; }
+
     Task<IDbContextTransaction> BeginTransactionAsync();
 }

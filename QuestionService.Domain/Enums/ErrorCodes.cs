@@ -11,8 +11,6 @@ public enum ErrorCodes
 
     LengthOutOfRange = 1,
 
-    TooLowReputation = 11,
-
     UserNotFound = 21,
 
     OperationForbidden = 31,
