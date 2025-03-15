@@ -1,11 +1,9 @@
-using System.Net.Mime;
 using System.Security.Claims;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using QuestionService.Api.Controllers.Base;
 using QuestionService.DAL.Result;
 using QuestionService.Domain.Dtos.Question;
-using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Services;
 
 namespace QuestionService.Api.Controllers;
@@ -14,18 +12,11 @@ namespace QuestionService.Api.Controllers;
 ///     Question controller
 /// </summary>
 /// <response code="200">If question was asked/edited/deleted</response>
-/// <response code="400">If user was not asked/edited/deleted</response>
+/// <response code="400">If question was not asked/edited/deleted</response>
 /// <response code="403">If the operation was forbidden for user</response>
 /// <response code="500">If internal server error occured</response>
-[ApiController]
-[Consumes(MediaTypeNames.Application.Json)]
-[Route("api/v{version:apiVersion}/[controller]")]
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status403Forbidden)]
-[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [Authorize]
-public class QuestionController(IQuestionService questionService, IMapper mapper) : ControllerBase
+public class QuestionController(IQuestionService questionService) : BaseController
 {
     /// <summary>
     ///     Creates a question
@@ -140,15 +131,5 @@ public class QuestionController(IQuestionService questionService, IMapper mapper
         var result = await questionService.UpvoteQuestion(userId, questionId);
 
         return HandleResult(result);
-    }
-
-    private ActionResult<BaseResult<T>> HandleResult<T>(BaseResult<T> result)
-    {
-        return result.ErrorCode switch
-        {
-            (int)ErrorCodes.OperationForbidden => Forbid(),
-            _ when !result.IsSuccess => BadRequest(result),
-            _ => Ok(result)
-        };
     }
 }
