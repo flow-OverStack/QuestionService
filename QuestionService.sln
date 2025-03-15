@@ -22,6 +22,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.DAL", "Ques
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Grpc", "QuestionService.Grpc\QuestionService.Grpc.csproj", "{BE96CF75-3383-43BC-A992-9240EB45B45C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{09F07A13-8ECC-4415-859E-9F7CE518168E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Tests", "QuestionService.Tests\QuestionService.Tests.csproj", "{818DBAD1-6DF8-46EF-AE61-362515A6E629}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,7 @@ Global
 		{C5540D77-3FB1-4203-8EEE-A7E7080F64E5} = {AF0BBE1D-93C1-48EF-8285-C5778B63A8D0}
 		{6B6058F8-F22F-4BC6-B6D5-1D693E24CE97} = {2007777B-BACA-4F38-A88E-D12A80648B68}
 		{BE96CF75-3383-43BC-A992-9240EB45B45C} = {2007777B-BACA-4F38-A88E-D12A80648B68}
+		{818DBAD1-6DF8-46EF-AE61-362515A6E629} = {09F07A13-8ECC-4415-859E-9F7CE518168E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{672FB5AA-F527-4C51-975B-32A528319331}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -55,5 +60,9 @@ Global
 		{BE96CF75-3383-43BC-A992-9240EB45B45C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE96CF75-3383-43BC-A992-9240EB45B45C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE96CF75-3383-43BC-A992-9240EB45B45C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{818DBAD1-6DF8-46EF-AE61-362515A6E629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{818DBAD1-6DF8-46EF-AE61-362515A6E629}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{818DBAD1-6DF8-46EF-AE61-362515A6E629}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{818DBAD1-6DF8-46EF-AE61-362515A6E629}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

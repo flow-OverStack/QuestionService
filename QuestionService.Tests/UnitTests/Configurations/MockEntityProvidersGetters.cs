@@ -1,0 +1,95 @@
+using Moq;
+using QuestionService.Domain.Dtos.GraphQl;
+using QuestionService.Domain.Interfaces.Providers;
+
+namespace QuestionService.Tests.UnitTests.Configurations;
+
+public static class MockEntityProvidersGetters
+{
+    public const int MinReputation = 1;
+    public const int MaxDailyReputation = 200;
+
+    public static Mock<IEntityProvider<UserDto>> GetMockUserProvider()
+    {
+        var mockProvider = new Mock<IEntityProvider<UserDto>>();
+
+        mockProvider.Setup(x => x.GetByIdAsync(It.IsAny<long>()))
+            .ReturnsAsync((long userId) => GetUserDtos().FirstOrDefault(x => x.Id == userId));
+
+        return mockProvider;
+    }
+
+    public static IQueryable<UserDto> GetUserDtos()
+    {
+        return new UserDto[]
+        {
+            new()
+            {
+                Id = 1,
+                KeycloakId = Guid.NewGuid(),
+                Username = "testuser1",
+                Email = "TestUser1@test.com",
+                LastLoginAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                Reputation = MinReputation,
+                ReputationEarnedToday = 0,
+                Roles = [GetRoleUser(), GetRoleAdmin()]
+            },
+            new()
+            {
+                Id = 2,
+                KeycloakId = Guid.NewGuid(),
+                Username = "testuser2",
+                Email = "TestUser2@test.com",
+                LastLoginAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                Reputation = MinReputation,
+                ReputationEarnedToday = 0,
+                Roles = [GetRoleUser(), GetRoleModer()]
+            },
+            new()
+            {
+                Id = 3,
+                KeycloakId = Guid.NewGuid(),
+                Username = "testuser3",
+                Email = "TestUser3@test.com",
+                LastLoginAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                Reputation = 200,
+                ReputationEarnedToday = MaxDailyReputation,
+                Roles = [GetRoleModer()]
+            }
+        }.AsQueryable();
+    }
+
+    #region Get entity dtos methods
+
+    private static RoleDto GetRoleUser()
+    {
+        return new RoleDto
+        {
+            Id = 1,
+            Name = "User"
+        };
+    }
+
+    private static RoleDto GetRoleAdmin()
+    {
+        return new RoleDto
+        {
+            Id = 2,
+            Name = "Admin"
+        };
+    }
+
+    private static RoleDto GetRoleModer()
+    {
+        return new RoleDto
+        {
+            Id = 3,
+            Name = "Moderator"
+        };
+    }
+
+    #endregion
+}
