@@ -20,6 +20,6 @@ public class Question : IEntityId<long>, IAuditable
 
     public DateTime CreatedAt { get; set; }
 
-    public DateTime LastModifiedAt { get; set; }
+    public DateTime? LastModifiedAt { get; set; }
     public long Id { get; set; }
 }
