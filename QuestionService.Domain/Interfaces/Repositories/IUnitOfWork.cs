@@ -8,9 +8,7 @@ public interface IUnitOfWork : IStateSaveChanges
 {
     IBaseRepository<Question> Questions { get; set; }
 
-    IBaseRepository<QuestionTag> QuestionTags { get; set; }
-
-    IBaseRepository<Tag> Tags { get; set; }
+    IBaseRepository<Vote> Votes { get; set; }
 
     Task<IDbContextTransaction> BeginTransactionAsync();
 }

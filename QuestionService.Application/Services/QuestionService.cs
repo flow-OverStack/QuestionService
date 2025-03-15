@@ -17,7 +17,7 @@ namespace QuestionService.Application.Services;
 
 public class QuestionService(
     IUnitOfWork unitOfWork,
-    IBaseRepository<Vote> voteRepository,
+    IBaseRepository<Tag> tagRepository,
     IEntityProvider<UserDto> userClient,
     IOptions<BusinessRules> businessRules,
     IMapper mapper)
@@ -34,7 +34,7 @@ public class QuestionService(
         if (user == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var tags = await unitOfWork.Tags.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
+        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
         if (tags.Count != dto.TagNames.Count)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
@@ -43,7 +43,7 @@ public class QuestionService(
         question.Tags = tags;
 
         await unitOfWork.Questions.CreateAsync(question);
-        await unitOfWork.Questions.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
 
         var questionDto = mapper.Map<QuestionDto>(question);
         return BaseResult<QuestionDto>.Success(questionDto);
@@ -68,7 +68,7 @@ public class QuestionService(
         if (!HasAccess(initiator, question))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.OperationForbidden, (int)ErrorCodes.OperationForbidden);
 
-        var tags = await unitOfWork.Tags.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
+        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
         if (tags.Count != dto.TagNames.Count)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
@@ -76,7 +76,7 @@ public class QuestionService(
         question.Tags = tags;
 
         unitOfWork.Questions.Update(question);
-        await unitOfWork.Questions.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
 
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
@@ -96,7 +96,7 @@ public class QuestionService(
             return BaseResult<QuestionDto>.Failure(ErrorMessage.OperationForbidden, (int)ErrorCodes.OperationForbidden);
 
         unitOfWork.Questions.Remove(question);
-        await unitOfWork.Questions.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
 
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
@@ -120,27 +120,44 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
-        if (vote == null)
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
-            vote = new Vote
+            try
             {
-                QuestionId = question.Id,
-                UserId = initiator.Id
-            };
+                if (vote == null)
+                {
+                    vote = new Vote
+                    {
+                        QuestionId = question.Id,
+                        UserId = initiator.Id
+                    };
 
-            await voteRepository.CreateAsync(vote);
+                    await unitOfWork.Votes.CreateAsync(vote);
+                }
+                else
+                {
+                    if (vote.ReputationChange >= _businessRules.UpvoteReputationChange)
+                        return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
+                            (int)ErrorCodes.VoteAlreadyGiven);
+
+                    vote.ReputationChange = _businessRules.UpvoteReputationChange;
+                    unitOfWork.Votes.Update(vote);
+                }
+
+                await unitOfWork.SaveChangesAsync();
+
+                question.Reputation += _businessRules.UpvoteReputationChange;
+
+                await unitOfWork.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
-        else
-        {
-            if (vote.ReputationChange >= _businessRules.UpvoteReputationChange)
-                return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
-                    (int)ErrorCodes.VoteAlreadyGiven);
-
-            vote.ReputationChange = _businessRules.UpvoteReputationChange;
-            voteRepository.Update(vote);
-        }
-
-        await voteRepository.SaveChangesAsync();
 
         var dto = mapper.Map<VoteQuestionDto>(question);
 
@@ -166,27 +183,44 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
-        if (vote == null)
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
-            vote = new Vote
+            try
             {
-                QuestionId = question.Id,
-                UserId = initiator.Id
-            };
+                if (vote == null)
+                {
+                    vote = new Vote
+                    {
+                        QuestionId = question.Id,
+                        UserId = initiator.Id
+                    };
 
-            await voteRepository.CreateAsync(vote);
+                    await unitOfWork.Votes.CreateAsync(vote);
+                }
+                else
+                {
+                    if (vote.ReputationChange <= _businessRules.DownvoteReputationChange)
+                        return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
+                            (int)ErrorCodes.VoteAlreadyGiven);
+
+                    vote.ReputationChange = _businessRules.DownvoteReputationChange;
+                    unitOfWork.Votes.Update(vote);
+                }
+
+                await unitOfWork.SaveChangesAsync();
+
+                question.Reputation += _businessRules.DownvoteReputationChange;
+
+                await unitOfWork.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
-        else
-        {
-            if (vote.ReputationChange <= _businessRules.DownvoteReputationChange)
-                return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
-                    (int)ErrorCodes.VoteAlreadyGiven);
-
-            vote.ReputationChange = _businessRules.DownvoteReputationChange;
-            voteRepository.Update(vote);
-        }
-
-        await voteRepository.SaveChangesAsync();
 
         var dto = mapper.Map<VoteQuestionDto>(question);
 
