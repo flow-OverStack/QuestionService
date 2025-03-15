@@ -31,7 +31,7 @@ public static class MockEntityProvidersGetters
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = MinReputation,
+                Reputation = 125,
                 ReputationEarnedToday = 0,
                 Roles = [GetRoleUser(), GetRoleAdmin()]
             },
@@ -43,9 +43,9 @@ public static class MockEntityProvidersGetters
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = MinReputation,
+                Reputation = 15,
                 ReputationEarnedToday = 0,
-                Roles = [GetRoleUser(), GetRoleModer()]
+                Roles = [GetRoleUser()]
             },
             new()
             {
@@ -55,7 +55,19 @@ public static class MockEntityProvidersGetters
                 Email = "TestUser3@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 200,
+                Reputation = MinReputation,
+                ReputationEarnedToday = MaxDailyReputation,
+                Roles = [GetRoleModer()]
+            },
+            new()
+            {
+                Id = 4,
+                KeycloakId = Guid.NewGuid(),
+                Username = "testuser4",
+                Email = "TestUser4@test.com",
+                LastLoginAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                Reputation = 125,
                 ReputationEarnedToday = MaxDailyReputation,
                 Roles = [GetRoleModer()]
             }

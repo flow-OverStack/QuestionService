@@ -8,7 +8,7 @@ using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Settings;
 using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Configurations;
-using MapperConfiguration = QuestionService.Tests.Configurations.MapperConfiguration;
+using MapperConfiguration = QuestionService.Tests.UnitTests.Configurations.MapperConfiguration;
 
 namespace QuestionService.Tests.UnitTests.ServiceFactories;
 

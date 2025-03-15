@@ -1,7 +1,7 @@
 using AutoMapper;
 using QuestionService.Application.Mappings;
 
-namespace QuestionService.Tests.Configurations;
+namespace QuestionService.Tests.UnitTests.Configurations;
 
 internal static class MapperConfiguration
 {

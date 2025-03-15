@@ -119,8 +119,8 @@ internal static class MockRepositoriesGetters
     {
         return new[]
         {
-            GetUpvote(1, 2), GetUpvote(2, 2), GetDownvote(3, 2),
-            GetUpvote(1, 3), GetDownvote(2, 3), GetDownvote(3, 3)
+            GetUpvote(1, 2), GetUpvote(2, 2), GetDownvote(1, 2),
+            GetUpvote(2, 3), GetDownvote(1, 3), GetDownvote(4, 3)
         }.AsQueryable();
     }
 

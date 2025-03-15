@@ -83,14 +83,14 @@ public class QuestionService(
 
     public async Task<BaseResult<QuestionDto>> DeleteQuestion(long initiatorId, long questionId)
     {
-        var question = await unitOfWork.Questions.GetAll().FirstOrDefaultAsync(x => x.Id == questionId);
         var initiator = await userClient.GetByIdAsync(initiatorId);
-
-        if (question == null)
-            return BaseResult<QuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
+        var question = await unitOfWork.Questions.GetAll().FirstOrDefaultAsync(x => x.Id == questionId);
 
         if (initiator == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
+
+        if (question == null)
+            return BaseResult<QuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
         if (!HasAccess(initiator, question))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.OperationForbidden, (int)ErrorCodes.OperationForbidden);
