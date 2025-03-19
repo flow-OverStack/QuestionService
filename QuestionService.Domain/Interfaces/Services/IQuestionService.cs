@@ -8,6 +8,7 @@ public interface IQuestionService
     /// <summary>
     /// Creates a question
     /// </summary>
+    /// <param name="initiatorId">Id of request initiator (e.g. Id of user or moderator)</param>
     /// <param name="dto"></param>
     /// <returns></returns>
     Task<BaseResult<QuestionDto>> AskQuestion(long initiatorId, AskQuestionDto dto);

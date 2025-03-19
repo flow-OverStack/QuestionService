@@ -1,5 +1,5 @@
 using AutoMapper;
-using QuestionService.Domain.Dtos.GraphQl;
+using QuestionService.Domain.Dtos.Entity;
 
 namespace QuestionService.Grpc.Mapping;
 

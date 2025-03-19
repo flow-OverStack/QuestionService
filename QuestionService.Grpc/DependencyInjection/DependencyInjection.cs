@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Domain.Dtos.GraphQl;
+using Microsoft.Extensions.Options;
+using QuestionService.Domain.Dtos.Entity;
 using QuestionService.Domain.Interfaces.Providers;
+using QuestionService.Domain.Settings;
 using QuestionService.Grpc.Mapping;
 using QuestionService.Grpc.Providers;
 
@@ -17,5 +19,10 @@ public static class DependencyInjection
     private static void InitServices(this IServiceCollection services)
     {
         services.AddScoped<IEntityProvider<UserDto>, UserProvider>();
+        services.AddGrpcClient<UserService.UserServiceClient>((provider, opt) =>
+        {
+            var usersHost = provider.GetRequiredService<IOptions<GrpcHosts>>().Value.UsersHost;
+            opt.Address = new Uri(usersHost);
+        });
     }
 }

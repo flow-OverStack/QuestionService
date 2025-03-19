@@ -1,8 +1,8 @@
 using Moq;
-using QuestionService.Domain.Dtos.GraphQl;
+using QuestionService.Domain.Dtos.Entity;
 using QuestionService.Domain.Interfaces.Providers;
 
-namespace QuestionService.Tests.UnitTests.Configurations;
+namespace QuestionService.Tests.Configurations;
 
 public static class MockEntityProvidersGetters
 {

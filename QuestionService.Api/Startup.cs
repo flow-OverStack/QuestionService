@@ -121,22 +121,26 @@ public static class Startup
     {
         app.Lifetime.ApplicationStarted.Register(() =>
         {
-            HashSet<string> hosts = [];
-
-            var serverAddressesFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
-            serverAddressesFeature?.Addresses.ToList().ForEach(x => hosts.Add(x));
-
-            var serverAddressesConfiguration = app.Configuration.GetSection("ASPNETCORE_URLS");
-            serverAddressesConfiguration.Value?.Split(';').ToList().ForEach(x => hosts.Add(x));
+            var hosts = app.GetHosts().ToList();
 
             var appStartupHostLog =
                 app.Configuration.GetSection(AppStartupSectionName).GetValue<string>("AppStartupUrlLog");
 
-            hosts.ToList().ForEach(host =>
+            hosts.ForEach(host =>
             {
                 var fullHostLog = appStartupHostLog + host;
                 Log.Information(fullHostLog);
             });
         });
+    }
+
+    private static IEnumerable<string> GetHosts(this WebApplication app)
+    {
+        HashSet<string> hosts = [];
+
+        var serverAddressesFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
+        serverAddressesFeature?.Addresses.ToList().ForEach(x => hosts.Add(x));
+
+        return hosts;
     }
 }

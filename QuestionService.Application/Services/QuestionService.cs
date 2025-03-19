@@ -2,7 +2,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using QuestionService.DAL.Result;
-using QuestionService.Domain.Dtos.GraphQl;
+using QuestionService.Domain.Dtos.Entity;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;

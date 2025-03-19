@@ -1,4 +1,4 @@
-namespace QuestionService.Domain.Dtos.GraphQl;
+namespace QuestionService.Domain.Dtos.Entity;
 
 public class UserDto
 {

@@ -119,7 +119,7 @@ internal static class MockRepositoriesGetters
     {
         return new[]
         {
-            GetUpvote(1, 2), GetUpvote(2, 2), GetDownvote(1, 2),
+            GetUpvote(1, 2), GetUpvote(2, 2), GetDownvote(4, 2),
             GetUpvote(2, 3), GetDownvote(1, 3), GetDownvote(4, 3)
         }.AsQueryable();
     }
@@ -131,6 +131,43 @@ internal static class MockRepositoriesGetters
             GetTagDotNet(),
             GetTagJava(),
             GetTagPython()
+        }.AsQueryable();
+    }
+
+    public static IQueryable<QuestionTag> GetQuestionTags()
+    {
+        return new[]
+        {
+            new QuestionTag
+            {
+                QuestionId = 1,
+                TagName = ".NET"
+            },
+            new QuestionTag
+            {
+                QuestionId = 2,
+                TagName = ".NET"
+            },
+            new QuestionTag
+            {
+                QuestionId = 2,
+                TagName = "Java"
+            },
+            new QuestionTag
+            {
+                QuestionId = 3,
+                TagName = ".NET"
+            },
+            new QuestionTag
+            {
+                QuestionId = 3,
+                TagName = "Java"
+            },
+            new QuestionTag
+            {
+                QuestionId = 3,
+                TagName = "Python"
+            }
         }.AsQueryable();
     }
 

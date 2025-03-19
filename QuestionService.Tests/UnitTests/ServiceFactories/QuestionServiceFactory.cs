@@ -1,13 +1,12 @@
 using AutoMapper;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Dtos.GraphQl;
+using QuestionService.Domain.Dtos.Entity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Settings;
 using QuestionService.Tests.Configurations;
-using QuestionService.Tests.UnitTests.Configurations;
 using MapperConfiguration = QuestionService.Tests.UnitTests.Configurations.MapperConfiguration;
 
 namespace QuestionService.Tests.UnitTests.ServiceFactories;
