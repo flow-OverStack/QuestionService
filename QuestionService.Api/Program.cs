@@ -52,3 +52,5 @@ await builder.Services.MigrateDatabaseAsync();
 app.LogListeningUrls();
 
 await app.RunAsync();
+
+public partial class Program;
