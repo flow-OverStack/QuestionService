@@ -7,12 +7,12 @@ namespace QuestionService.Api.Middlewares;
 
 public class ClaimsValidationMiddleware(RequestDelegate next)
 {
-    const string AuthorizationHeaderName = "Authorization";
+    private const string AuthorizationHeaderName = "Authorization";
     private const string SchemaName = "Bearer ";
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.User.Identity is { IsAuthenticated: true })
+        if (context.User.Identity is { IsAuthenticated: true }) // if authorization is required by controller
         {
             if (RequiredClaimsExists(context))
             {

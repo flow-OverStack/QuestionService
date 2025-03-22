@@ -1,6 +1,6 @@
 using System.Net;
-using QuestionService.DAL.Result;
 using QuestionService.Domain.Resources;
+using QuestionService.Domain.Result;
 using ILogger = Serilog.ILogger;
 
 namespace QuestionService.Api.Middlewares;

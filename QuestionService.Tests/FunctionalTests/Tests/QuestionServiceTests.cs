@@ -2,25 +2,23 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
-using QuestionService.DAL.Result;
 using QuestionService.Domain.Dtos.Entity;
 using QuestionService.Domain.Dtos.Question;
+using QuestionService.Domain.Resources;
+using QuestionService.Domain.Result;
 using QuestionService.Tests.FunctionalTests.Base;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Xunit;
 
 namespace QuestionService.Tests.FunctionalTests.Tests;
 
-public class QuestionServiceTests : BaseFunctionalTest
+[Collection(nameof(QuestionServiceTests))]
+public class QuestionServiceTests : SequentialFunctionalTest
 {
     public QuestionServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
     {
         var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", 1, [
-            new RoleDto
-            {
-                Id = 1,
-                Name = "User"
-            }
+            new RoleDto { Name = "User" }
         ]);
 
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -42,5 +40,181 @@ public class QuestionServiceTests : BaseFunctionalTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task AskQuestion_ShouldBe_BadRequest()
+    {
+        //Arrange
+        var token = TokenHelper.GetRsaTokenWithRoleClaims("WrongUser", 0, [
+            new RoleDto
+            {
+                Id = 1,
+                Name = "User"
+            }
+        ]);
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var dto = new AskQuestionDto("NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/question", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task EditQuestion_ShouldBe_Success()
+    {
+        //Arrange
+        var dto = new EditQuestionDto(1, "NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
+
+        //Act
+        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/question", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(result!.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task EditQuestion_ShouldBe_BadRequest()
+    {
+        //Arrange
+        var dto = new EditQuestionDto(0, "NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
+
+        //Act
+        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/question", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task DeleteQuestion_ShouldBe_Success()
+    {
+        //Arrange
+        const long questionId = 1;
+
+        //Act
+        var response = await HttpClient.DeleteAsync($"/api/v1.0/question/{questionId}");
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(result!.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task DeleteQuestion_ShouldBe_BadRequest()
+    {
+        //Arrange
+        const long questionId = 0;
+
+        //Act
+        var response = await HttpClient.DeleteAsync($"/api/v1.0/question/{questionId}");
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task DownvoteQuestion_ShouldBe_Success()
+    {
+        //Arrange
+        const long questionId = 1;
+
+        //Act
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/downvote/{questionId}", null);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(result!.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task DownvoteQuestion_ShouldBe_BadRequest()
+    {
+        //Arrange
+        const long questionId = 0;
+
+        //Act
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/downvote/{questionId}", null);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task UpvoteQuestion_ShouldBe_Success()
+    {
+        //Arrange
+        const long questionId = 1;
+
+        //Act
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/upvote/{questionId}", null);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(result!.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task UpvoteQuestion_ShouldBe_BadRequest()
+    {
+        //Arrange
+        const long questionId = 0;
+
+        //Act
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/upvote/{questionId}", null);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Null(result.Data);
     }
 }

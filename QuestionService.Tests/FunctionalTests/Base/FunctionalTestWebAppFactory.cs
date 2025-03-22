@@ -60,9 +60,7 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
             {
                 x.Host = _wireMockServer.Url!;
                 x.Realm = WireMockIdentityServerExtensions.RealmName;
-                x.AdminToken = "TestAdminToken";
                 x.Audience = TokenHelper.GetAudience();
-                x.ClientId = "TestClientId";
             });
 
             services.RemoveAll<IOptions<GrpcHosts>>();

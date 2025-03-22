@@ -1,7 +1,7 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
-using QuestionService.DAL.Result;
 using QuestionService.Domain.Enums;
+using QuestionService.Domain.Result;
 
 namespace QuestionService.Api.Controllers.Base;
 

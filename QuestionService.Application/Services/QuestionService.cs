@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using QuestionService.DAL.Result;
 using QuestionService.Domain.Dtos.Entity;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Entities;
@@ -11,6 +10,7 @@ using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Resources;
+using QuestionService.Domain.Result;
 using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services;

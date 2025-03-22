@@ -1,4 +1,4 @@
-namespace QuestionService.DAL.Result;
+namespace QuestionService.Domain.Result;
 
 public class CollectionResult<T> : BaseResult<IEnumerable<T>>
 {

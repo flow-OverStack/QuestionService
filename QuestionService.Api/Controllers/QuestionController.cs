@@ -2,9 +2,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuestionService.Api.Controllers.Base;
-using QuestionService.DAL.Result;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Result;
 
 namespace QuestionService.Api.Controllers;
 
@@ -101,9 +101,9 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <remarks>
     /// Request for downvote question:
     /// 
-    ///     POST downvote/{questionId}
+    ///     PATCH downvote/{questionId}
     /// </remarks>
-    [HttpPost("downvote/{questionId:long}")]
+    [HttpPatch("downvote/{questionId:long}")]
     public async Task<ActionResult<BaseResult<VoteQuestionDto>>> DownvoteQuestion(long questionId)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -121,9 +121,9 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <remarks>
     /// Request for upvote question:
     /// 
-    ///     POST upvote/{questionId}
+    ///     PATCH upvote/{questionId}
     /// </remarks>
-    [HttpPost("upvote/{questionId:long}")]
+    [HttpPatch("upvote/{questionId:long}")]
     public async Task<ActionResult<BaseResult<VoteQuestionDto>>> UpvoteQuestion(long questionId)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);

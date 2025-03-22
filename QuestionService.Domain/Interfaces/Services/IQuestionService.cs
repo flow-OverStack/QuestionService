@@ -1,5 +1,5 @@
-using QuestionService.DAL.Result;
 using QuestionService.Domain.Dtos.Question;
+using QuestionService.Domain.Result;
 
 namespace QuestionService.Domain.Interfaces.Services;
 
