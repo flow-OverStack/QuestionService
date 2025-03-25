@@ -6,6 +6,7 @@ using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Helpers;
+using QuestionService.Domain.Interfaces.Producers;
 using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
@@ -20,7 +21,8 @@ public class QuestionService(
     IBaseRepository<Tag> tagRepository,
     IEntityProvider<UserDto> userClient,
     IOptions<BusinessRules> businessRules,
-    IMapper mapper)
+    IMapper mapper,
+    IBaseEventProducer producer)
     : IQuestionService
 {
     private readonly BusinessRules _businessRules = businessRules.Value;
@@ -150,6 +152,8 @@ public class QuestionService(
 
                 await unitOfWork.SaveChangesAsync();
 
+                await producer.ProduceAsync(initiator.Id, BaseEventType.QuestionUpvote);
+
                 await transaction.CommitAsync();
             }
             catch (Exception)
@@ -212,6 +216,8 @@ public class QuestionService(
                 question.Reputation += _businessRules.DownvoteReputationChange;
 
                 await unitOfWork.SaveChangesAsync();
+
+                await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote);
 
                 await transaction.CommitAsync();
             }

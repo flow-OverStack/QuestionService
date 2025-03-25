@@ -4,6 +4,8 @@ using QuestionService.Application.DependencyInjection;
 using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
 using QuestionService.Grpc.DependencyInjection;
+using QuestionService.Outbox.DependencyInjection;
+using QuestionService.ReputationProducer.DependencyInjection;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,8 @@ builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 builder.Services.AddGrpcClients();
+builder.Services.AddMassTransitServices();
+builder.Services.AddOutbox();
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 

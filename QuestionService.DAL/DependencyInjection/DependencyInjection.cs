@@ -5,6 +5,7 @@ using QuestionService.DAL.Interceptors;
 using QuestionService.DAL.Repositories;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Outbox.Messages;
 
 namespace QuestionService.DAL.DependencyInjection;
 
@@ -35,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IBaseRepository<Tag>, BaseRepository<Tag>>();
         services.AddScoped<IBaseRepository<QuestionTag>, BaseRepository<QuestionTag>>();
         services.AddScoped<IBaseRepository<Vote>, BaseRepository<Vote>>();
+        services.AddScoped<IBaseRepository<OutboxMessage>, BaseRepository<OutboxMessage>>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }

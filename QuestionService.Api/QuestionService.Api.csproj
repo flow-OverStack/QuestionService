@@ -34,6 +34,7 @@
       <ProjectReference Include="..\QuestionService.DAL\QuestionService.DAL.csproj" />
       <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
         <ProjectReference Include="..\QuestionService.Grpc\QuestionService.Grpc.csproj"/>
+        <ProjectReference Include="..\QuestionService.ReputationProducer\QuestionService.ReputationProducer.csproj"/>
     </ItemGroup>
 
 </Project>

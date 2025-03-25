@@ -2,11 +2,13 @@ using AutoMapper;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Dtos.Entity;
 using QuestionService.Domain.Entities;
+using QuestionService.Domain.Interfaces.Producers;
 using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Settings;
 using QuestionService.Tests.Configurations;
+using QuestionService.Tests.UnitTests.Configurations;
 using MapperConfiguration = QuestionService.Tests.UnitTests.Configurations.MapperConfiguration;
 
 namespace QuestionService.Tests.UnitTests.ServiceFactories;
@@ -25,16 +27,18 @@ public class QuestionServiceFactory
         UpvoteReputationChange = 1
     };
 
+    public readonly IBaseEventProducer EventProducer =
+        BaseEventProducerConfiguration.GetBaseEventProducerConfiguration();
+
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
     public readonly IBaseRepository<Tag> TagRepository = MockRepositoriesGetters.GetMockTagRepository().Object;
-
     public readonly IUnitOfWork UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork().Object;
     public readonly IEntityProvider<UserDto> UserProvider = MockEntityProvidersGetters.GetMockUserProvider().Object;
 
     public QuestionServiceFactory()
     {
         _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, UserProvider,
-            new OptionsWrapper<BusinessRules>(BusinessRules), Mapper);
+            new OptionsWrapper<BusinessRules>(BusinessRules), Mapper, EventProducer);
     }
 
     public IQuestionService GetService()
