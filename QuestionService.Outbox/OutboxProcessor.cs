@@ -1,14 +1,17 @@
-using MassTransit;
 using Newtonsoft.Json;
 using QuestionService.Domain.Events;
 using QuestionService.Outbox.Interfaces.Repositories;
 using QuestionService.Outbox.Interfaces.Services;
+using QuestionService.Outbox.Interfaces.TopicProducers;
 using QuestionService.Outbox.Messages;
 using Serilog;
 
 namespace QuestionService.Outbox;
 
-public class OutboxProcessor(IOutboxRepository outboxRepository, IPublishEndpoint producer, ILogger logger)
+public class OutboxProcessor(
+    IOutboxRepository outboxRepository,
+    ITopicProducerResolver producerResolver,
+    ILogger logger)
     : IOutboxProcessor
 {
     public async Task<int> ProcessOutboxMessagesAsync(int batchSize, CancellationToken cancellationToken = default)
@@ -36,7 +39,9 @@ public class OutboxProcessor(IOutboxRepository outboxRepository, IPublishEndpoin
 
             ArgumentNullException.ThrowIfNull(content);
 
-            await producer.Publish(content, type, cancellationToken);
+            var producer = producerResolver.GetProducerForType(type);
+
+            await producer.Produce(content, cancellationToken);
 
             await outboxRepository.MarkAsProcessedAsync(message.Id);
 

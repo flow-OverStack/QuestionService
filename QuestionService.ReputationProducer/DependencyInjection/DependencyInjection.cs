@@ -25,7 +25,7 @@ public static class DependencyInjection
         services.AddMassTransit(configurator =>
         {
             configurator.SetKebabCaseEndpointNameFormatter();
-            configurator.UsingInMemory(); //TODO IPublishEndpoint does not send messages to queue
+            configurator.UsingInMemory();
 
             configurator.AddRider(rider =>
             {

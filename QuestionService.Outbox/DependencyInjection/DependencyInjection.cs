@@ -1,8 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
+using QuestionService.Domain.Events;
 using QuestionService.Outbox.Interfaces.Repositories;
 using QuestionService.Outbox.Interfaces.Services;
+using QuestionService.Outbox.Interfaces.TopicProducers;
 using QuestionService.Outbox.Repositories;
 using QuestionService.Outbox.Services;
+using QuestionService.Outbox.TopicProducers;
 
 namespace QuestionService.Outbox.DependencyInjection;
 
@@ -12,6 +15,7 @@ public static class DependencyInjection
     {
         services.InitServices();
         services.InitBackgroundServices();
+        services.InitTopicProducers();
     }
 
     private static void InitBackgroundServices(this IServiceCollection services)
@@ -24,5 +28,11 @@ public static class DependencyInjection
         services.AddScoped<IOutboxRepository, OutboxRepository>();
         services.AddScoped<IOutboxService, OutboxService>();
         services.AddScoped<IOutboxProcessor, OutboxProcessor>();
+    }
+
+    private static void InitTopicProducers(this IServiceCollection services)
+    {
+        services.AddSingleton<ITopicProducerResolver, TopicProducerResolver>();
+        services.AddScoped<ITopicProducer, TopicProducer<BaseEvent>>();
     }
 }
