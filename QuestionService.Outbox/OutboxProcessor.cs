@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using QuestionService.Domain.Events;
+using QuestionService.Domain.Helpers;
 using QuestionService.Outbox.Interfaces.Repositories;
 using QuestionService.Outbox.Interfaces.Services;
 using QuestionService.Outbox.Interfaces.TopicProducers;

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace QuestionService.Domain.Events;
+namespace QuestionService.Domain.Helpers;
 
 public static class DomainAssemblyHelper
 {
