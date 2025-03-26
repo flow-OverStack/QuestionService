@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -6,10 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using QuestionService.DAL;
+using QuestionService.Domain.Events;
 using QuestionService.Domain.Settings;
 using QuestionService.Grpc;
 using QuestionService.Tests.FunctionalTests.Configurations;
-using QuestionService.Tests.FunctionalTests.Configurations.TestServices.Grpc;
+using QuestionService.Tests.FunctionalTests.Configurations.TestServices;
 using QuestionService.Tests.FunctionalTests.Extensions;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Testcontainers.PostgreSql;
@@ -68,6 +70,9 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
 
             services.RemoveAll<UserService.UserServiceClient>();
             services.AddSingleton<UserService.UserServiceClient, GrpcTestUserService>();
+
+            services.RemoveAll<ITopicProducer<BaseEvent>>();
+            services.AddScoped<ITopicProducer<BaseEvent>, TestTopicProducer<BaseEvent>>();
         });
     }
 }

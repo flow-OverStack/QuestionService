@@ -7,7 +7,7 @@ using QuestionService.Grpc;
 using QuestionService.Grpc.Mapping;
 using QuestionService.Tests.Configurations;
 
-namespace QuestionService.Tests.FunctionalTests.Configurations.TestServices.Grpc;
+namespace QuestionService.Tests.FunctionalTests.Configurations.TestServices;
 
 public class GrpcTestUserService : UserService.UserServiceClient
 {

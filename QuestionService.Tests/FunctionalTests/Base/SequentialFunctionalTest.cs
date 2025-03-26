@@ -6,11 +6,8 @@ namespace QuestionService.Tests.FunctionalTests.Base;
 
 public class SequentialFunctionalTest : BaseFunctionalTest, IAsyncLifetime
 {
-    protected readonly IServiceProvider ServiceProvider;
-
     protected SequentialFunctionalTest(FunctionalTestWebAppFactory factory) : base(factory)
     {
-        ServiceProvider = factory.Services;
     }
 
     public Task InitializeAsync()

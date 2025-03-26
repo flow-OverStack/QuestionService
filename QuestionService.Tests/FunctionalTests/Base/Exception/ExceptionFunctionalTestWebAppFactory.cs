@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using QuestionService.DAL.Repositories;
 using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Outbox.Interfaces.TopicProducers;
 using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.FunctionalTests.Base.Exception;
@@ -37,6 +38,15 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
         return mockUnitOfWork;
     }
 
+    private static Mock<ITopicProducerResolver> GetExceptionTopicProducerResolver()
+    {
+        var mockResolver = new Mock<ITopicProducerResolver>();
+
+        mockResolver.Setup(x => x.GetProducerForType(It.IsAny<Type>())).Throws(new TestException());
+
+        return mockResolver;
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
@@ -51,6 +61,14 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
                 var exceptionUnitOfWork = GetExceptionMockUnitOfWork(unitOfWork).GetAwaiter().GetResult().Object;
 
                 return exceptionUnitOfWork;
+            });
+
+            services.RemoveAll<ITopicProducerResolver>();
+            services.AddScoped<ITopicProducerResolver>(provider =>
+            {
+                var exceptionTopicProducerResolver = GetExceptionTopicProducerResolver().Object;
+
+                return exceptionTopicProducerResolver;
             });
         });
     }

@@ -35,9 +35,7 @@ public class OutboxProcessor(
             var type = DomainAssemblyHelper.GetDomainAssembly().GetType(message.Type) ?? // FullName
                        DomainAssemblyHelper.GetDomainAssembly().GetTypes()
                            .First(x => x.Name == message.Type); // Name
-            var content = JsonConvert.DeserializeObject(message.Content, type);
-
-            ArgumentNullException.ThrowIfNull(content);
+            var content = JsonConvert.DeserializeObject(message.Content, type)!;
 
             var producer = producerResolver.GetProducerForType(type);
 
