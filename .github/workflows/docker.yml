@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./UserService.Api/Dockerfile
+          file: ./QuestionService.Api/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/flow-overstack_question-service:latest
 
