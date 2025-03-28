@@ -45,4 +45,13 @@
     <data name="TagsNotFound" xml:space="preserve">
         <value>Tags not found</value>
     </data>
+    <data name="QuestionsNotFound" xml:space="preserve">
+        <value>Questions not found</value>
+    </data>
+    <data name="TagNotFound" xml:space="preserve">
+        <value>Tag not found</value>
+    </data>
+    <data name="VoteNotFound" xml:space="preserve">
+        <value>Vote not found</value>
+    </data>
 </root>

@@ -45,4 +45,13 @@
     <data name="TagsNotFound" xml:space="preserve">
         <value>Тэги не найдены</value>
     </data>
+    <data name="QuestionsNotFound" xml:space="preserve">
+        <value>Вопросы не найдены</value>
+    </data>
+    <data name="TagNotFound" xml:space="preserve">
+        <value>Тэг не найден</value>
+    </data>
+    <data name="VoteNotFound" xml:space="preserve">
+        <value>Голос не найден</value>
+    </data>
 </root>

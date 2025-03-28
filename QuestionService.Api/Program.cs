@@ -3,6 +3,7 @@ using QuestionService.Api.Middlewares;
 using QuestionService.Application.DependencyInjection;
 using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
+using QuestionService.GraphQl.DependencyInjection;
 using QuestionService.Grpc.DependencyInjection;
 using QuestionService.Outbox.DependencyInjection;
 using QuestionService.ReputationProducer.DependencyInjection;
@@ -21,6 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
+builder.Services.AddGraphQl();
 builder.Services.AddGrpcClients();
 builder.Services.AddMassTransitServices();
 builder.Services.AddOutbox();
@@ -50,6 +52,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.UseGraphQl();
 
 await builder.Services.MigrateDatabaseAsync();
 
