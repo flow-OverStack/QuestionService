@@ -24,7 +24,7 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
 {
     private readonly PostgreSqlContainer _userServicePostgreSql = new PostgreSqlBuilder()
         .WithImage("postgres:latest")
-        .WithDatabase("user-service-db")
+        .WithDatabase("question-service-db")
         .WithUsername("postgres")
         .WithPassword("root")
         .Build();
