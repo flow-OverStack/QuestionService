@@ -59,12 +59,43 @@ internal static class MockRepositoriesGetters
     public static Mock<IBaseRepository<Tag>> GetMockTagRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Tag>>();
-        var tags = GetTags().BuildMockDbSet();
 
-        mockRepository.Setup(x => x.GetAll()).Returns(tags.Object);
+        #region Adding questions to tags
+
+        var tags = GetTags().ToList();
+        tags.ForEach(x => x.Questions = []);
+        var questions = GetQuestions().ToList();
+        var questionTags = GetQuestionTags().ToList();
+
+        foreach (var questionTag in questionTags)
+        {
+            var tag = tags.First(x => x.Name == questionTag.TagName);
+            var question = questions.First(x => x.Id == questionTag.QuestionId);
+
+            tag.Questions.Add(question);
+        }
+
+        #endregion
+
+        var tagsDbSet = tags.BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(tagsDbSet.Object);
         mockRepository.Setup(x => x.CreateAsync(It.IsAny<Tag>())).ReturnsAsync((Tag tag) => tag);
         mockRepository.Setup(x => x.Remove(It.IsAny<Tag>())).Returns((Tag tag) => tag);
         mockRepository.Setup(x => x.Update(It.IsAny<Tag>())).Returns((Tag tag) => tag);
+
+        return mockRepository;
+    }
+
+    public static Mock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
+    {
+        var mockRepository = new Mock<IBaseRepository<T>>();
+        var roles = Array.Empty<T>().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>())).ReturnsAsync((T role) => role);
+        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T role) => role);
+        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T role) => role);
 
         return mockRepository;
     }
@@ -111,6 +142,19 @@ internal static class MockRepositoriesGetters
                 Tags = [GetTagDotNet(), GetTagJava(), GetTagPython()],
                 Views = 50,
                 Votes = GetVotes().Where(x => x.QuestionId == 3).ToList()
+            },
+            new() // Question without tags
+            {
+                Id = 4,
+                Title = "question4",
+                Body = "questionBody4",
+                Reputation = 0,
+                UserId = 3,
+                CreatedAt = DateTime.UtcNow,
+                LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
+                Tags = [],
+                Views = 50,
+                Votes = []
             }
         }.AsQueryable();
     }
