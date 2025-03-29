@@ -15,7 +15,7 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
     {
         var votes = await voteRepository.GetAll().ToListAsync();
 
-        // Since there's can be no votes it is not exception to have no votes 
+        // Since there's can be no votes it is not an exception to have no votes 
         return CollectionResult<Vote>.Success(votes, votes.Count);
     }
 

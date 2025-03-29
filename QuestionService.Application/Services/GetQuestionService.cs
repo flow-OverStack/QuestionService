@@ -15,10 +15,7 @@ public class GetQuestionService(IBaseRepository<Question> questionRepository, IB
     {
         var questions = await questionRepository.GetAll().ToListAsync();
 
-        if (!questions.Any())
-            return CollectionResult<Question>.Failure(ErrorMessage.QuestionsNotFound,
-                (int)ErrorCodes.QuestionsNotFound);
-
+        // Since there's can be no questions it is not exception to have no questions
         return CollectionResult<Question>.Success(questions, questions.Count);
     }
 

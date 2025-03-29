@@ -96,15 +96,6 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Questions not found.
-        /// </summary>
-        public static string QuestionsNotFound {
-            get {
-                return ResourceManager.GetString("QuestionsNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Tag not found.
         /// </summary>
         public static string TagNotFound {
