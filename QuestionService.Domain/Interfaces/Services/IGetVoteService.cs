@@ -1,3 +1,4 @@
+using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Result;
 
@@ -14,10 +15,9 @@ public interface IGetVoteService
     /// <summary>
     ///     Get Vote of question by questionId and userId
     /// </summary>
-    /// <param name="questionId"></param>
-    /// <param name="userId"></param>
+    /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<Vote>> GetByIdsAsync(long questionId, long userId);
+    Task<BaseResult<Vote>> GetByIdsAsync(GetVoteDto dto);
 
     /// <summary>
     ///     Gets votes of question by its id

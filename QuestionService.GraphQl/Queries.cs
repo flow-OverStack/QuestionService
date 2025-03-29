@@ -1,3 +1,4 @@
+using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
@@ -77,7 +78,8 @@ public class Queries()
     [UseSorting]
     public async Task<Vote> GetVote(long questionId, long userId, [Service] IGetVoteService voteService)
     {
-        var result = await voteService.GetByIdsAsync(questionId, userId);
+        var dto = new GetVoteDto(questionId, userId);
+        var result = await voteService.GetByIdsAsync(dto);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Repositories;
@@ -19,15 +20,15 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
         return CollectionResult<Vote>.Success(votes, votes.Count);
     }
 
-    public async Task<BaseResult<Vote>> GetByIdsAsync(long questionId, long userId)
+    public async Task<BaseResult<Vote>> GetByIdsAsync(GetVoteDto dto)
     {
         var question = await questionRepository.GetAll().Include(x => x.Votes)
-            .FirstOrDefaultAsync(x => x.Id == questionId);
+            .FirstOrDefaultAsync(x => x.Id == dto.QuestionId);
 
         if (question == null)
             return BaseResult<Vote>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
-        var vote = question.Votes.FirstOrDefault(x => x.UserId == userId);
+        var vote = question.Votes.FirstOrDefault(x => x.UserId == dto.UserId);
 
         if (vote == null)
             return BaseResult<Vote>.Failure(ErrorMessage.VoteNotFound, (int)ErrorCodes.VoteNotFound);
