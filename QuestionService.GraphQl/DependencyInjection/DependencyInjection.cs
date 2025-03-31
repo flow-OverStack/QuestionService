@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using QuestionService.GraphQl.ErrorFilters;
+using QuestionService.GraphQl.ExtensionTypes;
 using QuestionService.GraphQl.Types;
 
 namespace QuestionService.GraphQl.DependencyInjection;
@@ -23,9 +24,11 @@ public static class DependencyInjection
             .AddType<QuestionType>()
             .AddType<VoteType>()
             .AddType<TagType>()
+            .AddType<UserType>()
             .AddSorting()
             .AddFiltering()
-            .AddErrorFilter<PublicErrorFilter>();
+            .AddErrorFilter<PublicErrorFilter>()
+            .AddApolloFederation();
     }
 
     /// <summary>
