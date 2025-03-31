@@ -29,6 +29,14 @@ public class GetQuestionService(IBaseRepository<Question> questionRepository, IB
         return BaseResult<Question>.Success(question);
     }
 
+    public async Task<CollectionResult<Question>> GetByIdsAsync(IEnumerable<long> ids)
+    {
+        var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+        var totalCount = await questionRepository.GetAll().CountAsync();
+
+        return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
+    }
+
     public async Task<CollectionResult<Question>> GetQuestionsWithTag(string tagName)
     {
         var tag = await tagRepository.GetAll().Include(x => x.Questions).FirstOrDefaultAsync(x => x.Name == tagName);
