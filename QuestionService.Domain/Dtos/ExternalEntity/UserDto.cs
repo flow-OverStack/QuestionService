@@ -1,4 +1,4 @@
-namespace QuestionService.Domain.Dtos.Entity;
+namespace QuestionService.Domain.Dtos.ExternalEntity;
 
 public class UserDto
 {

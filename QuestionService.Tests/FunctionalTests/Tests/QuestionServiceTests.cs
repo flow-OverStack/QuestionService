@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
-using QuestionService.Domain.Dtos.Entity;
+using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Resources;
 using QuestionService.Domain.Result;

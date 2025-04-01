@@ -1,5 +1,5 @@
 using AutoMapper;
-using QuestionService.Domain.Dtos.Entity;
+using QuestionService.Domain.Dtos.ExternalEntity;
 
 namespace QuestionService.Grpc.Mapping;
 

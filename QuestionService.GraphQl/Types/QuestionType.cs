@@ -1,5 +1,5 @@
 using HotChocolate.ApolloFederation.Types;
-using QuestionService.Domain.Dtos.Entity;
+using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;

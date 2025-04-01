@@ -1,6 +1,6 @@
 using AutoMapper;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Dtos.Entity;
+using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Producers;
 using QuestionService.Domain.Interfaces.Providers;
