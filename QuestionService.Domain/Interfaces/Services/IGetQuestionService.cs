@@ -11,4 +11,11 @@ public interface IGetQuestionService : IGetService<Question>
     /// <param name="tagName"></param>
     /// <returns></returns>
     Task<CollectionResult<Question>> GetQuestionsWithTag(string tagName);
+
+    /// <summary>
+    ///     Gets questions of user by its id
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<CollectionResult<Question>> GetUserQuestions(long userId);
 }

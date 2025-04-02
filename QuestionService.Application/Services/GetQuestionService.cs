@@ -49,4 +49,12 @@ public class GetQuestionService(IBaseRepository<Question> questionRepository, IB
 
         return CollectionResult<Question>.Success(questions, questions.Count);
     }
+
+    public async Task<CollectionResult<Question>> GetUserQuestions(long userId)
+    {
+        var questions = await questionRepository.GetAll().Where(x => x.UserId == userId).ToListAsync();
+        var totalCount = await questionRepository.GetAll().CountAsync();
+
+        return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
+    }
 }

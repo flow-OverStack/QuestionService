@@ -31,7 +31,7 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field("user") // Field for user from UserService
             .Description("The author of the question")
             .ResolveWith<Resolvers>(x => x.GetUserByQuestion(default!))
-            .Type<UserType>();
+            .Type<NonNullType<UserType>>();
 
 
         descriptor.Key(nameof(Question.Id).LowercaseFirstLetter())
