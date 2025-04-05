@@ -4,6 +4,8 @@ using QuestionService.Domain.Interfaces.Services;
 
 namespace QuestionService.GraphQl.DataLoaders;
 
+// The data loader is not used yet because 
+// question is not resolved by any other entity yet
 public class QuestionDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,

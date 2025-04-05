@@ -19,7 +19,7 @@ namespace QuestionService.Application.Services;
 public class QuestionService(
     IUnitOfWork unitOfWork,
     IBaseRepository<Tag> tagRepository,
-    IEntityProvider<UserDto> userClient,
+    IEntityProvider<UserDto> userProvider,
     IOptions<BusinessRules> businessRules,
     IMapper mapper,
     IBaseEventProducer producer)
@@ -32,7 +32,7 @@ public class QuestionService(
         if (!IsDtoPropsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
-        var user = await userClient.GetByIdAsync(initiatorId);
+        var user = await userProvider.GetByIdAsync(initiatorId);
         if (user == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
@@ -56,7 +56,7 @@ public class QuestionService(
         if (!IsDtoPropsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
-        var initiator = await userClient.GetByIdAsync(initiatorId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId);
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Tags)
             .FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -85,7 +85,7 @@ public class QuestionService(
 
     public async Task<BaseResult<QuestionDto>> DeleteQuestion(long initiatorId, long questionId)
     {
-        var initiator = await userClient.GetByIdAsync(initiatorId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId);
         var question = await unitOfWork.Questions.GetAll().FirstOrDefaultAsync(x => x.Id == questionId);
 
         if (initiator == null)
@@ -105,7 +105,7 @@ public class QuestionService(
 
     public async Task<BaseResult<VoteQuestionDto>> UpvoteQuestion(long initiatorId, long questionId)
     {
-        var initiator = await userClient.GetByIdAsync(initiatorId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId);
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Votes)
             .FirstOrDefaultAsync(x => x.Id == questionId);
@@ -170,7 +170,7 @@ public class QuestionService(
 
     public async Task<BaseResult<VoteQuestionDto>> DownvoteQuestion(long initiatorId, long questionId)
     {
-        var initiator = await userClient.GetByIdAsync(initiatorId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId);
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Votes)
             .FirstOrDefaultAsync(x => x.Id == questionId);

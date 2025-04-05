@@ -2,6 +2,7 @@ using GraphQL.Server.Ui.Voyager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ErrorFilters;
 using QuestionService.GraphQl.ExtensionTypes;
 using QuestionService.GraphQl.Types;
@@ -28,6 +29,7 @@ public static class DependencyInjection
             .AddSorting()
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>()
+            .AddDataLoader<QuestionDataLoader>()
             .AddApolloFederation();
     }
 

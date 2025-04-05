@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
+using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Resources;
@@ -8,7 +10,10 @@ using QuestionService.Domain.Result;
 
 namespace QuestionService.Application.Services;
 
-public class GetQuestionService(IBaseRepository<Question> questionRepository, IBaseRepository<Tag> tagRepository)
+public class GetQuestionService(
+    IBaseRepository<Question> questionRepository,
+    IBaseRepository<Tag> tagRepository,
+    IEntityProvider<UserDto> userProvider)
     : IGetQuestionService
 {
     public async Task<CollectionResult<Question>> GetAllAsync()
@@ -56,6 +61,10 @@ public class GetQuestionService(IBaseRepository<Question> questionRepository, IB
 
     public async Task<CollectionResult<Question>> GetUserQuestions(long userId)
     {
+        var userExists = await userProvider.GetByIdAsync(userId) != null;
+        if (!userExists)
+            return CollectionResult<Question>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
+
         var questions = await questionRepository.GetAll().Where(x => x.UserId == userId).ToListAsync();
         var totalCount = await questionRepository.GetAll().CountAsync();
 
