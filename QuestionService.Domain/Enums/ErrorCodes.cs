@@ -18,6 +18,7 @@ public enum ErrorCodes
     QuestionNotFound = 41,
     VoteAlreadyGiven = 42,
     VoteNotFound = 43,
+    QuestionsNotFound = 44,
 
     TagsNotFound = 51,
     TagNotFound = 52,

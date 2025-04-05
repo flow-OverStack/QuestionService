@@ -34,6 +34,10 @@ public class GetQuestionService(IBaseRepository<Question> questionRepository, IB
         var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
         var totalCount = await questionRepository.GetAll().CountAsync();
 
+        if (!questions.Any())
+            return CollectionResult<Question>.Failure(ErrorMessage.QuestionsNotFound,
+                (int)ErrorCodes.QuestionsNotFound);
+
         return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
     }
 
