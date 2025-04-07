@@ -8,8 +8,6 @@ public class Question : IEntityId<long>, IAuditable
 
     public string Body { get; set; }
 
-    public int Views { get; set; }
-
     public long UserId { get; set; }
 
     public int Reputation { get; set; }
@@ -17,6 +15,8 @@ public class Question : IEntityId<long>, IAuditable
     public List<Tag> Tags { get; set; }
 
     public List<Vote> Votes { get; set; }
+
+    public List<View> Views { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

@@ -114,7 +114,6 @@ internal static class MockRepositoriesGetters
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = null,
                 Tags = [GetTagDotNet()],
-                Views = 0,
                 Votes = []
             },
             new()
@@ -127,7 +126,6 @@ internal static class MockRepositoriesGetters
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava()],
-                Views = 10,
                 Votes = GetVotes().Where(x => x.QuestionId == 2).ToList()
             },
             new()
@@ -140,7 +138,6 @@ internal static class MockRepositoriesGetters
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava(), GetTagPython()],
-                Views = 50,
                 Votes = GetVotes().Where(x => x.QuestionId == 3).ToList()
             },
             new() // Question without tags
@@ -153,7 +150,6 @@ internal static class MockRepositoriesGetters
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
                 Tags = [],
-                Views = 50,
                 Votes = []
             }
         }.AsQueryable();

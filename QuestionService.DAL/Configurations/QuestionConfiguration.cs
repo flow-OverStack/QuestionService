@@ -13,7 +13,6 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(x => x.Body).IsRequired();
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.LastModifiedAt);
-        builder.Property(x => x.Views).IsRequired().HasDefaultValue(0);
         builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.Reputation).IsRequired().HasDefaultValue(0);
 
@@ -23,6 +22,11 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
                 x => x.HasOne<Question>().WithMany().HasForeignKey(y => y.QuestionId));
 
         builder.HasMany(x => x.Votes)
+            .WithOne(x => x.Question)
+            .HasForeignKey(x => x.QuestionId)
+            .HasPrincipalKey(x => x.Id);
+
+        builder.HasMany(x => x.Views)
             .WithOne(x => x.Question)
             .HasForeignKey(x => x.QuestionId)
             .HasPrincipalKey(x => x.Id);

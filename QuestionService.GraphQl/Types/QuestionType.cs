@@ -17,7 +17,6 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.Id).Description("The ID of the user.");
         descriptor.Field(x => x.Title).Description("The tile of the question.");
         descriptor.Field(x => x.Body).Description("The body of the question.");
-        descriptor.Field(x => x.Views).Description("Count of views of the question.");
         descriptor.Field(x => x.UserId).Description("The ID of the author of the question.");
         descriptor.Field(x => x.Reputation).Description("The reputation of the question.");
         descriptor.Field(x => x.Tags).Description("The tags of the question.");

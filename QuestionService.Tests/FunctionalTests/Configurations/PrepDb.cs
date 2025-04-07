@@ -18,7 +18,6 @@ internal static class PrepDb
             {
                 Title = x.Title,
                 Body = x.Body,
-                Views = x.Views,
                 UserId = x.UserId,
                 Reputation = x.Reputation,
                 CreatedAt = x.CreatedAt,
