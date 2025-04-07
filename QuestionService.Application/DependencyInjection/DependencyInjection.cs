@@ -13,19 +13,7 @@ public static class DependencyInjection
     public static void AddApplication(this IServiceCollection services)
     {
         services.AddAutoMapper(typeof(QuestionMapping));
-        services.AddStackExchangeRedisCache(opt =>
-        {
-            using var scope = services.BuildServiceProvider().CreateScope();
-            var redisSettings = scope.ServiceProvider.GetRequiredService<IOptions<RedisSettings>>().Value;
-
-            opt.ConfigurationOptions = new ConfigurationOptions
-            {
-                EndPoints = { { redisSettings.Host, redisSettings.Port } },
-                Password = redisSettings.Password,
-            };
-            opt.InstanceName = redisSettings.InstanceName;
-        });
-
+        services.InitRedisCaching();
         services.InitServices();
     }
 
@@ -35,5 +23,26 @@ public static class DependencyInjection
         services.AddScoped<IGetQuestionService, GetQuestionService>();
         services.AddScoped<IGetVoteService, GetVoteService>();
         services.AddScoped<IGetTagService, GetTagService>();
+    }
+
+    private static void InitRedisCaching(this IServiceCollection services)
+    {
+        services.AddSingleton<IConnectionMultiplexer>(provider =>
+        {
+            var redisSettings = provider.GetRequiredService<IOptions<RedisSettings>>().Value;
+            var configuration = new ConfigurationOptions
+            {
+                EndPoints = { { redisSettings.Host, redisSettings.Port } },
+                Password = redisSettings.Password,
+            };
+
+            return ConnectionMultiplexer.Connect(configuration);
+        });
+
+        services.AddScoped<IDatabase>(provider =>
+        {
+            var multiplexer = provider.GetRequiredService<IConnectionMultiplexer>();
+            return multiplexer.GetDatabase();
+        });
     }
 }
