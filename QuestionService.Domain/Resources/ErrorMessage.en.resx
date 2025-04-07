@@ -54,4 +54,10 @@
     <data name="QuestionsNotFound" xml:space="preserve">
         <value>Question not found</value>
     </data>
+    <data name="ViewNotFound" xml:space="preserve">
+        <value>View not found</value>
+    </data>
+    <data name="ViewsNotFound" xml:space="preserve">
+        <value>Views not found</value>
+    </data>
 </root>

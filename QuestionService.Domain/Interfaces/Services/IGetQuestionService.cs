@@ -1,3 +1,4 @@
+using QuestionService.Domain.Dtos.View;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Result;
 
@@ -18,4 +19,6 @@ public interface IGetQuestionService : IGetService<Question>
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<CollectionResult<Question>> GetUserQuestions(long userId);
+
+    Task<BaseResult<QuestionViewsDto>> GetQuestionViewsCount(long questionId);
 }

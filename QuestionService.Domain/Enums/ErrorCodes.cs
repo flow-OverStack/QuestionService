@@ -8,6 +8,7 @@ public enum ErrorCodes
     //Authorization: 31-40
     //Question: 41-50
     //Tags: 51-60
+    //Views: 61-70
 
     LengthOutOfRange = 1,
 
@@ -22,4 +23,7 @@ public enum ErrorCodes
 
     TagsNotFound = 51,
     TagNotFound = 52,
+
+    ViewNotFound = 61,
+    ViewsNotFound = 62,
 }

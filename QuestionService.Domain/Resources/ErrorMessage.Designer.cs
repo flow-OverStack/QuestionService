@@ -150,6 +150,24 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View not found.
+        /// </summary>
+        public static string ViewNotFound {
+            get {
+                return ResourceManager.GetString("ViewNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Views not found.
+        /// </summary>
+        public static string ViewsNotFound {
+            get {
+                return ResourceManager.GetString("ViewsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Vote already given.
         /// </summary>
         public static string VoteAlreadyGiven {

@@ -54,4 +54,10 @@
     <data name="QuestionsNotFound" xml:space="preserve">
         <value>Вопросы не найдены</value>
     </data>
+    <data name="ViewNotFound" xml:space="preserve">
+        <value>Просмотр не найден</value>
+    </data>
+    <data name="ViewsNotFound" xml:space="preserve">
+        <value>Просмотры не найдены</value>
+    </data>
 </root>

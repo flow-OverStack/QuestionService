@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Domain.Dtos.ExternalEntity;
+using QuestionService.Domain.Dtos.View;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Providers;
@@ -69,5 +70,26 @@ public class GetQuestionService(
         var totalCount = await questionRepository.GetAll().CountAsync();
 
         return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
+    }
+
+    public async Task<BaseResult<QuestionViewsDto>> GetQuestionViewsCount(long questionId)
+    {
+        var question = await questionRepository.GetAll().Include(x => x.Views).Select(x => new
+            {
+                x.Id,
+                ViewsCount = x.Views.Count,
+            })
+            .FirstOrDefaultAsync(x => x.Id == questionId);
+
+        if (question == null)
+            return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.QuestionNotFound,
+                (int)ErrorCodes.QuestionNotFound);
+
+        var dto = new QuestionViewsDto
+        {
+            QuestionId = question.Id,
+            Views = question.ViewsCount
+        };
+        return BaseResult<QuestionViewsDto>.Success(dto);
     }
 }
