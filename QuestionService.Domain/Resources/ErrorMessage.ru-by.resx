@@ -60,4 +60,7 @@
     <data name="ViewsNotFound" xml:space="preserve">
         <value>Просмотры не найдены</value>
     </data>
+    <data name="InvalidDataFormat" xml:space="preserve">
+        <value>Неверный формат данных</value>
+    </data>
 </root>

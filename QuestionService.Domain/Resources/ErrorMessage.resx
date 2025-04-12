@@ -60,4 +60,7 @@
     <data name="ViewsNotFound" xml:space="preserve">
         <value>Views not found</value>
     </data>
+    <data name="InvalidDataFormat" xml:space="preserve">
+        <value>Invalid data format</value>
+    </data>
 </root>

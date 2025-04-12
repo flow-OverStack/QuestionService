@@ -1,6 +1,7 @@
 using HotChocolate.ApolloFederation.Types;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
+using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.GraphQl.DataLoaders;

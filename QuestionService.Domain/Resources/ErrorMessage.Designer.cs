@@ -69,6 +69,15 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid data format.
+        /// </summary>
+        public static string InvalidDataFormat {
+            get {
+                return ResourceManager.GetString("InvalidDataFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Length out of range.
         /// </summary>
         public static string LengthOutOfRange {

@@ -11,6 +11,7 @@ public enum ErrorCodes
     //Views: 61-70
 
     LengthOutOfRange = 1,
+    InvalidDataFormat = 2,
 
     UserNotFound = 21,
 

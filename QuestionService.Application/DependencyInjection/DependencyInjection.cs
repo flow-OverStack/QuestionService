@@ -20,6 +20,7 @@ public static class DependencyInjection
     private static void InitServices(this IServiceCollection services)
     {
         services.AddScoped<IQuestionService, Services.QuestionService>();
+        services.AddScoped<IViewService, ViewService>();
         services.AddScoped<IGetQuestionService, GetQuestionService>();
         services.AddScoped<IGetVoteService, GetVoteService>();
         services.AddScoped<IGetTagService, GetTagService>();

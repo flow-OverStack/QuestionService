@@ -5,7 +5,7 @@ using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
-using QuestionService.Domain.Helpers;
+using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Interfaces.Producers;
 using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
@@ -29,7 +29,7 @@ public class QuestionService(
 
     public async Task<BaseResult<QuestionDto>> AskQuestion(long initiatorId, AskQuestionDto dto)
     {
-        if (!IsDtoPropsLengthValid(dto))
+        if (!IsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
         var user = await userProvider.GetByIdAsync(initiatorId);
@@ -53,7 +53,7 @@ public class QuestionService(
 
     public async Task<BaseResult<QuestionDto>> EditQuestion(long initiatorId, EditQuestionDto dto)
     {
-        if (!IsDtoPropsLengthValid(dto))
+        if (!IsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
         var initiator = await userProvider.GetByIdAsync(initiatorId);
@@ -240,17 +240,17 @@ public class QuestionService(
                || toQuestion.UserId == initiator.Id;
     }
 
-    private bool IsDtoPropsLengthValid(EditQuestionDto dto)
+    private bool IsLengthValid(EditQuestionDto dto)
     {
-        return StringHelper.HasMinimumLength(_businessRules.TitleMinLength, dto.Title)
-               && StringHelper.HasMinimumLength(_businessRules.BodyMinLength, dto.Body)
+        return dto.Title.HasMinimumLength(_businessRules.TitleMinLength)
+               && dto.Body.HasMinimumLength(_businessRules.BodyMinLength)
                && dto.TagNames.Any();
     }
 
-    private bool IsDtoPropsLengthValid(AskQuestionDto dto)
+    private bool IsLengthValid(AskQuestionDto dto)
     {
-        return StringHelper.HasMinimumLength(_businessRules.TitleMinLength, dto.Title)
-               && StringHelper.HasMinimumLength(_businessRules.BodyMinLength, dto.Body)
+        return dto.Title.HasMinimumLength(_businessRules.TitleMinLength)
+               && dto.Body.HasMinimumLength(_businessRules.BodyMinLength)
                && dto.TagNames.Any();
     }
 }
