@@ -16,12 +16,27 @@ namespace QuestionService.Api.Controllers.Base;
 public class BaseController : ControllerBase
 {
     /// <summary>
-    /// Handles the BaseResult of type T and returns the corresponding ActionResult 
+    ///     Handles the BaseResult of type T and returns the corresponding ActionResult 
     /// </summary>
     /// <param name="result"></param>
     /// <typeparam name="T">Type of BaseResult</typeparam>
     /// <returns></returns>
     protected ActionResult<BaseResult<T>> HandleResult<T>(BaseResult<T> result)
+    {
+        return result.ErrorCode switch
+        {
+            (int)ErrorCodes.OperationForbidden => Forbid(),
+            _ when !result.IsSuccess => BadRequest(result),
+            _ => Ok(result)
+        };
+    }
+
+    /// <summary>
+    ///     Handles the BaseResult and returns the corresponding ActionResult 
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns></returns>
+    protected ActionResult<BaseResult> HandleResult(BaseResult result)
     {
         return result.ErrorCode switch
         {

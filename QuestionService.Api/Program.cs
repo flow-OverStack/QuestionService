@@ -55,6 +55,7 @@ app.MapControllers();
 app.UseGraphQl();
 
 await builder.Services.MigrateDatabaseAsync();
+app.UseForwardedHeaders(builder.Configuration);
 
 app.LogListeningUrls();
 

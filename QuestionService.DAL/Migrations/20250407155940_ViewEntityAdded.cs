@@ -29,7 +29,7 @@ namespace QuestionService.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_View", x => x.Id);
-                    table.CheckConstraint("CK_View_UserId_Or_UserIpAndFingerprint", "(UserId IS NOT NULL OR (UserFingerprint IS NOT NULL AND UserIp IS NOT NULL))");
+                    table.CheckConstraint("CK_View_UserId_Or_UserIpAndFingerprint", "\"UserId\" IS NOT NULL OR (\"UserFingerprint\" IS NOT NULL AND \"UserIp\" IS NOT NULL)");
                     table.ForeignKey(
                         name: "FK_View_Question_QuestionId",
                         column: x => x.QuestionId,

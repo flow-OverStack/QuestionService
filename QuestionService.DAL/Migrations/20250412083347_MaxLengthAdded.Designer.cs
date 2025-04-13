@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using QuestionService.DAL;
@@ -11,9 +12,11 @@ using QuestionService.DAL;
 namespace QuestionService.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250412083347_MaxLengthAdded")]
+    partial class MaxLengthAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace QuestionService.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Question", (string)null);
+                    b.ToTable("Question");
                 });
 
             modelBuilder.Entity("QuestionService.Domain.Entities.QuestionTag", b =>
@@ -69,7 +72,7 @@ namespace QuestionService.DAL.Migrations
 
                     b.HasIndex("TagName");
 
-                    b.ToTable("QuestionTag", (string)null);
+                    b.ToTable("QuestionTag");
                 });
 
             modelBuilder.Entity("QuestionService.Domain.Entities.Tag", b =>
@@ -84,7 +87,7 @@ namespace QuestionService.DAL.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("Tag", (string)null);
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("QuestionService.Domain.Entities.View", b =>
@@ -113,9 +116,9 @@ namespace QuestionService.DAL.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("View", null, t =>
+                    b.ToTable("View", t =>
                         {
-                            t.HasCheckConstraint("CK_View_UserId_Or_UserIpAndFingerprint", "\"UserId\" IS NOT NULL OR (\"UserFingerprint\" IS NOT NULL AND \"UserIp\" IS NOT NULL)");
+                            t.HasCheckConstraint("CK_View_UserId_Or_UserIpAndFingerprint", "(UserId IS NOT NULL OR (UserFingerprint IS NOT NULL AND UserIp IS NOT NULL))");
                         });
                 });
 
@@ -132,7 +135,7 @@ namespace QuestionService.DAL.Migrations
 
                     b.HasKey("QuestionId", "UserId");
 
-                    b.ToTable("Vote", (string)null);
+                    b.ToTable("Vote");
                 });
 
             modelBuilder.Entity("QuestionService.Outbox.Messages.OutboxMessage", b =>
@@ -157,7 +160,7 @@ namespace QuestionService.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OutboxMessage", (string)null);
+                    b.ToTable("OutboxMessage");
                 });
 
             modelBuilder.Entity("QuestionService.Domain.Entities.QuestionTag", b =>

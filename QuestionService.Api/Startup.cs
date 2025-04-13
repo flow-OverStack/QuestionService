@@ -1,7 +1,9 @@
+using System.Net;
 using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -133,6 +135,27 @@ public static class Startup
             });
         });
     }
+
+    /// <summary>
+    ///     Replaces the remote ip with forwarded headers if the ip is allowed
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="configuration"></param>
+    public static void UseForwardedHeaders(this WebApplication app, IConfiguration configuration)
+    {
+        var knownProxiesString =
+            configuration.GetSection(AppStartupSectionName).GetSection("KnownProxies").Get<string[]>();
+        if (knownProxiesString == null || !knownProxiesString.Any()) return;
+
+        var options = new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor
+        };
+        knownProxiesString.ToList().ForEach(x => options.KnownProxies.Add(IPAddress.Parse(x)));
+
+        app.UseForwardedHeaders(options);
+    }
+
 
     private static IEnumerable<string> GetHosts(this WebApplication app)
     {

@@ -4,12 +4,12 @@ namespace QuestionService.Domain.Extensions;
 
 public static class RedisDatabaseExtensions
 {
-    private static readonly LuaScript AddToSetsScript = LuaScript.Prepare("""
-                                                                                  for i = 1, #KEYS do
-                                                                                      redis.call('SADD', KEYS[i], ARGV[i])
-                                                                                  end
-                                                                                  return true
-                                                                          """);
+    private const string AddToSetsScript = """
+                                           for i = 1, #KEYS do
+                                               redis.call('SADD', KEYS[i], ARGV[i])
+                                           end
+                                           return true
+                                           """;
 
     public static async Task AddToSetsAsync(this IDatabase redisDatabase,
         IEnumerable<KeyValuePair<string, string>> keyValueMap)
@@ -31,7 +31,7 @@ public static class RedisDatabaseExtensions
 
         if (!keys.Any() || !values.Any()) return;
 
-        var result = await redisDatabase.ScriptEvaluateAsync(AddToSetsScript, new { keys, values });
+        var result = await redisDatabase.ScriptEvaluateAsync(AddToSetsScript, keys.ToArray(), values.ToArray());
 
         if (result.IsNull || !(bool)result)
             throw new RedisException("An exception occured while executing the redis command.");

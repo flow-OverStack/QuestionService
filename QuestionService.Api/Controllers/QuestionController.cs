@@ -38,7 +38,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     [HttpPost]
     public async Task<ActionResult<BaseResult<QuestionDto>>> AskQuestion(AskQuestionDto dto)
     {
-        var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var result = await questionService.AskQuestion(userId, dto);
 
