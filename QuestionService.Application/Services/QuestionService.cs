@@ -148,10 +148,6 @@ public class QuestionService(
 
                 await unitOfWork.SaveChangesAsync();
 
-                question.Reputation += _businessRules.UpvoteReputationChange;
-
-                await unitOfWork.SaveChangesAsync();
-
                 await producer.ProduceAsync(initiator.Id, BaseEventType.QuestionUpvote);
 
                 await transaction.CommitAsync();
@@ -210,10 +206,6 @@ public class QuestionService(
                     vote.ReputationChange = _businessRules.DownvoteReputationChange;
                     unitOfWork.Votes.Update(vote);
                 }
-
-                await unitOfWork.SaveChangesAsync();
-
-                question.Reputation += _businessRules.DownvoteReputationChange;
 
                 await unitOfWork.SaveChangesAsync();
 

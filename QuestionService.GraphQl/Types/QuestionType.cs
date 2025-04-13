@@ -19,12 +19,10 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.Title).Description("The tile of the question.");
         descriptor.Field(x => x.Body).Description("The body of the question.");
         descriptor.Field(x => x.UserId).Description("The ID of the author of the question.");
-        descriptor.Field(x => x.Reputation).Description("The reputation of the question.");
         descriptor.Field(x => x.Tags).Description("The tags of the question.");
         descriptor.Field(x => x.Votes).Description("The votes of the question.");
         descriptor.Field(x => x.CreatedAt).Description("Question creation time.");
         descriptor.Field(x => x.LastModifiedAt).Description("Question last modification time.");
-
         descriptor.Field(x => x.Tags).ResolveWith<Resolvers>(x => x.GetTagsAsync(default!, default!));
         descriptor.Field(x => x.Votes).ResolveWith<Resolvers>(x => x.GetVotesAsync(default!, default!));
 

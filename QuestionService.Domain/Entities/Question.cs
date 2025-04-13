@@ -10,8 +10,6 @@ public class Question : IEntityId<long>, IAuditable
 
     public long UserId { get; set; }
 
-    public int Reputation { get; set; }
-
     public List<Tag> Tags { get; set; }
 
     public List<Vote> Votes { get; set; }

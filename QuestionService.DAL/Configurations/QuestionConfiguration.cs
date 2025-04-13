@@ -14,7 +14,6 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.LastModifiedAt);
         builder.Property(x => x.UserId).IsRequired();
-        builder.Property(x => x.Reputation).IsRequired().HasDefaultValue(0);
 
         builder.HasMany(x => x.Tags)
             .WithMany(x => x.Questions)
