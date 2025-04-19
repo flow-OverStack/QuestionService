@@ -6,22 +6,22 @@ namespace QuestionService.Domain.Interfaces.Services;
 public interface IGetTagService
 {
     /// <summary>
-    ///     Gets all tags async
+    ///     Gets all tags
     /// </summary>
     /// <returns></returns>
     Task<CollectionResult<Tag>> GetAllAsync();
 
     /// <summary>
-    ///     Gets tag by its name
+    ///     Gets tags by their names
     /// </summary>
-    /// <param name="name"></param>
+    /// <param name="names"></param>
     /// <returns></returns>
-    Task<BaseResult<Tag>> GetByNameAsync(string name);
+    Task<CollectionResult<Tag>> GetByNamesAsync(IEnumerable<string> names);
 
     /// <summary>
-    ///     Gets tags of question by its id
+    ///     Gets tags of questions by their ids
     /// </summary>
-    /// <param name="questionId"></param>
+    /// <param name="questionIds"></param>
     /// <returns></returns>
-    Task<CollectionResult<Tag>> GetQuestionTags(long questionId);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTags(IEnumerable<long> questionIds);
 }

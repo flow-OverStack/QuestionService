@@ -30,6 +30,16 @@ public static class DependencyInjection
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>()
             .AddDataLoader<QuestionDataLoader>()
+            .AddDataLoader<VoteDataLoader>()
+            .AddDataLoader<TagDataLoader>()
+            .AddDataLoader<ViewDataLoader>()
+            .AddDataLoader<GroupTagDataLoader>()
+            .AddDataLoader<GroupVoteDataLoader>()
+            .AddDataLoader<GroupTagQuestionDataLoader>()
+            .AddDataLoader<GroupViewDataLoader>()
+            .AddDataLoader<GroupUserQuestionDataLoader>()
+            .AddDataLoader<GroupUserViewDataLoader>()
+            .AddDataLoader<GroupUserVoteDataLoader>()
             .AddApolloFederation();
     }
 

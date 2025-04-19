@@ -7,22 +7,29 @@ namespace QuestionService.Domain.Interfaces.Services;
 public interface IGetVoteService
 {
     /// <summary>
-    ///     Get all votes
+    ///     Gets all votes
     /// </summary>
     /// <returns></returns>
     Task<CollectionResult<Vote>> GetAllAsync();
 
     /// <summary>
-    ///     Get Vote of question by questionId and userId
+    ///     Gets vote of questions by pairs of question id and user id
     /// </summary>
-    /// <param name="dto"></param>
+    /// <param name="dtos"></param>
     /// <returns></returns>
-    Task<BaseResult<Vote>> GetByIdsAsync(GetVoteDto dto);
+    Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos);
 
     /// <summary>
-    ///     Gets votes of question by its id
+    ///     Gets votes of questions by their ids
     /// </summary>
-    /// <param name="questionId"></param>
+    /// <param name="questionIds"></param>
     /// <returns></returns>
-    Task<CollectionResult<Vote>> GetQuestionVotesAsync(long questionId);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(IEnumerable<long> questionIds);
+
+    /// <summary>
+    ///     Gets votes of users by their ids
+    /// </summary>
+    /// <param name="userIds"></param>
+    /// <returns></returns>
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(IEnumerable<long> userIds);
 }

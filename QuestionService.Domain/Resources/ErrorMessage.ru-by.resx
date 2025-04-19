@@ -63,4 +63,7 @@
     <data name="InvalidDataFormat" xml:space="preserve">
         <value>Неверный формат данных</value>
     </data>
+    <data name="VotesNotFound" xml:space="preserve">
+        <value>Голоса не найдены</value>
+    </data>
 </root>

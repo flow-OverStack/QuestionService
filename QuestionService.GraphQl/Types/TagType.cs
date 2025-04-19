@@ -1,6 +1,5 @@
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.GraphQl.DataLoaders;
 using Tag = QuestionService.Domain.Entities.Tag;
 
 namespace QuestionService.GraphQl.Types;
@@ -21,14 +20,11 @@ public class TagType : ObjectType<Tag>
     private sealed class Resolvers
     {
         public async Task<IEnumerable<Question>> GetQuestionsAsync([Parent] Tag tag,
-            [Service] IGetQuestionService questionService)
+            GroupTagQuestionDataLoader questionLoader)
         {
-            var result = await questionService.GetQuestionsWithTag(tag.Name);
+            var questions = await questionLoader.LoadRequiredAsync(tag.Name);
 
-            if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-            return result.Data;
+            return questions;
         }
     }
 }

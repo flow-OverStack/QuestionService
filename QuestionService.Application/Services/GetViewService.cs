@@ -8,7 +8,8 @@ using QuestionService.Domain.Result;
 
 namespace QuestionService.Application.Services;
 
-public class GetViewService(IBaseRepository<View> viewRepository) : IGetViewService
+public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepository<Question> questionRepository)
+    : IGetViewService
 {
     public async Task<CollectionResult<View>> GetAllAsync()
     {
@@ -17,15 +18,6 @@ public class GetViewService(IBaseRepository<View> viewRepository) : IGetViewServ
         return CollectionResult<View>.Success(views, views.Count);
     }
 
-    public async Task<BaseResult<View>> GetByIdAsync(long id)
-    {
-        var view = await viewRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
-
-        if (view == null)
-            return BaseResult<View>.Failure(ErrorMessage.ViewNotFound, (int)ErrorCodes.ViewNotFound);
-
-        return BaseResult<View>.Success(view);
-    }
 
     public async Task<CollectionResult<View>> GetByIdsAsync(IEnumerable<long> ids)
     {
@@ -33,8 +25,54 @@ public class GetViewService(IBaseRepository<View> viewRepository) : IGetViewServ
         var totalCount = await viewRepository.GetAll().CountAsync();
 
         if (!views.Any())
-            return CollectionResult<View>.Failure(ErrorMessage.ViewsNotFound, (int)ErrorCodes.ViewsNotFound);
+            return ids.Count() switch
+            {
+                <= 1 => CollectionResult<View>.Failure(ErrorMessage.ViewNotFound, (int)ErrorCodes.ViewNotFound),
+                > 1 => CollectionResult<View>.Failure(ErrorMessage.ViewsNotFound, (int)ErrorCodes.ViewsNotFound),
+            };
 
         return CollectionResult<View>.Success(views, views.Count, totalCount);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(
+        IEnumerable<long> userIds)
+    {
+        var groupedViews = await viewRepository.GetAll()
+            .Where(x => x.UserId != null && userIds.Contains((long)x.UserId))
+            .GroupBy(x => (long)x.UserId!)
+            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x))
+            .ToListAsync();
+
+        if (!groupedViews.Any())
+            return userIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewNotFound,
+                    (int)ErrorCodes.ViewNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
+                    (int)ErrorCodes.ViewsNotFound),
+            };
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews, groupedViews.Count);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
+        IEnumerable<long> questionIds)
+    {
+        var groupedViews = await questionRepository.GetAll()
+            .Where(x => questionIds.Contains(x.Id))
+            .Include(x => x.Views)
+            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Id, x.Views))
+            .ToListAsync();
+
+        if (!groupedViews.Any())
+            return questionIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewNotFound,
+                    (int)ErrorCodes.ViewNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
+                    (int)ErrorCodes.ViewsNotFound),
+            };
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews, groupedViews.Count);
     }
 }

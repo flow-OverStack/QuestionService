@@ -63,4 +63,7 @@
     <data name="InvalidDataFormat" xml:space="preserve">
         <value>Invalid data format</value>
     </data>
+    <data name="VotesNotFound" xml:space="preserve">
+        <value>Votes not found</value>
+    </data>
 </root>

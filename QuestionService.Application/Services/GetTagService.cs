@@ -21,29 +21,41 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
         return CollectionResult<Tag>.Success(tags, tags.Count);
     }
 
-    public async Task<BaseResult<Tag>> GetByNameAsync(string name)
+    public async Task<CollectionResult<Tag>> GetByNamesAsync(IEnumerable<string> names)
     {
-        var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Name == name);
-
-        if (tag == null)
-            return BaseResult<Tag>.Failure(ErrorMessage.TagNotFound, (int)ErrorCodes.TagNotFound);
-
-        return BaseResult<Tag>.Success(tag);
-    }
-
-    public async Task<CollectionResult<Tag>> GetQuestionTags(long questionId)
-    {
-        var question = await questionRepository.GetAll().Include(x => x.Tags)
-            .FirstOrDefaultAsync(x => x.Id == questionId);
-
-        if (question == null)
-            return CollectionResult<Tag>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
-
-        var tags = question.Tags;
+        var tags = await tagRepository.GetAll()
+            .Where(x => names.Contains(x.Name))
+            .ToListAsync();
+        var totalCount = await tagRepository.GetAll().CountAsync();
 
         if (!tags.Any())
-            return CollectionResult<Tag>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
+            return names.Count() switch
+            {
+                <= 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagNotFound, (int)ErrorCodes.TagNotFound),
+                > 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound)
+            };
 
-        return CollectionResult<Tag>.Success(tags, tags.Count);
+        return CollectionResult<Tag>.Success(tags, tags.Count, totalCount);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTags(
+        IEnumerable<long> questionIds)
+    {
+        var groupedTags = await questionRepository.GetAll()
+            .Where(x => questionIds.Contains(x.Id))
+            .Include(x => x.Tags)
+            .Select(x => new KeyValuePair<long, IEnumerable<Tag>>(x.Id, x.Tags))
+            .ToListAsync();
+
+        if (!groupedTags.Any())
+            return questionIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagNotFound,
+                    (int)ErrorCodes.TagNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagsNotFound,
+                    (int)ErrorCodes.TagsNotFound)
+            };
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Success(groupedTags, groupedTags.Count);
     }
 }

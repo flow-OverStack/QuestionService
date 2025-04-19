@@ -2,6 +2,7 @@ using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
+using QuestionService.GraphQl.DataLoaders;
 using Tag = QuestionService.Domain.Entities.Tag;
 
 namespace QuestionService.GraphQl;
@@ -24,14 +25,12 @@ public class Queries()
     [GraphQLDescription("Returns a question by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Question> GetQuestion(long id, [Service] IGetQuestionService questionService)
+    public async Task<Question> GetQuestion(long id, QuestionDataLoader questionLoader)
     {
-        var result = await questionService.GetByIdAsync(id);
+        //If the question is not found, data loader will throw GrpahQl exception
+        var question = await questionLoader.LoadRequiredAsync(id);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-        return result.Data;
+        return question;
     }
 
     [GraphQLDescription("Returns a list of all tags")]
@@ -50,14 +49,11 @@ public class Queries()
     [GraphQLDescription("Returns a tag by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Tag> GetTag(string name, [Service] IGetTagService tagService)
+    public async Task<Tag> GetTag(string name, TagDataLoader tagLoader)
     {
-        var result = await tagService.GetByNameAsync(name);
+        var tag = await tagLoader.LoadRequiredAsync(name);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-        return result.Data;
+        return tag;
     }
 
     [GraphQLDescription("Returns a list of all votes")]
@@ -76,14 +72,34 @@ public class Queries()
     [GraphQLDescription("Returns a vote by id of the question that was voted and the user that voted")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Vote> GetVote(long questionId, long userId, [Service] IGetVoteService voteService)
+    public async Task<Vote> GetVote(long questionId, long userId, VoteDataLoader voteLoader)
     {
         var dto = new GetVoteDto(questionId, userId);
-        var result = await voteService.GetByIdsAsync(dto);
+        var vote = await voteLoader.LoadRequiredAsync(dto);
+
+        return vote;
+    }
+
+    [GraphQLDescription("Returns a list of all views")]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<IEnumerable<View>> GetViews([Service] IGetViewService viewService)
+    {
+        var result = await viewService.GetAllAsync();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
         return result.Data;
+    }
+
+    [GraphQLDescription("Returns a view by its id")]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<View> GetView(long viewId, ViewDataLoader viewLoader)
+    {
+        var view = await viewLoader.LoadRequiredAsync(viewId);
+
+        return view;
     }
 }

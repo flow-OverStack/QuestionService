@@ -20,32 +20,63 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
         return CollectionResult<Vote>.Success(votes, votes.Count);
     }
 
-    public async Task<BaseResult<Vote>> GetByIdsAsync(GetVoteDto dto)
+    public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos)
     {
-        var question = await questionRepository.GetAll().Include(x => x.Votes)
-            .FirstOrDefaultAsync(x => x.Id == dto.QuestionId);
+        var votes = await voteRepository.GetAll()
+            .Where(x => dtos.Any(y =>
+                y.UserId == x.UserId && y.QuestionId == x.QuestionId)) //TODO does not work, find solution
+            .ToListAsync();
+        var totalCount = await voteRepository.GetAll().CountAsync();
 
-        if (question == null)
-            return BaseResult<Vote>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
+        if (!votes.Any())
+            return dtos.Count() switch
+            {
+                <= 1 => CollectionResult<Vote>.Failure(ErrorMessage.VoteNotFound, (int)ErrorCodes.VoteNotFound),
+                > 1 => CollectionResult<Vote>.Failure(ErrorMessage.VotesNotFound, (int)ErrorCodes.VotesNotFound)
+            };
 
-        var vote = question.Votes.FirstOrDefault(x => x.UserId == dto.UserId);
-
-        if (vote == null)
-            return BaseResult<Vote>.Failure(ErrorMessage.VoteNotFound, (int)ErrorCodes.VoteNotFound);
-
-        return BaseResult<Vote>.Success(vote);
+        return CollectionResult<Vote>.Success(votes, votes.Count, totalCount);
     }
 
-    public async Task<CollectionResult<Vote>> GetQuestionVotesAsync(long questionId)
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
+        IEnumerable<long> questionIds)
     {
-        var question = await questionRepository.GetAll().Include(x => x.Votes)
-            .FirstOrDefaultAsync(x => x.Id == questionId);
+        var groupedVotes = await questionRepository.GetAll()
+            .Where(x => questionIds.Contains(x.Id))
+            .Include(x => x.Votes)
+            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Id, x.Votes))
+            .ToListAsync();
 
-        if (question == null)
-            return CollectionResult<Vote>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
+        if (!groupedVotes.Any())
+            return questionIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VoteNotFound,
+                    (int)ErrorCodes.VoteNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
+                    (int)ErrorCodes.VotesNotFound)
+            };
 
-        var votes = question.Votes;
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes, groupedVotes.Count);
+    }
 
-        return CollectionResult<Vote>.Success(votes, votes.Count);
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
+        IEnumerable<long> userIds)
+    {
+        var groupedVotes = await voteRepository.GetAll()
+            .Where(x => userIds.Contains(x.UserId))
+            .GroupBy(x => x.UserId)
+            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x))
+            .ToListAsync();
+
+        if (!groupedVotes.Any())
+            return userIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VoteNotFound,
+                    (int)ErrorCodes.VoteNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
+                    (int)ErrorCodes.VotesNotFound)
+            };
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes, groupedVotes.Count);
     }
 }

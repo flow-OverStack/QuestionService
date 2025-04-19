@@ -11,14 +11,7 @@ public interface IGetService<T>
     Task<CollectionResult<T>> GetAllAsync();
 
     /// <summary>
-    ///     Gets one T by its Id
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    Task<BaseResult<T>> GetByIdAsync(long id);
-
-    /// <summary>
-    ///     Gets several T's by its Ids
+    ///     Gets multiple T's by their ids
     /// </summary>
     /// <param name="ids"></param>
     /// <returns></returns>

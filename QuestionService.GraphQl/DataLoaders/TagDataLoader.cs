@@ -1,29 +1,29 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Domain.Entities;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
+using Tag = QuestionService.Domain.Entities.Tag;
 
 namespace QuestionService.GraphQl.DataLoaders;
 
-public class QuestionDataLoader(
+public class TagDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : BatchDataLoader<long, Question>(batchScheduler, options)
+    : BatchDataLoader<string, Tag>(batchScheduler, options)
 {
-    protected override async Task<IReadOnlyDictionary<long, Question>> LoadBatchAsync(IReadOnlyList<long> keys,
+    protected override async Task<IReadOnlyDictionary<string, Tag>> LoadBatchAsync(IReadOnlyList<string> keys,
         CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
-        var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
+        var tagService = scope.ServiceProvider.GetRequiredService<IGetTagService>();
 
-        var result = await questionService.GetByIdsAsync(keys);
+        var result = await tagService.GetByNamesAsync(keys);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
-        var dictionary = new Dictionary<long, Question>();
-        result.Data.ToList().ForEach(x => dictionary.Add(x.Id, x));
+        var dictionary = new Dictionary<string, Tag>();
+        result.Data.ToList().ForEach(x => dictionary.Add(x.Name, x));
 
         return dictionary.AsReadOnly();
     }

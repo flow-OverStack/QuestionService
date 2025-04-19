@@ -2,8 +2,6 @@ using HotChocolate.ApolloFederation.Types;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Extensions;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Services;
 using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ExtensionTypes;
 using Tag = QuestionService.Domain.Entities.Tag;
@@ -23,8 +21,10 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.Votes).Description("The votes of the question.");
         descriptor.Field(x => x.CreatedAt).Description("Question creation time.");
         descriptor.Field(x => x.LastModifiedAt).Description("Question last modification time.");
+
         descriptor.Field(x => x.Tags).ResolveWith<Resolvers>(x => x.GetTagsAsync(default!, default!));
         descriptor.Field(x => x.Votes).ResolveWith<Resolvers>(x => x.GetVotesAsync(default!, default!));
+        descriptor.Field(x => x.Views).ResolveWith<Resolvers>(x => x.GetViewsAsync(default!, default!));
 
         descriptor.Field("user") // Field for user from UserService
             .Description("The author of the question")
@@ -38,26 +38,25 @@ public class QuestionType : ObjectType<Question>
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<Tag>> GetTagsAsync([Parent] Question question,
-            [Service] IGetTagService tagService)
+        public async Task<IEnumerable<Tag>> GetTagsAsync([Parent] Question question, GroupTagDataLoader tagLoader)
         {
-            var result = await tagService.GetQuestionTags(question.Id);
+            var tags = await tagLoader.LoadRequiredAsync(question.Id);
 
-            if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-            return result.Data;
+            return tags;
         }
 
-        public async Task<IEnumerable<Vote>> GetVotesAsync([Parent] Question question,
-            [Service] IGetVoteService voteService)
+        public async Task<IEnumerable<Vote>> GetVotesAsync([Parent] Question question, GroupVoteDataLoader voteLoader)
         {
-            var result = await voteService.GetQuestionVotesAsync(question.Id);
+            var votes = await voteLoader.LoadRequiredAsync(question.Id);
 
-            if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+            return votes;
+        }
 
-            return result.Data;
+        public async Task<IEnumerable<View>> GetViewsAsync([Parent] Question question, GroupViewDataLoader viewLoader)
+        {
+            var views = await viewLoader.LoadRequiredAsync(question.Id);
+
+            return views;
         }
 
         public static async Task<Question> GetQuestionById(long id, QuestionDataLoader questionLoader)

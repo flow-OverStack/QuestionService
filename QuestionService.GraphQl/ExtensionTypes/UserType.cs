@@ -2,8 +2,7 @@ using HotChocolate.ApolloFederation.Types;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Extensions;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.Types;
 
 namespace QuestionService.GraphQl.ExtensionTypes;
@@ -23,6 +22,16 @@ public class UserType : ObjectType<UserDto>
             .ResolveWith<Resolvers>(x => x.GetUserQuestionsAsync(default!, default!))
             .Type<NonNullType<ListType<NonNullType<QuestionType>>>>();
 
+        descriptor.Field("views")
+            .Description("The views of the user.")
+            .ResolveWith<Resolvers>(x => x.GetUserViewsAsync(default!, default!))
+            .Type<NonNullType<ListType<NonNullType<ViewType>>>>();
+
+        descriptor.Field("votes")
+            .Description("The votes of the user.")
+            .ResolveWith<Resolvers>(x => x.GetUserVotesAsync(default!, default!))
+            .Type<NonNullType<ListType<NonNullType<VoteType>>>>();
+
         //Ignore fields that will be retrieved from UserService
         descriptor.Field(x => x.KeycloakId).Ignore();
         descriptor.Field(x => x.Username).Ignore();
@@ -37,14 +46,27 @@ public class UserType : ObjectType<UserDto>
     private sealed class Resolvers
     {
         public async Task<IEnumerable<Question>> GetUserQuestionsAsync([Parent] UserDto user,
-            [Service] IGetQuestionService questionService)
+            GroupUserQuestionDataLoader questionLoader)
         {
-            var result = await questionService.GetUserQuestions(user.Id);
+            var questions = await questionLoader.LoadRequiredAsync(user.Id);
 
-            if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+            return questions;
+        }
 
-            return result.Data;
+        public async Task<IEnumerable<View>> GetUserViewsAsync([Parent] UserDto user,
+            GroupUserViewDataLoader viewLoader)
+        {
+            var views = await viewLoader.LoadRequiredAsync(user.Id);
+
+            return views;
+        }
+
+        public async Task<IEnumerable<Vote>> GetUserVotesAsync([Parent] UserDto user,
+            GroupUserVoteDataLoader voteLoader)
+        {
+            var views = await voteLoader.LoadRequiredAsync(user.Id);
+
+            return views;
         }
 
         public static UserDto GetUserById(long id) => new() { Id = id };

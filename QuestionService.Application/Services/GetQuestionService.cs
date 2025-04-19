@@ -1,9 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using QuestionService.Domain.Dtos.ExternalEntity;
-using QuestionService.Domain.Dtos.View;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
-using QuestionService.Domain.Interfaces.Providers;
 using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Resources;
@@ -13,8 +10,7 @@ namespace QuestionService.Application.Services;
 
 public class GetQuestionService(
     IBaseRepository<Question> questionRepository,
-    IBaseRepository<Tag> tagRepository,
-    IEntityProvider<UserDto> userProvider)
+    IBaseRepository<Tag> tagRepository)
     : IGetQuestionService
 {
     public async Task<CollectionResult<Question>> GetAllAsync()
@@ -25,71 +21,68 @@ public class GetQuestionService(
         return CollectionResult<Question>.Success(questions, questions.Count);
     }
 
-    public async Task<BaseResult<Question>> GetByIdAsync(long id)
-    {
-        var question = await questionRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
-
-        if (question == null)
-            return BaseResult<Question>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
-
-        return BaseResult<Question>.Success(question);
-    }
-
     public async Task<CollectionResult<Question>> GetByIdsAsync(IEnumerable<long> ids)
     {
         var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
         var totalCount = await questionRepository.GetAll().CountAsync();
 
         if (!questions.Any())
-            return CollectionResult<Question>.Failure(ErrorMessage.QuestionsNotFound,
-                (int)ErrorCodes.QuestionsNotFound);
-
-        return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
-    }
-
-    public async Task<CollectionResult<Question>> GetQuestionsWithTag(string tagName)
-    {
-        var tag = await tagRepository.GetAll().Include(x => x.Questions).FirstOrDefaultAsync(x => x.Name == tagName);
-
-        if (tag == null)
-            return CollectionResult<Question>.Failure(ErrorMessage.TagNotFound,
-                (int)ErrorCodes.TagNotFound);
-
-        var questions = tag.Questions;
-
-        return CollectionResult<Question>.Success(questions, questions.Count);
-    }
-
-    public async Task<CollectionResult<Question>> GetUserQuestions(long userId)
-    {
-        var userExists = await userProvider.GetByIdAsync(userId) != null;
-        if (!userExists)
-            return CollectionResult<Question>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
-
-        var questions = await questionRepository.GetAll().Where(x => x.UserId == userId).ToListAsync();
-        var totalCount = await questionRepository.GetAll().CountAsync();
-
-        return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
-    }
-
-    public async Task<BaseResult<QuestionViewsDto>> GetQuestionViewsCount(long questionId)
-    {
-        var question = await questionRepository.GetAll().Include(x => x.Views).Select(x => new
+            return ids.Count() switch
             {
-                x.Id,
-                ViewsCount = x.Views.Count,
-            })
-            .FirstOrDefaultAsync(x => x.Id == questionId);
+                <= 1 => CollectionResult<Question>.Failure(ErrorMessage.QuestionNotFound,
+                    (int)ErrorCodes.QuestionNotFound),
+                > 1 => CollectionResult<Question>.Failure(ErrorMessage.QuestionsNotFound,
+                    (int)ErrorCodes.QuestionsNotFound)
+            };
 
-        if (question == null)
-            return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.QuestionNotFound,
-                (int)ErrorCodes.QuestionNotFound);
+        return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
+    }
 
-        var dto = new QuestionViewsDto
-        {
-            QuestionId = question.Id,
-            Views = question.ViewsCount
-        };
-        return BaseResult<QuestionViewsDto>.Success(dto);
+    public async Task<CollectionResult<KeyValuePair<string, IEnumerable<Question>>>> GetQuestionsWithTags(
+        IEnumerable<string> tagNames)
+    {
+        var groupedQuestions = await tagRepository.GetAll()
+            .Where(x => tagNames.Contains(x.Name))
+            .Include(x => x.Questions)
+            .Select(x => new KeyValuePair<string, IEnumerable<Question>>(x.Name, x.Questions))
+            .ToListAsync();
+
+        if (!groupedQuestions.Any())
+            return tagNames.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Failure(
+                    ErrorMessage.QuestionNotFound,
+                    (int)ErrorCodes.QuestionNotFound),
+                > 1 => CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Failure(
+                    ErrorMessage.QuestionsNotFound,
+                    (int)ErrorCodes.QuestionsNotFound)
+            };
+
+        return CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Success(groupedQuestions,
+            groupedQuestions.Count);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestions(
+        IEnumerable<long> userIds)
+    {
+        var groupedQuestions = await questionRepository.GetAll()
+            .Where(x => userIds.Contains(x.UserId))
+            .GroupBy(x => x.UserId)
+            .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x))
+            .ToListAsync();
+
+        if (!groupedQuestions.Any())
+            return userIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(
+                    ErrorMessage.QuestionNotFound,
+                    (int)ErrorCodes.QuestionNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(
+                    ErrorMessage.QuestionsNotFound,
+                    (int)ErrorCodes.QuestionsNotFound)
+            };
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions,
+            groupedQuestions.Count);
     }
 }

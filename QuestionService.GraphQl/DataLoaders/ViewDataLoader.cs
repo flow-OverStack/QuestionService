@@ -5,24 +5,24 @@ using QuestionService.Domain.Interfaces.Services;
 
 namespace QuestionService.GraphQl.DataLoaders;
 
-public class QuestionDataLoader(
+public class ViewDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : BatchDataLoader<long, Question>(batchScheduler, options)
+    : BatchDataLoader<long, View>(batchScheduler, options)
 {
-    protected override async Task<IReadOnlyDictionary<long, Question>> LoadBatchAsync(IReadOnlyList<long> keys,
+    protected override async Task<IReadOnlyDictionary<long, View>> LoadBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
-        var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
+        var viewService = scope.ServiceProvider.GetRequiredService<IGetViewService>();
 
-        var result = await questionService.GetByIdsAsync(keys);
+        var result = await viewService.GetByIdsAsync(keys);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
-        var dictionary = new Dictionary<long, Question>();
+        var dictionary = new Dictionary<long, View>();
         result.Data.ToList().ForEach(x => dictionary.Add(x.Id, x));
 
         return dictionary.AsReadOnly();

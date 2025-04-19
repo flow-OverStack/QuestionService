@@ -9,6 +9,7 @@ public enum ErrorCodes
     //Question: 41-50
     //Tags: 51-60
     //Views: 61-70
+    //Vote: 71-80
 
     LengthOutOfRange = 1,
     InvalidDataFormat = 2,
@@ -18,13 +19,15 @@ public enum ErrorCodes
     OperationForbidden = 31,
 
     QuestionNotFound = 41,
-    VoteAlreadyGiven = 42,
-    VoteNotFound = 43,
-    QuestionsNotFound = 44,
+    QuestionsNotFound = 42,
 
     TagsNotFound = 51,
     TagNotFound = 52,
 
     ViewNotFound = 61,
     ViewsNotFound = 62,
+
+    VoteAlreadyGiven = 71,
+    VoteNotFound = 72,
+    VotesNotFound = 73
 }

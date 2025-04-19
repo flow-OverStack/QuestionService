@@ -1,6 +1,5 @@
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.GraphQl.DataLoaders;
 
 namespace QuestionService.GraphQl.Types;
 
@@ -19,14 +18,11 @@ public class VoteType : ObjectType<Vote>
 
     private sealed class Resolvers
     {
-        public async Task<Question> GetQuestionAsync([Parent] Vote vote, [Service] IGetQuestionService questionService)
+        public async Task<Question> GetQuestionAsync([Parent] Vote vote, QuestionDataLoader questionLoader)
         {
-            var result = await questionService.GetByIdAsync(vote.QuestionId);
+            var question = await questionLoader.LoadRequiredAsync(vote.QuestionId);
 
-            if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-            return result.Data;
+            return question;
         }
     }
 }

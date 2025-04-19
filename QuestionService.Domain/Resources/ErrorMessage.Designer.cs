@@ -193,5 +193,14 @@ namespace QuestionService.Domain.Resources {
                 return ResourceManager.GetString("VoteNotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Votes not found.
+        /// </summary>
+        public static string VotesNotFound {
+            get {
+                return ResourceManager.GetString("VotesNotFound", resourceCulture);
+            }
+        }
     }
 }

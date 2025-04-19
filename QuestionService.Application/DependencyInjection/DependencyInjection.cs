@@ -24,6 +24,7 @@ public static class DependencyInjection
         services.AddScoped<IGetQuestionService, GetQuestionService>();
         services.AddScoped<IGetVoteService, GetVoteService>();
         services.AddScoped<IGetTagService, GetTagService>();
+        services.AddScoped<IGetViewService, GetViewService>();
     }
 
     private static void InitRedisCaching(this IServiceCollection services)
