@@ -1,3 +1,4 @@
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
@@ -22,14 +23,21 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
 
     public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos)
     {
+        var keys = dtos.ToList();
+
+        var predicate = PredicateBuilder.New<Vote>();
+        predicate = keys.Aggregate(predicate,
+            (current, local) =>
+                current.Or(x => x.QuestionId == local.QuestionId && x.UserId == local.UserId));
+
         var votes = await voteRepository.GetAll()
-            .Where(x => dtos.Any(y =>
-                y.UserId == x.UserId && y.QuestionId == x.QuestionId)) //TODO does not work, find solution
+            .AsExpandable()
+            .Where(predicate)
             .ToListAsync();
         var totalCount = await voteRepository.GetAll().CountAsync();
 
         if (!votes.Any())
-            return dtos.Count() switch
+            return keys.Count switch
             {
                 <= 1 => CollectionResult<Vote>.Failure(ErrorMessage.VoteNotFound, (int)ErrorCodes.VoteNotFound),
                 > 1 => CollectionResult<Vote>.Failure(ErrorMessage.VotesNotFound, (int)ErrorCodes.VotesNotFound)
