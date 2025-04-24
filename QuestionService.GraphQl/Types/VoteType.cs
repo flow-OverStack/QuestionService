@@ -1,5 +1,7 @@
+using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.GraphQl.DataLoaders;
+using QuestionService.GraphQl.ExtensionTypes;
 
 namespace QuestionService.GraphQl.Types;
 
@@ -14,6 +16,11 @@ public class VoteType : ObjectType<Vote>
         descriptor.Field(x => x.Question).Description("The question that was voted.");
 
         descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!));
+
+        descriptor.Field("user") // Field for user from UserService
+            .Description("The voter.")
+            .ResolveWith<Resolvers>(x => x.GetUserByVote(default!))
+            .Type<NonNullType<UserType>>();
     }
 
     private sealed class Resolvers
@@ -24,5 +31,7 @@ public class VoteType : ObjectType<Vote>
 
             return question;
         }
+
+        public UserDto GetUserByVote([Parent] Vote vote) => new() { Id = vote.UserId };
     }
 }

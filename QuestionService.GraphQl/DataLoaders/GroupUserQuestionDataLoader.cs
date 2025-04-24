@@ -1,12 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
 
 namespace QuestionService.GraphQl.DataLoaders;
 
 /// <summary>
-///     Data loader that stores question by users ids
+///     Data loader that stores questions by users ids
 /// </summary>
 public class GroupUserQuestionDataLoader(
     IBatchScheduler batchScheduler,
@@ -23,7 +22,9 @@ public class GroupUserQuestionDataLoader(
         var result = await questionService.GetUsersQuestions(keys);
 
         if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+            return Enumerable.Empty<KeyValuePair<long, IEnumerable<Question>>>()
+                .SelectMany(x => x.Value.Select(y => new { x.Key, Question = y }))
+                .ToLookup(x => x.Key, x => x.Question);
 
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, Question = y }))

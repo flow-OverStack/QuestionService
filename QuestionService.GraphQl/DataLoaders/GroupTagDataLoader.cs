@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
 using Tag = QuestionService.Domain.Entities.Tag;
 
@@ -26,7 +25,9 @@ public class GroupTagDataLoader(
         var result = await tagService.GetQuestionsTags(keys);
 
         if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+            return Enumerable.Empty<KeyValuePair<long, IEnumerable<Tag>>>()
+                .SelectMany(x => x.Value.Select(y => new { x.Key, Tag = y }))
+                .ToLookup(x => x.Key, x => x.Tag);
 
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, Tag = y }))

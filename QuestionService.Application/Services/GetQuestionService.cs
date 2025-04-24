@@ -65,11 +65,14 @@ public class GetQuestionService(
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestions(
         IEnumerable<long> userIds)
     {
-        var groupedQuestions = await questionRepository.GetAll()
+        var questions = await questionRepository.GetAll()
             .Where(x => userIds.Contains(x.UserId))
+            .ToListAsync();
+
+        var groupedQuestions = questions
             .GroupBy(x => x.UserId)
             .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x))
-            .ToListAsync();
+            .ToList();
 
         if (!groupedQuestions.Any())
             return userIds.Count() switch

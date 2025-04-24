@@ -7,7 +7,7 @@ using Tag = QuestionService.Domain.Entities.Tag;
 
 namespace QuestionService.GraphQl;
 
-public class Queries()
+public class Queries
 {
     [GraphQLDescription("Returns a list of all questions")]
     [UseFiltering]
@@ -25,10 +25,9 @@ public class Queries()
     [GraphQLDescription("Returns a question by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Question> GetQuestion(long id, QuestionDataLoader questionLoader)
+    public async Task<Question?> GetQuestion(long id, QuestionDataLoader questionLoader)
     {
-        //If the question is not found, data loader will throw GrpahQl exception
-        var question = await questionLoader.LoadRequiredAsync(id);
+        var question = await questionLoader.LoadAsync(id);
 
         return question;
     }
@@ -49,9 +48,9 @@ public class Queries()
     [GraphQLDescription("Returns a tag by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Tag> GetTag(string name, TagDataLoader tagLoader)
+    public async Task<Tag?> GetTag(string name, TagDataLoader tagLoader)
     {
-        var tag = await tagLoader.LoadRequiredAsync(name);
+        var tag = await tagLoader.LoadAsync(name);
 
         return tag;
     }
@@ -72,10 +71,10 @@ public class Queries()
     [GraphQLDescription("Returns a vote by id of the question that was voted and the user that voted")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Vote> GetVote(long questionId, long userId, VoteDataLoader voteLoader)
+    public async Task<Vote?> GetVote(long questionId, long userId, VoteDataLoader voteLoader)
     {
         var dto = new GetVoteDto(questionId, userId);
-        var vote = await voteLoader.LoadRequiredAsync(dto);
+        var vote = await voteLoader.LoadAsync(dto);
 
         return vote;
     }
@@ -96,9 +95,9 @@ public class Queries()
     [GraphQLDescription("Returns a view by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<View> GetView(long viewId, ViewDataLoader viewLoader)
+    public async Task<View?> GetView(long viewId, ViewDataLoader viewLoader)
     {
-        var view = await viewLoader.LoadRequiredAsync(viewId);
+        var view = await viewLoader.LoadAsync(viewId);
 
         return view;
     }

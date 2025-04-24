@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
 
 namespace QuestionService.GraphQl.DataLoaders;
@@ -19,11 +18,12 @@ public class ViewDataLoader(
 
         var result = await viewService.GetByIdsAsync(keys);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
         var dictionary = new Dictionary<long, View>();
-        result.Data.ToList().ForEach(x => dictionary.Add(x.Id, x));
+
+        if (!result.IsSuccess)
+            return dictionary.AsReadOnly();
+
+        dictionary = result.Data.ToDictionary(x => x.Id, x => x);
 
         return dictionary.AsReadOnly();
     }

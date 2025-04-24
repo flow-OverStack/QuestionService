@@ -1,5 +1,7 @@
+using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.GraphQl.DataLoaders;
+using QuestionService.GraphQl.ExtensionTypes;
 
 namespace QuestionService.GraphQl.Types;
 
@@ -15,6 +17,11 @@ public class ViewType : ObjectType<View>
         descriptor.Field(x => x.UserFingerprint).Description("The unique fingerprint of the viewer's device.");
 
         descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!));
+
+        descriptor.Field("user") // Field for user from UserService
+            .Description("The viewer.")
+            .ResolveWith<Resolvers>(x => x.GetUserByView(default!))
+            .Type<UserType>(); // Can be null
     }
 
     private sealed class Resolvers
@@ -25,5 +32,8 @@ public class ViewType : ObjectType<View>
 
             return question;
         }
+
+        public UserDto? GetUserByView([Parent] View view) =>
+            view.UserId != null ? new UserDto { Id = (long)view.UserId } : null;
     }
 }

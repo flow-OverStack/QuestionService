@@ -70,11 +70,14 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
         IEnumerable<long> userIds)
     {
-        var groupedVotes = await voteRepository.GetAll()
+        var votes = await voteRepository.GetAll()
             .Where(x => userIds.Contains(x.UserId))
+            .ToListAsync();
+
+        var groupedVotes = votes
             .GroupBy(x => x.UserId)
             .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x))
-            .ToListAsync();
+            .ToList();
 
         if (!groupedVotes.Any())
             return userIds.Count() switch

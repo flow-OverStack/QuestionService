@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
 using Tag = QuestionService.Domain.Entities.Tag;
 
@@ -19,11 +18,12 @@ public class TagDataLoader(
 
         var result = await tagService.GetByNamesAsync(keys);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
         var dictionary = new Dictionary<string, Tag>();
-        result.Data.ToList().ForEach(x => dictionary.Add(x.Name, x));
+
+        if (!result.IsSuccess)
+            return dictionary.AsReadOnly();
+
+        dictionary = result.Data.ToDictionary(x => x.Name, x => x);
 
         return dictionary.AsReadOnly();
     }

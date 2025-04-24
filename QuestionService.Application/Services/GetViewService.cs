@@ -37,11 +37,15 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(
         IEnumerable<long> userIds)
     {
-        var groupedViews = await viewRepository.GetAll()
+        var views = await viewRepository.GetAll()
             .Where(x => x.UserId != null && userIds.Contains((long)x.UserId))
+            .ToListAsync();
+
+        var groupedViews = views
             .GroupBy(x => (long)x.UserId!)
             .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x))
-            .ToListAsync();
+            .ToList();
+
 
         if (!groupedViews.Any())
             return userIds.Count() switch

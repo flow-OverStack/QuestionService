@@ -2,6 +2,8 @@ using HotChocolate.ApolloFederation.Types;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Extensions;
+using QuestionService.Domain.Helpers;
+using QuestionService.Domain.Resources;
 using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ExtensionTypes;
 using Tag = QuestionService.Domain.Entities.Tag;
@@ -27,7 +29,7 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.Views).ResolveWith<Resolvers>(x => x.GetViewsAsync(default!, default!));
 
         descriptor.Field("user") // Field for user from UserService
-            .Description("The author of the question")
+            .Description("The author of the question.")
             .ResolveWith<Resolvers>(x => x.GetUserByQuestion(default!))
             .Type<NonNullType<UserType>>();
 
@@ -41,6 +43,10 @@ public class QuestionType : ObjectType<Question>
         public async Task<IEnumerable<Tag>> GetTagsAsync([Parent] Question question, GroupTagDataLoader tagLoader)
         {
             var tags = await tagLoader.LoadRequiredAsync(question.Id);
+
+            // Have no tags is a business exception
+            if (!tags.Any())
+                throw GraphQlExceptionHelper.GetException(ErrorMessage.TagsNotFound);
 
             return tags;
         }

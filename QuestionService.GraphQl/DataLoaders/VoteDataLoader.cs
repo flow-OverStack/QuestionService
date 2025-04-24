@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Services;
 
 namespace QuestionService.GraphQl.DataLoaders;
@@ -20,11 +19,12 @@ public class VoteDataLoader(
 
         var result = await voteService.GetByDtosAsync(keys);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
         var dictionary = new Dictionary<GetVoteDto, Vote>();
-        result.Data.ToList().ForEach(x => dictionary.Add(new GetVoteDto(x.QuestionId, x.UserId), x));
+
+        if (!result.IsSuccess)
+            return dictionary.AsReadOnly();
+
+        dictionary = result.Data.ToDictionary(x => new GetVoteDto(x.QuestionId, x.UserId), x => x);
 
         return dictionary.AsReadOnly();
     }
