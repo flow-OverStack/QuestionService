@@ -1,8 +1,11 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Repositories;
+using View = QuestionService.Domain.Entities.View;
 
 namespace QuestionService.Tests.Configurations;
 
@@ -87,15 +90,29 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
+    public static Mock<IBaseRepository<View>> GetMockViewRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<View>>();
+
+        var views = GetViews().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(views.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<View>())).ReturnsAsync((View view) => view);
+        mockRepository.Setup(x => x.Remove(It.IsAny<View>())).Returns((View view) => view);
+        mockRepository.Setup(x => x.Update(It.IsAny<View>())).Returns((View view) => view);
+
+        return mockRepository;
+    }
+
     public static Mock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
     {
         var mockRepository = new Mock<IBaseRepository<T>>();
-        var roles = Array.Empty<T>().BuildMockDbSet();
+        var entities = Array.Empty<T>().BuildMockDbSet();
 
-        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>())).ReturnsAsync((T role) => role);
-        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T role) => role);
-        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T role) => role);
+        mockRepository.Setup(x => x.GetAll()).Returns(entities.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>())).ReturnsAsync((T entity) => entity);
+        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T entity) => entity);
+        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T entity) => entity);
 
         return mockRepository;
     }
@@ -109,48 +126,48 @@ internal static class MockRepositoriesGetters
                 Id = 1,
                 Title = "question1",
                 Body = "questionBody1",
-                Reputation = 0,
                 UserId = 1,
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = null,
                 Tags = [GetTagDotNet()],
-                Votes = []
+                Votes = [],
+                Views = GetViews().Where(x => x.QuestionId == 1).ToList()
             },
             new()
             {
                 Id = 2,
                 Title = "question2",
                 Body = "questionBody2",
-                Reputation = 2,
                 UserId = 1,
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava()],
-                Votes = GetVotes().Where(x => x.QuestionId == 2).ToList()
+                Votes = GetVotes().Where(x => x.QuestionId == 2).ToList(),
+                Views = GetViews().Where(x => x.QuestionId == 2).ToList()
             },
             new()
             {
                 Id = 3,
                 Title = "question3",
                 Body = "questionBody3",
-                Reputation = -1,
                 UserId = 3,
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava(), GetTagPython()],
-                Votes = GetVotes().Where(x => x.QuestionId == 3).ToList()
+                Votes = GetVotes().Where(x => x.QuestionId == 3).ToList(),
+                Views = GetViews().Where(x => x.QuestionId == 3).ToList()
             },
-            new() // Question without tags
+            new() // Question without tags (not possible)
             {
                 Id = 4,
                 Title = "question4",
                 Body = "questionBody4",
-                Reputation = 0,
                 UserId = 3,
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
                 Tags = [],
-                Votes = []
+                Votes = [],
+                Views = GetViews().Where(x => x.QuestionId == 4).ToList()
             }
         }.AsQueryable();
     }
@@ -209,6 +226,51 @@ internal static class MockRepositoriesGetters
                 TagName = "Python"
             }
         }.AsQueryable();
+    }
+
+    public static IQueryable<View> GetViews()
+    {
+        return new[]
+        {
+            new View
+            {
+                Id = 1,
+                QuestionId = 1,
+                UserId = 1,
+                UserIp = null,
+                UserFingerprint = null
+            },
+            new View
+            {
+                Id = 2,
+                QuestionId = 2,
+                UserId = 1,
+                UserIp = null,
+                UserFingerprint = null
+            },
+            new View
+            {
+                Id = 3,
+                QuestionId = 2,
+                UserId = null,
+                UserIp = "0.0.0.0",
+                UserFingerprint = HashString("someFingerprintFromClient")
+            },
+            new View
+            {
+                Id = 4,
+                QuestionId = 3,
+                UserId = null,
+                UserIp = "1.0.0.1",
+                UserFingerprint = HashString("someAnotherFingerprintFromClient")
+            },
+        }.AsQueryable();
+    }
+
+    private static string HashString(string s)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(s));
+        return Convert.ToBase64String(bytes);
     }
 
     #region Get entities methods

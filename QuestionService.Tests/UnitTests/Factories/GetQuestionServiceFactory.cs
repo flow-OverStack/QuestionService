@@ -6,7 +6,7 @@ using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Tests.Configurations;
 
-namespace QuestionService.Tests.UnitTests.ServiceFactories;
+namespace QuestionService.Tests.UnitTests.Factories;
 
 public class GetQuestionServiceFactory
 {
@@ -20,7 +20,7 @@ public class GetQuestionServiceFactory
 
     public GetQuestionServiceFactory()
     {
-        _getQuestionService = new GetQuestionService(QuestionRepository, TagRepository, UserProvider);
+        _getQuestionService = new GetQuestionService(QuestionRepository, TagRepository);
     }
 
     public IGetQuestionService GetService()

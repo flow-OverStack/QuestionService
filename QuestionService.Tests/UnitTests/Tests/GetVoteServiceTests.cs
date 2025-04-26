@@ -1,6 +1,6 @@
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Resources;
-using QuestionService.Tests.UnitTests.ServiceFactories;
+using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace QuestionService.Tests.UnitTests.Tests;
@@ -12,7 +12,7 @@ public class GetVoteServiceTests
     public async Task GetAll_ShouldBe_Success()
     {
         //Arrange
-        var getVoteService = new GetVoteServiceFactory().GetVoteService();
+        var getVoteService = new GetVoteServiceFactory().GetService();
 
         //Act
         var result = await getVoteService.GetAllAsync();
@@ -24,16 +24,19 @@ public class GetVoteServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByIds_ShouldBe_Success()
+    public async Task GetByDtos_ShouldBe_Success()
     {
         //Arrange
-        const long questionId = 2;
-        const long userId = 1;
-        var dto = new GetVoteDto(questionId, userId);
-        var getVoteService = new GetVoteServiceFactory().GetVoteService();
+        var dtos = new List<GetVoteDto>
+        {
+            new(1, 1),
+            new(2, 2),
+            new(0, 0),
+        };
+        var getVoteService = new GetVoteServiceFactory().GetService();
 
         //Act
-        var result = await getVoteService.GetByIdsAsync(dto);
+        var result = await getVoteService.GetByDtosAsync(dtos);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -42,35 +45,17 @@ public class GetVoteServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByIds_ShouldBe_QuestionNotFound()
+    public async Task GetByDtos_ShouldBe_VoteNotFound()
     {
         //Arrange
-        const long questionId = 0;
-        const long userId = 1;
-        var dto = new GetVoteDto(questionId, userId);
-        var getVoteService = new GetVoteServiceFactory().GetVoteService();
+        var dtos = new List<GetVoteDto>
+        {
+            new(0, 0),
+        };
+        var getVoteService = new GetVoteServiceFactory().GetService();
 
         //Act
-        var result = await getVoteService.GetByIdsAsync(dto);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetByIds_ShouldBe_VoteNotFound()
-    {
-        //Arrange
-        const long questionId = 2;
-        const long userId = 3; //User has not voted the question
-        var dto = new GetVoteDto(questionId, userId);
-        var getVoteService = new GetVoteServiceFactory().GetVoteService();
-
-        //Act
-        var result = await getVoteService.GetByIdsAsync(dto);
+        var result = await getVoteService.GetByDtosAsync(dtos);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -80,14 +65,35 @@ public class GetVoteServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionVotes_ShouldBe_Success()
+    public async Task GetByDtos_ShouldBe_VotesNotFound()
     {
         //Arrange
-        const long questionId = 2;
-        var getVoteService = new GetVoteServiceFactory().GetVoteService();
+        var dtos = new List<GetVoteDto>
+        {
+            new(0, 0),
+            new(0, 0),
+        };
+        var getVoteService = new GetVoteServiceFactory().GetService();
 
         //Act
-        var result = await getVoteService.GetQuestionVotesAsync(questionId);
+        var result = await getVoteService.GetByDtosAsync(dtos);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.VotesNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetQuestionsVotes_ShouldBe_Success()
+    {
+        //Arrange
+        var questionIds = new List<long> { 1, 2, 0 };
+        var getVoteService = new GetVoteServiceFactory().GetService();
+
+        //Act
+        var result = await getVoteService.GetQuestionsVotesAsync(questionIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -96,18 +102,51 @@ public class GetVoteServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionVotes_ShouldBe_QuestionNotFound()
+    public async Task GetQuestionsVotes_ShouldBe_VotesNotFound()
     {
         //Arrange
-        const long questionId = 0;
-        var getVoteService = new GetVoteServiceFactory().GetVoteService();
+        var questionIds = new List<long> { 0 };
+        var getVoteService = new GetVoteServiceFactory().GetService();
 
         //Act
-        var result = await getVoteService.GetQuestionVotesAsync(questionId);
+        var result = await getVoteService.GetQuestionsVotesAsync(questionIds);
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.VotesNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUsersVotes_ShouldBe_Success()
+    {
+        //Arrange
+        var userIds = new List<long> { 1, 2, 0 };
+        var getVoteService = new GetVoteServiceFactory().GetService();
+
+        //Act
+        var result = await getVoteService.GetUsersVotesAsync(userIds);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUsersVotes_ShouldBe_VotesNotFound()
+    {
+        //Arrange
+        var userIds = new List<long> { 0 };
+        var getVoteService = new GetVoteServiceFactory().GetService();
+
+        //Act
+        var result = await getVoteService.GetUsersVotesAsync(userIds);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.VotesNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }

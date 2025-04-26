@@ -11,15 +11,13 @@ internal static class PrepDb
     public static void PrepPopulation(this IServiceScope serviceScope)
     {
         var questions = MockRepositoriesGetters.GetQuestions()
-            // The 4th question has no tags which is for unit tests only
             // Real question always has at least 1 tag
-            .Where(x => x.Id != 4)
+            .Where(x => x.Tags.Count >= 1)
             .Select(x => new Question
             {
                 Title = x.Title,
                 Body = x.Body,
                 UserId = x.UserId,
-                Reputation = x.Reputation,
                 CreatedAt = x.CreatedAt,
                 LastModifiedAt = x.LastModifiedAt
             });

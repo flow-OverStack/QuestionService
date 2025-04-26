@@ -48,13 +48,8 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
 
 
         if (!groupedViews.Any())
-            return userIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewNotFound,
-                    (int)ErrorCodes.ViewNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
-                    (int)ErrorCodes.ViewsNotFound),
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
+                (int)ErrorCodes.ViewsNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews, groupedViews.Count);
     }
@@ -69,13 +64,8 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
             .ToListAsync();
 
         if (!groupedViews.Any())
-            return questionIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewNotFound,
-                    (int)ErrorCodes.ViewNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
-                    (int)ErrorCodes.ViewsNotFound),
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
+                (int)ErrorCodes.ViewsNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews, groupedViews.Count);
     }

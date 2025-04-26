@@ -1,7 +1,7 @@
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Resources;
 using QuestionService.Tests.Configurations;
-using QuestionService.Tests.UnitTests.ServiceFactories;
+using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace QuestionService.Tests.UnitTests.Tests;
@@ -43,14 +43,14 @@ public class GetTagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByName_ShouldBe_Success()
+    public async Task GetByNames_ShouldBe_Success()
     {
         //Arrange
-        const string tagName = ".NET";
+        var tagNames = new List<string> { ".NET", "Java", "WrongTag" };
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetByNameAsync(tagName);
+        var result = await getTagService.GetByNamesAsync(tagNames);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -59,14 +59,14 @@ public class GetTagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByName_ShouldBe_TagNotFound()
+    public async Task GetByNames_ShouldBe_TagNotFound()
     {
         //Arrange
-        const string tagName = "WrongTag";
+        var tagNames = new List<string> { "WrongTag" };
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetByNameAsync(tagName);
+        var result = await getTagService.GetByNamesAsync(tagNames);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -76,14 +76,31 @@ public class GetTagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionTags_ShouldBe_Success()
+    public async Task GetByNames_ShouldBe_TagsNotFound()
     {
         //Arrange
-        const long questionId = 1;
+        var tagNames = new List<string> { "WrongTag", "WrongTag" };
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetQuestionTags(questionId);
+        var result = await getTagService.GetByNamesAsync(tagNames);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.TagsNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetQuestionsTags_ShouldBe_Success()
+    {
+        //Arrange
+        var questionIds = new List<long> { 1, 2, 0 };
+        var getTagService = new GetTagServiceFactory().GetService();
+
+        //Act
+        var result = await getTagService.GetQuestionsTags(questionIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -92,31 +109,14 @@ public class GetTagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionTags_ShouldBe_QuestionNotFound()
+    public async Task GetQuestionsTags_ShouldBe_TagsNotFound()
     {
         //Arrange
-        const long questionId = 0;
+        var questionIds = new List<long> { 0 };
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetQuestionTags(questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetQuestionTags_ShouldBe_TagsNotFound()
-    {
-        //Arrange
-        const long questionId = 4; // Question without tags
-        var getTagService = new GetTagServiceFactory().GetService();
-
-        //Act
-        var result = await getTagService.GetQuestionTags(questionId);
+        var result = await getTagService.GetQuestionsTags(questionIds);
 
         //Assert
         Assert.False(result.IsSuccess);

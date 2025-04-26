@@ -10,9 +10,7 @@ public static class GraphQlHelper
                                               id
                                               title
                                               body
-                                              views
                                               userId
-                                              reputation
                                               createdAt
                                               lastModifiedAt
                                               tags {
@@ -27,6 +25,17 @@ public static class GraphQlHelper
                                                 userId
                                                 reputationChange
                                                 question {
+                                                  id
+                                                  title
+                                                }
+                                              }
+                                              views{
+                                                id
+                                                questionId
+                                                userId
+                                                userIp
+                                                userFingerprint
+                                                question{
                                                   id
                                                   title
                                                 }
@@ -75,7 +84,6 @@ public static class GraphQlHelper
                 body
                 views
                 userId
-                reputation
                 createdAt
                 lastModifiedAt
                 tags {

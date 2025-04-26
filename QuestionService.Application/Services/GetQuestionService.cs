@@ -48,15 +48,8 @@ public class GetQuestionService(
             .ToListAsync();
 
         if (!groupedQuestions.Any())
-            return tagNames.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Failure(
-                    ErrorMessage.QuestionNotFound,
-                    (int)ErrorCodes.QuestionNotFound),
-                > 1 => CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Failure(
-                    ErrorMessage.QuestionsNotFound,
-                    (int)ErrorCodes.QuestionsNotFound)
-            };
+            return CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
+                (int)ErrorCodes.QuestionsNotFound);
 
         return CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Success(groupedQuestions,
             groupedQuestions.Count);
@@ -75,15 +68,8 @@ public class GetQuestionService(
             .ToList();
 
         if (!groupedQuestions.Any())
-            return userIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(
-                    ErrorMessage.QuestionNotFound,
-                    (int)ErrorCodes.QuestionNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(
-                    ErrorMessage.QuestionsNotFound,
-                    (int)ErrorCodes.QuestionsNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
+                (int)ErrorCodes.QuestionsNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions,
             groupedQuestions.Count);

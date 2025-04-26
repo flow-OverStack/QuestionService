@@ -56,13 +56,8 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
             .ToListAsync();
 
         if (!groupedVotes.Any())
-            return questionIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VoteNotFound,
-                    (int)ErrorCodes.VoteNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
-                    (int)ErrorCodes.VotesNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
+                (int)ErrorCodes.VotesNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes, groupedVotes.Count);
     }
@@ -80,13 +75,8 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
             .ToList();
 
         if (!groupedVotes.Any())
-            return userIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VoteNotFound,
-                    (int)ErrorCodes.VoteNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
-                    (int)ErrorCodes.VotesNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
+                (int)ErrorCodes.VotesNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes, groupedVotes.Count);
     }

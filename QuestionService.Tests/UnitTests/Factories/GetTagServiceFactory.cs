@@ -4,7 +4,7 @@ using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Tests.Configurations;
 
-namespace QuestionService.Tests.UnitTests.ServiceFactories;
+namespace QuestionService.Tests.UnitTests.Factories;
 
 public class GetTagServiceFactory
 {

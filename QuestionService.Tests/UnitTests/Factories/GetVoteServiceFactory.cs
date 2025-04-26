@@ -4,7 +4,7 @@ using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Tests.Configurations;
 
-namespace QuestionService.Tests.UnitTests.ServiceFactories;
+namespace QuestionService.Tests.UnitTests.Factories;
 
 public class GetVoteServiceFactory
 {
@@ -20,7 +20,7 @@ public class GetVoteServiceFactory
         _getVoteService = new GetVoteService(VoteRepository, QuestionRepository);
     }
 
-    public IGetVoteService GetVoteService()
+    public IGetVoteService GetService()
     {
         return _getVoteService;
     }

@@ -11,7 +11,7 @@ using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Configurations;
 using MapperConfiguration = QuestionService.Tests.UnitTests.Configurations.MapperConfiguration;
 
-namespace QuestionService.Tests.UnitTests.ServiceFactories;
+namespace QuestionService.Tests.UnitTests.Factories;
 
 public class QuestionServiceFactory
 {

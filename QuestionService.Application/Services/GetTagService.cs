@@ -48,13 +48,8 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
             .ToListAsync();
 
         if (!groupedTags.Any())
-            return questionIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagNotFound,
-                    (int)ErrorCodes.TagNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagsNotFound,
-                    (int)ErrorCodes.TagsNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagsNotFound,
+                (int)ErrorCodes.TagsNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Success(groupedTags, groupedTags.Count);
     }

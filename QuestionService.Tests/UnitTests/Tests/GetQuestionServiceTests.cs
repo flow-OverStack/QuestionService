@@ -1,5 +1,5 @@
 using QuestionService.Domain.Resources;
-using QuestionService.Tests.UnitTests.ServiceFactories;
+using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace QuestionService.Tests.UnitTests.Tests;
@@ -21,38 +21,6 @@ public class GetQuestionServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetById_ShouldBe_Success()
-    {
-        //Arrange
-        const long questionId = 1;
-        var getQuestionService = new GetQuestionServiceFactory().GetService();
-
-        //Act
-        var result = await getQuestionService.GetByIdAsync(questionId);
-
-        //Assert
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetById_ShouldBe_QuestionNotFound()
-    {
-        //Arrange
-        const long questionId = 0;
-        var getQuestionService = new GetQuestionServiceFactory().GetService();
-
-        //Act
-        var result = await getQuestionService.GetByIdAsync(questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
 
     [Trait("Category", "Unit")]
     [Fact]
@@ -83,20 +51,37 @@ public class GetQuestionServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetByIds_ShouldBe_QuestionsNotFound()
+    {
+        //Arrange
+        var questionIds = new List<long> { 0, 0 };
+        var getQuestionService = new GetQuestionServiceFactory().GetService();
+
+        //Act
+        var result = await getQuestionService.GetByIdsAsync(questionIds);
+
+        //Assert
+        Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.QuestionsNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionsWithTag_ShouldBe_Success()
+    public async Task GetQuestionsWithTags_ShouldBe_Success()
     {
         //Arrange
-        const string tagName = ".NET";
+        var tagNames = new List<string> { ".NET", "Java", "WrongTag" };
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetQuestionsWithTag(tagName);
+        var result = await getQuestionService.GetQuestionsWithTags(tagNames);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -105,31 +90,31 @@ public class GetQuestionServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionsWithTag_ShouldBe_TagNotFound()
+    public async Task GetQuestionsWithTags_ShouldBe_QuestionsNotFound()
     {
         //Arrange
-        const string tagName = "WrongTag";
+        var tagNames = new List<string> { "WrongTag", "WrongTag" };
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetQuestionsWithTag(tagName);
+        var result = await getQuestionService.GetQuestionsWithTags(tagNames);
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.TagNotFound, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.QuestionsNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUserQuestions_ShouldBe_Success()
+    public async Task GetUsersQuestions_ShouldBe_Success()
     {
         //Arrange
-        const long userId = 1;
+        var userIds = new List<long> { 1, 2, 0 };
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetUserQuestions(userId);
+        var result = await getQuestionService.GetUsersQuestions(userIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -138,34 +123,18 @@ public class GetQuestionServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUserQuestions_ShouldBe_UserNotFound()
+    public async Task GetUsersQuestions_ShouldBe_QuestionsNotFound()
     {
         //Arrange
-        const long userId = 0;
+        var userIds = new List<long> { 0, 0 };
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetUserQuestions(userId);
+        var result = await getQuestionService.GetUsersQuestions(userIds);
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.QuestionsNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetUserQuestions_ShouldBe_Success_With_NoQuestions()
-    {
-        //Arrange
-        const long userId = 2;
-        var getQuestionService = new GetQuestionServiceFactory().GetService();
-
-        //Act
-        var result = await getQuestionService.GetUserQuestions(userId);
-
-        //Assert
-        Assert.True(result.IsSuccess);
-        Assert.True(!result.Data.Any());
     }
 }

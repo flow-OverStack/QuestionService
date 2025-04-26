@@ -1,6 +1,6 @@
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Resources;
-using QuestionService.Tests.UnitTests.ServiceFactories;
+using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace QuestionService.Tests.UnitTests.Tests;
