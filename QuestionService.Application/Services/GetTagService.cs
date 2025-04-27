@@ -35,7 +35,7 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
         return CollectionResult<Tag>.Success(tags, tags.Count, totalCount);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTags(
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTagsAsync(
         IEnumerable<long> questionIds)
     {
         var groupedTags = await questionRepository.GetAll()

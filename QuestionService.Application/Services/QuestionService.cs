@@ -27,7 +27,7 @@ public class QuestionService(
 {
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-    public async Task<BaseResult<QuestionDto>> AskQuestion(long initiatorId, AskQuestionDto dto)
+    public async Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto)
     {
         if (!IsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
@@ -51,7 +51,7 @@ public class QuestionService(
         return BaseResult<QuestionDto>.Success(questionDto);
     }
 
-    public async Task<BaseResult<QuestionDto>> EditQuestion(long initiatorId, EditQuestionDto dto)
+    public async Task<BaseResult<QuestionDto>> EditQuestionAsync(long initiatorId, EditQuestionDto dto)
     {
         if (!IsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
@@ -83,7 +83,7 @@ public class QuestionService(
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
 
-    public async Task<BaseResult<QuestionDto>> DeleteQuestion(long initiatorId, long questionId)
+    public async Task<BaseResult<QuestionDto>> DeleteQuestionAsync(long initiatorId, long questionId)
     {
         var initiator = await userProvider.GetByIdAsync(initiatorId);
         var question = await unitOfWork.Questions.GetAll().FirstOrDefaultAsync(x => x.Id == questionId);
@@ -103,7 +103,7 @@ public class QuestionService(
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
 
-    public async Task<BaseResult<VoteQuestionDto>> UpvoteQuestion(long initiatorId, long questionId)
+    public async Task<BaseResult<VoteQuestionDto>> UpvoteQuestionAsync(long initiatorId, long questionId)
     {
         var initiator = await userProvider.GetByIdAsync(initiatorId);
         var question = await unitOfWork.Questions.GetAll()
@@ -164,7 +164,7 @@ public class QuestionService(
         return BaseResult<VoteQuestionDto>.Success(dto);
     }
 
-    public async Task<BaseResult<VoteQuestionDto>> DownvoteQuestion(long initiatorId, long questionId)
+    public async Task<BaseResult<VoteQuestionDto>> DownvoteQuestionAsync(long initiatorId, long questionId)
     {
         var initiator = await userProvider.GetByIdAsync(initiatorId);
         var question = await unitOfWork.Questions.GetAll()

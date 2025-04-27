@@ -40,7 +40,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     {
         var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var result = await questionService.AskQuestion(userId, dto);
+        var result = await questionService.AskQuestionAsync(userId, dto);
 
         return HandleResult(result);
     }
@@ -60,7 +60,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.DeleteQuestion(userId, questionId);
+        var result = await questionService.DeleteQuestionAsync(userId, questionId);
 
         return HandleResult(result);
     }
@@ -88,7 +88,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.EditQuestion(userId, dto);
+        var result = await questionService.EditQuestionAsync(userId, dto);
 
         return HandleResult(result);
     }
@@ -108,7 +108,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.DownvoteQuestion(userId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(userId, questionId);
 
         return HandleResult(result);
     }
@@ -128,7 +128,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.UpvoteQuestion(userId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(userId, questionId);
 
         return HandleResult(result);
     }

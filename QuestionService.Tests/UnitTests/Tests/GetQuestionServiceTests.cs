@@ -81,7 +81,7 @@ public class GetQuestionServiceTests
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetQuestionsWithTags(tagNames);
+        var result = await getQuestionService.GetQuestionsWithTagsAsync(tagNames);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -97,7 +97,7 @@ public class GetQuestionServiceTests
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetQuestionsWithTags(tagNames);
+        var result = await getQuestionService.GetQuestionsWithTagsAsync(tagNames);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -114,7 +114,7 @@ public class GetQuestionServiceTests
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetUsersQuestions(userIds);
+        var result = await getQuestionService.GetUsersQuestionsAsync(userIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -130,7 +130,7 @@ public class GetQuestionServiceTests
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetUsersQuestions(userIds);
+        var result = await getQuestionService.GetUsersQuestionsAsync(userIds);
 
         //Assert
         Assert.False(result.IsSuccess);

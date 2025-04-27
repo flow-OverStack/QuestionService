@@ -38,7 +38,7 @@ public class GetQuestionService(
         return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
     }
 
-    public async Task<CollectionResult<KeyValuePair<string, IEnumerable<Question>>>> GetQuestionsWithTags(
+    public async Task<CollectionResult<KeyValuePair<string, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
         IEnumerable<string> tagNames)
     {
         var groupedQuestions = await tagRepository.GetAll()
@@ -55,7 +55,7 @@ public class GetQuestionService(
             groupedQuestions.Count);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestions(
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(
         IEnumerable<long> userIds)
     {
         var questions = await questionRepository.GetAll()

@@ -19,7 +19,7 @@ public class GroupUserQuestionDataLoader(
         using var scope = scopeFactory.CreateScope();
         var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
 
-        var result = await questionService.GetUsersQuestions(keys);
+        var result = await questionService.GetUsersQuestionsAsync(keys);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<KeyValuePair<long, IEnumerable<Question>>>()

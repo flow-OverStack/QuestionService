@@ -15,5 +15,5 @@ public interface ITopicProducer
     /// <param name="message"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task Produce(object message, CancellationToken cancellationToken = default);
+    Task ProduceAsync(object message, CancellationToken cancellationToken = default);
 }

@@ -28,6 +28,7 @@ public interface IOutboxRepository
     /// Marks
     /// </summary>
     /// <param name="messageId"></param>
+    /// <param name="errorMessage"></param>
     /// <returns></returns>
     Task MarkAsFailedAsync(Guid messageId, string errorMessage);
 }

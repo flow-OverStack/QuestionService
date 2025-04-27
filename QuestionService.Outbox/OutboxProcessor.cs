@@ -39,7 +39,7 @@ public class OutboxProcessor(
 
             var producer = producerResolver.GetProducerForType(type);
 
-            await producer.Produce(content, cancellationToken);
+            await producer.ProduceAsync(content, cancellationToken);
 
             await outboxRepository.MarkAsProcessedAsync(message.Id);
 

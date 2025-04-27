@@ -11,7 +11,7 @@ public interface IQuestionService
     /// <param name="initiatorId">Id of request initiator (e.g. Id of user or moderator)</param>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<QuestionDto>> AskQuestion(long initiatorId, AskQuestionDto dto);
+    Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto);
 
     /// <summary>
     /// Edits question
@@ -19,7 +19,7 @@ public interface IQuestionService
     /// <param name="initiatorId">Id of request initiator (e.g. Id of user or moderator)</param>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<QuestionDto>> EditQuestion(long initiatorId, EditQuestionDto dto);
+    Task<BaseResult<QuestionDto>> EditQuestionAsync(long initiatorId, EditQuestionDto dto);
 
     /// <summary>
     /// Deletes the question
@@ -27,7 +27,7 @@ public interface IQuestionService
     /// <param name="initiatorId">Id of request initiator (e.g. Id of user or moderator)</param>
     /// <param name="questionId"></param>
     /// <returns></returns>
-    Task<BaseResult<QuestionDto>> DeleteQuestion(long initiatorId, long questionId);
+    Task<BaseResult<QuestionDto>> DeleteQuestionAsync(long initiatorId, long questionId);
 
     /// <summary>
     /// Increases question's reputation by 1 
@@ -35,7 +35,7 @@ public interface IQuestionService
     /// <param name="initiatorId">Id of request initiator (e.g. Id of user or moderator)</param>
     /// <param name="questionId"></param>
     /// <returns></returns>
-    Task<BaseResult<VoteQuestionDto>> UpvoteQuestion(long initiatorId, long questionId);
+    Task<BaseResult<VoteQuestionDto>> UpvoteQuestionAsync(long initiatorId, long questionId);
 
     /// <summary>
     /// Decreases question's reputation by 1 
@@ -43,5 +43,5 @@ public interface IQuestionService
     /// <param name="initiatorId">Id of request initiator (e.g. Id of user or moderator)</param>
     /// <param name="questionId"></param>
     /// <returns></returns>
-    Task<BaseResult<VoteQuestionDto>> DownvoteQuestion(long initiatorId, long questionId);
+    Task<BaseResult<VoteQuestionDto>> DownvoteQuestionAsync(long initiatorId, long questionId);
 }

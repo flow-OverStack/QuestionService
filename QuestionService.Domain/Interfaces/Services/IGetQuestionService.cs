@@ -10,7 +10,7 @@ public interface IGetQuestionService : IGetService<Question>
     /// </summary>
     /// <param name="tagNames"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<string, IEnumerable<Question>>>> GetQuestionsWithTags(
+    Task<CollectionResult<KeyValuePair<string, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
         IEnumerable<string> tagNames);
 
     /// <summary>
@@ -18,5 +18,5 @@ public interface IGetQuestionService : IGetService<Question>
     /// </summary>
     /// <param name="userIds"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestions(IEnumerable<long> userIds);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(IEnumerable<long> userIds);
 }

@@ -7,7 +7,7 @@ public class TopicProducer<T>(ITopicProducer<T> producer) : ITopicProducer where
 {
     public bool CanProduce(Type messageType) => messageType == typeof(T);
 
-    public async Task Produce(object message, CancellationToken cancellationToken = default)
+    public async Task ProduceAsync(object message, CancellationToken cancellationToken = default)
     {
         if (CanProduce(message.GetType()))
             await producer.Produce((T)message, cancellationToken);

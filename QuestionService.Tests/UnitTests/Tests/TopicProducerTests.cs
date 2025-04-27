@@ -14,7 +14,7 @@ public class TopicProducerTests
         var producer = new TopicProducer<BaseEvent>(null); //passing null for exception
 
         //Act
-        var action = async () => await producer.Produce("notBaseEvent");
+        var action = async () => await producer.ProduceAsync("notBaseEvent");
 
         //Assert
         await Assert.ThrowsAsync<ArgumentException>(action);

@@ -22,7 +22,7 @@ public class GroupTagQuestionDataLoader(
         using var scope = scopeFactory.CreateScope();
         var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
 
-        var result = await questionService.GetQuestionsWithTags(keys);
+        var result = await questionService.GetQuestionsWithTagsAsync(keys);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<KeyValuePair<string, IEnumerable<Question>>>()

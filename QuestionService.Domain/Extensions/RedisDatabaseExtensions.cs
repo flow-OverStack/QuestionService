@@ -11,6 +11,12 @@ public static class RedisDatabaseExtensions
                                            return true
                                            """;
 
+    /// <summary>
+    ///     Adds collection of key-value pairs to sets
+    /// </summary>
+    /// <param name="redisDatabase"></param>
+    /// <param name="keyValueMap"></param>
+    /// <exception cref="RedisException"></exception>
     public static async Task AddToSetsAsync(this IDatabase redisDatabase,
         IEnumerable<KeyValuePair<string, string>> keyValueMap)
     {

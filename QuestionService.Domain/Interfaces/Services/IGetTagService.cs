@@ -23,5 +23,5 @@ public interface IGetTagService
     /// </summary>
     /// <param name="questionIds"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTags(IEnumerable<long> questionIds);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTagsAsync(IEnumerable<long> questionIds);
 }

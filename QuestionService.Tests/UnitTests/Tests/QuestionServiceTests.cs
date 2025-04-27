@@ -17,7 +17,7 @@ public class QuestionServiceTests
         var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET"]);
 
         //Act
-        var result = await questionService.AskQuestion(initiatorId, dto);
+        var result = await questionService.AskQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -34,7 +34,7 @@ public class QuestionServiceTests
         var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", []);
 
         //Act
-        var result = await questionService.AskQuestion(initiatorId, dto);
+        var result = await questionService.AskQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -52,7 +52,7 @@ public class QuestionServiceTests
         var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET"]);
 
         //Act
-        var result = await questionService.AskQuestion(initiatorId, dto);
+        var result = await questionService.AskQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -70,7 +70,7 @@ public class QuestionServiceTests
         var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", ["WrongTag", "Java"]);
 
         //Act
-        var result = await questionService.AskQuestion(initiatorId, dto);
+        var result = await questionService.AskQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -88,7 +88,7 @@ public class QuestionServiceTests
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
         //Act
-        var result = await questionService.EditQuestion(initiatorId, dto);
+        var result = await questionService.EditQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -105,7 +105,7 @@ public class QuestionServiceTests
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", []);
 
         //Act
-        var result = await questionService.EditQuestion(initiatorId, dto);
+        var result = await questionService.EditQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -123,7 +123,7 @@ public class QuestionServiceTests
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
         //Act
-        var result = await questionService.EditQuestion(initiatorId, dto);
+        var result = await questionService.EditQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -141,7 +141,7 @@ public class QuestionServiceTests
         var dto = new EditQuestionDto(0, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
         //Act
-        var result = await questionService.EditQuestion(initiatorId, dto);
+        var result = await questionService.EditQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -159,7 +159,7 @@ public class QuestionServiceTests
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
         //Act
-        var result = await questionService.EditQuestion(initiatorId, dto);
+        var result = await questionService.EditQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -177,7 +177,7 @@ public class QuestionServiceTests
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", ["WrongTag", "Java"]);
 
         //Act
-        var result = await questionService.EditQuestion(initiatorId, dto);
+        var result = await questionService.EditQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -195,7 +195,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.DeleteQuestion(initiatorId, questionId);
+        var result = await questionService.DeleteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -212,7 +212,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.DeleteQuestion(initiatorId, questionId);
+        var result = await questionService.DeleteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -230,7 +230,7 @@ public class QuestionServiceTests
         const long questionId = 0;
 
         //Act
-        var result = await questionService.DeleteQuestion(initiatorId, questionId);
+        var result = await questionService.DeleteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -248,7 +248,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.DeleteQuestion(initiatorId, questionId);
+        var result = await questionService.DeleteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -266,7 +266,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.UpvoteQuestion(initiatorId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -283,7 +283,7 @@ public class QuestionServiceTests
         const long questionId = 3;
 
         //Act
-        var result = await questionService.UpvoteQuestion(initiatorId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -300,7 +300,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.UpvoteQuestion(initiatorId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -318,7 +318,7 @@ public class QuestionServiceTests
         const long questionId = 0;
 
         //Act
-        var result = await questionService.UpvoteQuestion(initiatorId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -336,7 +336,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.UpvoteQuestion(initiatorId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -354,7 +354,7 @@ public class QuestionServiceTests
         const long questionId = 2;
 
         //Act
-        var result = await questionService.UpvoteQuestion(initiatorId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -372,7 +372,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.DownvoteQuestion(initiatorId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -389,7 +389,7 @@ public class QuestionServiceTests
         const long questionId = 2;
 
         //Act
-        var result = await questionService.DownvoteQuestion(initiatorId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -406,7 +406,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.DownvoteQuestion(initiatorId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -424,7 +424,7 @@ public class QuestionServiceTests
         const long questionId = 0;
 
         //Act
-        var result = await questionService.DownvoteQuestion(initiatorId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -442,7 +442,7 @@ public class QuestionServiceTests
         const long questionId = 1;
 
         //Act
-        var result = await questionService.DownvoteQuestion(initiatorId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -460,7 +460,7 @@ public class QuestionServiceTests
         const long questionId = 3;
 
         //Act
-        var result = await questionService.DownvoteQuestion(initiatorId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
 
         //Assert
         Assert.False(result.IsSuccess);

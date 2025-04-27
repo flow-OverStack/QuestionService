@@ -80,7 +80,7 @@ public class GetTagServiceTests
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetQuestionsTags(questionIds);
+        var result = await getTagService.GetQuestionsTagsAsync(questionIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -96,7 +96,7 @@ public class GetTagServiceTests
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetQuestionsTags(questionIds);
+        var result = await getTagService.GetQuestionsTagsAsync(questionIds);
 
         //Assert
         Assert.False(result.IsSuccess);
