@@ -15,6 +15,7 @@ using QuestionService.Tests.FunctionalTests.Configurations.TestServices;
 using QuestionService.Tests.FunctionalTests.Extensions;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Testcontainers.PostgreSql;
+using Testcontainers.Redis;
 using WireMock.Server;
 using Xunit;
 
@@ -22,23 +23,29 @@ namespace QuestionService.Tests.FunctionalTests.Base;
 
 public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _userServicePostgreSql = new PostgreSqlBuilder()
+    private readonly PostgreSqlContainer _questionServicePostgreSql = new PostgreSqlBuilder()
         .WithImage("postgres:latest")
         .WithDatabase("question-service-db")
         .WithUsername("postgres")
         .WithPassword("root")
         .Build();
 
+    private readonly RedisContainer _redisContainer = new RedisBuilder()
+        .WithImage("redis:latest")
+        .Build();
+
     private WireMockServer _wireMockServer = null!;
 
     public async Task InitializeAsync()
     {
-        await _userServicePostgreSql.StartAsync();
+        await _questionServicePostgreSql.StartAsync();
+        await _redisContainer.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
-        await _userServicePostgreSql.StopAsync();
+        await _questionServicePostgreSql.StopAsync();
+        await _redisContainer.StopAsync();
         _wireMockServer.StopServer();
         _wireMockServer.Dispose();
     }
@@ -48,8 +55,8 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
-            var userServiceConnectionString = _userServicePostgreSql.GetConnectionString();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(userServiceConnectionString));
+            var connectionString = _questionServicePostgreSql.GetConnectionString();
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
             using var serviceProvider = services.BuildServiceProvider();
             using var scope = serviceProvider.CreateScope();
@@ -73,6 +80,16 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
 
             services.RemoveAll<ITopicProducer<BaseEvent>>();
             services.AddScoped<ITopicProducer<BaseEvent>, TestTopicProducer<BaseEvent>>();
+
+            services.RemoveAll<IOptions<RedisSettings>>();
+            services.Configure<RedisSettings>(x =>
+            {
+                _redisContainer.GetConnectionString().ParseConnectionString(out var host, out var port);
+                x.Host = host;
+                x.Port = port;
+                x.InstanceName = "TestQuestionService";
+                x.Password = null!;
+            });
         });
     }
 }

@@ -1,5 +1,8 @@
 using QuestionService.Application.Services;
+using QuestionService.Domain.Entities;
+using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Configurations;
 using StackExchange.Redis;
 
@@ -9,11 +12,16 @@ public class ViewServiceFactory
 {
     private readonly IViewService _viewService;
 
+    public readonly IBaseRepository<Question> QuestionRepository =
+        MockRepositoriesGetters.GetMockQuestionRepository().Object;
+
     public readonly IDatabase RedisDatabase = RedisDatabaseConfiguration.GetRedisDatabaseConfiguration();
 
-    public ViewServiceFactory()
+    public ViewServiceFactory(IDatabase? redisDatabase = null)
     {
-        _viewService = new ViewService(RedisDatabase);
+        if (redisDatabase != null) RedisDatabase = redisDatabase;
+
+        _viewService = new ViewService(RedisDatabase, QuestionRepository);
     }
 
     public IViewService GetService()

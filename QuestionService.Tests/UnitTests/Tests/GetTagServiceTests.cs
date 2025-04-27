@@ -1,6 +1,4 @@
-using QuestionService.Domain.Entities;
 using QuestionService.Domain.Resources;
-using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 
@@ -21,24 +19,6 @@ public class GetTagServiceTests
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetAll_ShouldBe_TagsNotFound()
-    {
-        //Arrange
-        var getTagService =
-            new GetTagServiceFactory(tagRepository: MockRepositoriesGetters.GetEmptyMockRepository<Tag>().Object)
-                .GetService();
-
-        //Act
-        var result = await getTagService.GetAllAsync();
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.TagsNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
     }
 
     [Trait("Category", "Unit")]

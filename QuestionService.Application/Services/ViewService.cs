@@ -1,8 +1,11 @@
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 using QuestionService.Domain.Dtos.View;
+using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Helpers;
+using QuestionService.Domain.Interfaces.Repositories;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Resources;
 using QuestionService.Domain.Result;
@@ -10,7 +13,7 @@ using StackExchange.Redis;
 
 namespace QuestionService.Application.Services;
 
-public class ViewService(IDatabase redisDatabase) : IViewService
+public class ViewService(IDatabase redisDatabase, IBaseRepository<Question> questionRepository) : IViewService
 {
     private const string ViewKey = "view:question:";
     private const string ViewKeysKey = "view:keys";
@@ -20,6 +23,11 @@ public class ViewService(IDatabase redisDatabase) : IViewService
         if (!IsValidFormat(dto))
             return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.InvalidDataFormat,
                 (int)ErrorCodes.InvalidDataFormat);
+
+        var questionExists = await questionRepository.GetAll().AnyAsync(x => x.Id == dto.QuestionId);
+        if (!questionExists)
+            return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.QuestionNotFound,
+                (int)ErrorCodes.QuestionNotFound);
 
         var key = ViewKey + dto.QuestionId;
         var value = GetViewValue(dto);

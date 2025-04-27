@@ -95,9 +95,9 @@ public class Queries
     [GraphQLDescription("Returns a view by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<View?> GetView(long viewId, ViewDataLoader viewLoader)
+    public async Task<View?> GetView(long id, ViewDataLoader viewLoader)
     {
-        var view = await viewLoader.LoadAsync(viewId);
+        var view = await viewLoader.LoadAsync(id);
 
         return view;
     }

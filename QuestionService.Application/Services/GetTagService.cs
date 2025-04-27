@@ -15,9 +15,6 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
     {
         var tags = await tagRepository.GetAll().ToListAsync();
 
-        if (!tags.Any())
-            return CollectionResult<Tag>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
-
         return CollectionResult<Tag>.Success(tags, tags.Count);
     }
 

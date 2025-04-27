@@ -29,13 +29,13 @@ public static class GraphQlHelper
                                                   title
                                                 }
                                               }
-                                              views{
+                                              views {
                                                 id
                                                 questionId
                                                 userId
                                                 userIp
                                                 userFingerprint
-                                                question{
+                                                question {
                                                   id
                                                   title
                                                 }
@@ -57,24 +57,22 @@ public static class GraphQlHelper
                                                 title
                                               }
                                             }
+                                            views {
+                                              id
+                                              questionId
+                                              userId
+                                              userIp
+                                              userFingerprint
+                                              question {
+                                                id
+                                                title
+                                              }
+                                            }
                                           }
                                           """;
 
-    public const string RequestTagsQuery = """
-                                           {
-                                             tags {
-                                               name
-                                               description
-                                               questions {
-                                                 id
-                                                 title
-                                               }
-                                             }
-                                           } 
-                                           """;
-
-    public static string RequestAllByIdsAndNamesQuery(long questionId, long voteQuestionId, long voteUserId,
-        string tagName)
+    public static string RequestAllByIdsAndNameQuery(long questionId, long voteQuestionId, long voteUserId,
+        string tagName, long viewId)
     {
         return """
             {
@@ -82,7 +80,6 @@ public static class GraphQlHelper
                 id
                 title
                 body
-                views
                 userId
                 createdAt
                 lastModifiedAt
@@ -102,17 +99,41 @@ public static class GraphQlHelper
                     title
                   }
                 }
-              }
-              vote(questionId: $VOTEQUESTIONID, userId: $VOTEUSERID){
-                reputationChange
-                question{
+                views {
                   id
-                title
+                  questionId
+                  userId
+                  userIp
+                  userFingerprint
+                  question {
+                    id
+                    title
+                  }
                 }
               }
-              tag(name: "$TAGNAME"){
+              vote(userId: $VOTEUSERID,questionId: $VOTEQUESTIONID) {
+                userId
+                reputationChange
+                question {
+                  id
+                  title
+                }
+              }
+              tag(name: "$TAGNAME") {
+                name
                 description
-                questions{
+                questions {
+                  id
+                  title
+                }
+              }
+              view(id: $VIEWID) {
+                id
+                questionId
+                userId
+                userIp
+                userFingerprint
+                question {
                   id
                   title
                 }
@@ -122,6 +143,7 @@ public static class GraphQlHelper
             .Replace("$QUESTIONID", questionId.ToString())
             .Replace("$VOTEQUESTIONID", voteQuestionId.ToString())
             .Replace("$VOTEUSERID", voteUserId.ToString())
-            .Replace("$TAGNAME", tagName);
+            .Replace("$TAGNAME", tagName)
+            .Replace("$VIEWID", viewId.ToString());
     }
 }
