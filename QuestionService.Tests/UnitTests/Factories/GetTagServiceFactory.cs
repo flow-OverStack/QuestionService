@@ -6,7 +6,7 @@ using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class GetTagServiceFactory
+internal class GetTagServiceFactory
 {
     private readonly IGetTagService _getTagService;
 

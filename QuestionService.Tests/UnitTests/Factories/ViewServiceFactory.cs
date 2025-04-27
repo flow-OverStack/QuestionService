@@ -8,7 +8,7 @@ using StackExchange.Redis;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class ViewServiceFactory
+internal class ViewServiceFactory
 {
     private readonly IViewService _viewService;
 

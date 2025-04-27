@@ -13,7 +13,7 @@ using MapperConfiguration = QuestionService.Tests.UnitTests.Configurations.Mappe
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class QuestionServiceFactory
+internal class QuestionServiceFactory
 {
     private readonly IQuestionService _questionService;
 

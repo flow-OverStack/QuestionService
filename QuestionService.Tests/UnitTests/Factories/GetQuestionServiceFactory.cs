@@ -8,7 +8,7 @@ using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class GetQuestionServiceFactory
+internal class GetQuestionServiceFactory
 {
     private readonly IGetQuestionService _getQuestionService;
 

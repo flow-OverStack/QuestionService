@@ -1,6 +1,6 @@
 namespace QuestionService.Tests.FunctionalTests.Helper;
 
-public static class ConnectionStringHelper
+internal static class ConnectionStringHelper
 {
     /// <summary>
     ///     Parses connection string into host and port

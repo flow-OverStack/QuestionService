@@ -7,7 +7,7 @@ using View = QuestionService.Domain.Entities.View;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class GetViewServiceFactory
+internal class GetViewServiceFactory
 {
     private readonly IGetViewService _getViewService;
 

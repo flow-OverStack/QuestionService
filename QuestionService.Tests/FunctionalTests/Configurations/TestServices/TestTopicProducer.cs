@@ -3,7 +3,7 @@ using MassTransit.Util;
 
 namespace QuestionService.Tests.FunctionalTests.Configurations.TestServices;
 
-public class TestTopicProducer<T> : ITopicProducer<T> where T : class
+internal class TestTopicProducer<T> : ITopicProducer<T> where T : class
 {
     public ConnectHandle ConnectSendObserver(ISendObserver observer) => new EmptyConnectHandle();
 

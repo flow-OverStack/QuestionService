@@ -1,6 +1,6 @@
 namespace QuestionService.Tests.FunctionalTests.Helper;
 
-public static class PathHelper
+internal static class PathHelper
 {
     private const string FunctionalTestsDirectoryName = "FunctionalTests";
     private const string ConfigurationsDirectoryName = "Configurations";

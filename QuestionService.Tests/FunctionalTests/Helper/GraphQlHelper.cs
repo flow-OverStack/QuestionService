@@ -1,6 +1,6 @@
 namespace QuestionService.Tests.FunctionalTests.Helper;
 
-public static class GraphQlHelper
+internal static class GraphQlHelper
 {
     public const string GraphQlEndpoint = "/graphql";
 

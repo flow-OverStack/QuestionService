@@ -6,7 +6,7 @@ using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class GetVoteServiceFactory
+internal class GetVoteServiceFactory
 {
     private readonly IGetVoteService _getVoteService;
 

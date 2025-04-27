@@ -9,7 +9,7 @@ using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.FunctionalTests.Configurations.TestServices;
 
-public class GrpcTestUserService : UserService.UserServiceClient
+internal class GrpcTestUserService : UserService.UserServiceClient
 {
     private static readonly IEnumerable<UserDto> Users = MockEntityProvidersGetters.GetUserDtos();
 

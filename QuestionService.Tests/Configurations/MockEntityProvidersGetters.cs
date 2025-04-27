@@ -4,7 +4,7 @@ using QuestionService.Domain.Interfaces.Providers;
 
 namespace QuestionService.Tests.Configurations;
 
-public static class MockEntityProvidersGetters
+internal static class MockEntityProvidersGetters
 {
     public const int MinReputation = 1;
     public const int MaxDailyReputation = 200;
