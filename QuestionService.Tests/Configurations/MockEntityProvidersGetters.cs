@@ -9,7 +9,7 @@ internal static class MockEntityProvidersGetters
     public const int MinReputation = 1;
     public const int MaxDailyReputation = 200;
 
-    public static Mock<IEntityProvider<UserDto>> GetMockUserProvider()
+    public static IMock<IEntityProvider<UserDto>> GetMockUserProvider()
     {
         var mockProvider = new Mock<IEntityProvider<UserDto>>();
 

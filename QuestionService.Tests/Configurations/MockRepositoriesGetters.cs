@@ -11,7 +11,7 @@ namespace QuestionService.Tests.Configurations;
 
 internal static class MockRepositoriesGetters
 {
-    private static Mock<IDbContextTransaction> GetMockTransaction()
+    private static IMock<IDbContextTransaction> GetMockTransaction()
     {
         var transaction = new Mock<IDbContextTransaction>();
 
@@ -21,7 +21,7 @@ internal static class MockRepositoriesGetters
         return transaction;
     }
 
-    public static Mock<IUnitOfWork> GetMockUnitOfWork()
+    public static IMock<IUnitOfWork> GetMockUnitOfWork()
     {
         var mockUnitOfWork = new Mock<IUnitOfWork>();
 
@@ -33,7 +33,7 @@ internal static class MockRepositoriesGetters
         return mockUnitOfWork;
     }
 
-    public static Mock<IBaseRepository<Question>> GetMockQuestionRepository()
+    public static IMock<IBaseRepository<Question>> GetMockQuestionRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Question>>();
         var questions = GetQuestions().BuildMockDbSet();
@@ -46,7 +46,7 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<Vote>> GetMockVoteRepository()
+    public static IMock<IBaseRepository<Vote>> GetMockVoteRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Vote>>();
         var votes = GetVotes().BuildMockDbSet();
@@ -59,7 +59,7 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<Tag>> GetMockTagRepository()
+    public static IMock<IBaseRepository<Tag>> GetMockTagRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Tag>>();
 
@@ -90,7 +90,7 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<View>> GetMockViewRepository()
+    public static IMock<IBaseRepository<View>> GetMockViewRepository()
     {
         var mockRepository = new Mock<IBaseRepository<View>>();
 
@@ -100,19 +100,6 @@ internal static class MockRepositoriesGetters
         mockRepository.Setup(x => x.CreateAsync(It.IsAny<View>())).ReturnsAsync((View view) => view);
         mockRepository.Setup(x => x.Remove(It.IsAny<View>())).Returns((View view) => view);
         mockRepository.Setup(x => x.Update(It.IsAny<View>())).Returns((View view) => view);
-
-        return mockRepository;
-    }
-
-    public static Mock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
-    {
-        var mockRepository = new Mock<IBaseRepository<T>>();
-        var entities = Array.Empty<T>().BuildMockDbSet();
-
-        mockRepository.Setup(x => x.GetAll()).Returns(entities.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>())).ReturnsAsync((T entity) => entity);
-        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T entity) => entity);
-        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T entity) => entity);
 
         return mockRepository;
     }
