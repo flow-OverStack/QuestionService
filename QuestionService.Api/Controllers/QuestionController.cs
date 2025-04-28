@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuestionService.Api.Controllers.Base;
 using QuestionService.Domain.Dtos.Question;
+using QuestionService.Domain.Dtos.Requests;
 using QuestionService.Domain.Interfaces.Services;
 using QuestionService.Domain.Result;
 
@@ -72,7 +73,8 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <summary>
     ///     Edits a question
     /// </summary>
-    ///  <param name="dto"></param>
+    /// <param name="questionId"></param>
+    /// <param name="requestDto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
@@ -88,11 +90,14 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///          ]
     ///     } 
     /// </remarks>
-    [HttpPut]
-    public async Task<ActionResult<BaseResult<QuestionDto>>> EditQuestion(EditQuestionDto dto,
+    [HttpPut("{questionId:long}")]
+    public async Task<ActionResult<BaseResult<QuestionDto>>> EditQuestion(long questionId,
+        RequestEditQuestionDto requestDto,
         CancellationToken cancellationToken)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var dto = new EditQuestionDto(questionId, requestDto.Title, requestDto.Body, requestDto.TagNames);
 
         var result = await questionService.EditQuestionAsync(userId, dto, cancellationToken);
 

@@ -34,7 +34,7 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
         //Arrange
         const string forbiddenUrl = "/api/v1.0/question";
         //Act
-        var response = await HttpClient.PutAsync(forbiddenUrl, null);
+        var response = await HttpClient.PostAsync(forbiddenUrl, null);
         var body = await response.Content.ReadAsStringAsync();
 
         //Assert

@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.Question;
+using QuestionService.Domain.Dtos.Requests;
 using QuestionService.Domain.Resources;
 using QuestionService.Domain.Result;
 using QuestionService.Tests.FunctionalTests.Base;
@@ -75,10 +76,11 @@ public class QuestionServiceTests : SequentialFunctionalTest
     public async Task EditQuestion_ShouldBe_Success()
     {
         //Arrange
-        var dto = new EditQuestionDto(1, "NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
+        const long questionId = 1;
+        var dto = new RequestEditQuestionDto("NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
 
         //Act
-        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/question", dto);
+        var response = await HttpClient.PutAsJsonAsync($"/api/v1.0/question/{questionId}", dto);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
@@ -93,10 +95,11 @@ public class QuestionServiceTests : SequentialFunctionalTest
     public async Task EditQuestion_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new EditQuestionDto(0, "NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
+        const long questionId = 0;
+        var dto = new RequestEditQuestionDto("NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
 
         //Act
-        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/question", dto);
+        var response = await HttpClient.PutAsJsonAsync($"/api/v1.0/question/{questionId}", dto);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
