@@ -8,8 +8,9 @@ public interface IOutboxRepository
     ///     Adds  message to outbox
     /// </summary>
     /// <param name="message"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task AddAsync(OutboxMessage message);
+    Task AddAsync(OutboxMessage message, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets messages that have not been processed yet
@@ -21,8 +22,9 @@ public interface IOutboxRepository
     /// Marks
     /// </summary>
     /// <param name="messageId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task MarkAsProcessedAsync(Guid messageId);
+    Task MarkAsProcessedAsync(Guid messageId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Marks

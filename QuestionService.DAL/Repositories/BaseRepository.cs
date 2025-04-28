@@ -10,16 +10,16 @@ public class BaseRepository<TEntity>(ApplicationDbContext dbContext) : IBaseRepo
         return dbContext.Set<TEntity>();
     }
 
-    public async Task<int> SaveChangesAsync()
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await dbContext.SaveChangesAsync();
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<TEntity> CreateAsync(TEntity entity)
+    public async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        await dbContext.AddAsync(entity);
+        await dbContext.AddAsync(entity, cancellationToken);
 
         return entity;
     }

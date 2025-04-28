@@ -17,9 +17,9 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
     {
         var mockTransaction = new Mock<IDbContextTransaction>();
 
-        mockTransaction.Setup(x => x.RollbackAsync(default))
+        mockTransaction.Setup(x => x.RollbackAsync(It.IsAny<CancellationToken>()))
             .Returns(originalTransaction.RollbackAsync);
-        mockTransaction.Setup(x => x.CommitAsync(default)).ThrowsAsync(new TestException());
+        mockTransaction.Setup(x => x.CommitAsync(It.IsAny<CancellationToken>())).ThrowsAsync(new TestException());
 
         return mockTransaction;
     }
@@ -29,8 +29,9 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
         var mockUnitOfWork = new Mock<IUnitOfWork>();
 
         var originalTransaction = await originalUnitOfWork.BeginTransactionAsync();
-        mockUnitOfWork.Setup(x => x.SaveChangesAsync()).Returns(originalUnitOfWork.SaveChangesAsync);
-        mockUnitOfWork.Setup(x => x.BeginTransactionAsync())
+        mockUnitOfWork.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(originalUnitOfWork.SaveChangesAsync);
+        mockUnitOfWork.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(GetExceptionMockTransaction(originalTransaction).Object);
         mockUnitOfWork.Setup(x => x.Questions).Returns(originalUnitOfWork.Questions);
         mockUnitOfWork.Setup(x => x.Votes).Returns(originalUnitOfWork.Votes);

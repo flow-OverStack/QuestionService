@@ -27,16 +27,18 @@ public class QuestionService(
 {
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-    public async Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto)
+    public async Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (!IsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
-        var user = await userProvider.GetByIdAsync(initiatorId);
+        var user = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         if (user == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
+        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name))
+            .ToListAsync(cancellationToken);
         if (tags.Count != dto.TagNames.Count)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
@@ -44,22 +46,23 @@ public class QuestionService(
         question.UserId = initiatorId;
         question.Tags = tags;
 
-        await unitOfWork.Questions.CreateAsync(question);
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.Questions.CreateAsync(question, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         var questionDto = mapper.Map<QuestionDto>(question);
         return BaseResult<QuestionDto>.Success(questionDto);
     }
 
-    public async Task<BaseResult<QuestionDto>> EditQuestionAsync(long initiatorId, EditQuestionDto dto)
+    public async Task<BaseResult<QuestionDto>> EditQuestionAsync(long initiatorId, EditQuestionDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (!IsLengthValid(dto))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
-        var initiator = await userProvider.GetByIdAsync(initiatorId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Tags)
-            .FirstOrDefaultAsync(x => x.Id == dto.Id);
+            .FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
 
         if (initiator == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -70,7 +73,8 @@ public class QuestionService(
         if (!HasAccess(initiator, question))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.OperationForbidden, (int)ErrorCodes.OperationForbidden);
 
-        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name)).ToListAsync();
+        var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name))
+            .ToListAsync(cancellationToken);
         if (tags.Count != dto.TagNames.Count)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
@@ -78,15 +82,17 @@ public class QuestionService(
         question.Tags = tags;
 
         unitOfWork.Questions.Update(question);
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
 
-    public async Task<BaseResult<QuestionDto>> DeleteQuestionAsync(long initiatorId, long questionId)
+    public async Task<BaseResult<QuestionDto>> DeleteQuestionAsync(long initiatorId, long questionId,
+        CancellationToken cancellationToken = default)
     {
-        var initiator = await userProvider.GetByIdAsync(initiatorId);
-        var question = await unitOfWork.Questions.GetAll().FirstOrDefaultAsync(x => x.Id == questionId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
+        var question = await unitOfWork.Questions.GetAll()
+            .FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
 
         if (initiator == null)
             return BaseResult<QuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -98,17 +104,18 @@ public class QuestionService(
             return BaseResult<QuestionDto>.Failure(ErrorMessage.OperationForbidden, (int)ErrorCodes.OperationForbidden);
 
         unitOfWork.Questions.Remove(question);
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
 
-    public async Task<BaseResult<VoteQuestionDto>> UpvoteQuestionAsync(long initiatorId, long questionId)
+    public async Task<BaseResult<VoteQuestionDto>> UpvoteQuestionAsync(long initiatorId, long questionId,
+        CancellationToken cancellationToken = default)
     {
-        var initiator = await userProvider.GetByIdAsync(initiatorId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Votes)
-            .FirstOrDefaultAsync(x => x.Id == questionId);
+            .FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
 
         if (initiator == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -122,7 +129,7 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
@@ -134,7 +141,7 @@ public class QuestionService(
                         UserId = initiator.Id
                     };
 
-                    await unitOfWork.Votes.CreateAsync(vote);
+                    await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
                 }
                 else
                 {
@@ -146,11 +153,11 @@ public class QuestionService(
                     unitOfWork.Votes.Update(vote);
                 }
 
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await producer.ProduceAsync(initiator.Id, BaseEventType.QuestionUpvote);
+                await producer.ProduceAsync(initiator.Id, BaseEventType.QuestionUpvote, cancellationToken);
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -164,12 +171,13 @@ public class QuestionService(
         return BaseResult<VoteQuestionDto>.Success(dto);
     }
 
-    public async Task<BaseResult<VoteQuestionDto>> DownvoteQuestionAsync(long initiatorId, long questionId)
+    public async Task<BaseResult<VoteQuestionDto>> DownvoteQuestionAsync(long initiatorId, long questionId,
+        CancellationToken cancellationToken = default)
     {
-        var initiator = await userProvider.GetByIdAsync(initiatorId);
+        var initiator = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Votes)
-            .FirstOrDefaultAsync(x => x.Id == questionId);
+            .FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
 
         if (initiator == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -183,7 +191,7 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
@@ -195,7 +203,7 @@ public class QuestionService(
                         UserId = initiator.Id
                     };
 
-                    await unitOfWork.Votes.CreateAsync(vote);
+                    await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
                 }
                 else
                 {
@@ -207,11 +215,11 @@ public class QuestionService(
                     unitOfWork.Votes.Update(vote);
                 }
 
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote);
+                await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote, cancellationToken);
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {

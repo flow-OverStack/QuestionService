@@ -13,18 +13,19 @@ public class GetQuestionService(
     IBaseRepository<Tag> tagRepository)
     : IGetQuestionService
 {
-    public async Task<CollectionResult<Question>> GetAllAsync()
+    public async Task<CollectionResult<Question>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var questions = await questionRepository.GetAll().ToListAsync();
+        var questions = await questionRepository.GetAll().ToListAsync(cancellationToken);
 
         // Since there's can be no questions it is not exception to have no questions
         return CollectionResult<Question>.Success(questions, questions.Count);
     }
 
-    public async Task<CollectionResult<Question>> GetByIdsAsync(IEnumerable<long> ids)
+    public async Task<CollectionResult<Question>> GetByIdsAsync(IEnumerable<long> ids,
+        CancellationToken cancellationToken = default)
     {
-        var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
-        var totalCount = await questionRepository.GetAll().CountAsync();
+        var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        var totalCount = await questionRepository.GetAll().CountAsync(cancellationToken);
 
         if (!questions.Any())
             return ids.Count() switch
@@ -39,13 +40,13 @@ public class GetQuestionService(
     }
 
     public async Task<CollectionResult<KeyValuePair<string, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
-        IEnumerable<string> tagNames)
+        IEnumerable<string> tagNames, CancellationToken cancellationToken = default)
     {
         var groupedQuestions = await tagRepository.GetAll()
             .Where(x => tagNames.Contains(x.Name))
             .Include(x => x.Questions)
             .Select(x => new KeyValuePair<string, IEnumerable<Question>>(x.Name, x.Questions))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         if (!groupedQuestions.Any())
             return CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
@@ -56,11 +57,11 @@ public class GetQuestionService(
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(
-        IEnumerable<long> userIds)
+        IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
         var questions = await questionRepository.GetAll()
             .Where(x => userIds.Contains(x.UserId))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var groupedQuestions = questions
             .GroupBy(x => x.UserId)

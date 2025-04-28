@@ -8,10 +8,11 @@ namespace QuestionService.Grpc.Providers;
 
 public class UserProvider(UserService.UserServiceClient client, IMapper mapper) : IEntityProvider<UserDto>
 {
-    public async Task<UserDto?> GetByIdAsync(long id)
+    public async Task<UserDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var user = await client.GetUserByIdAsync(new GetUserByIdRequest { UserId = id });
             return mapper.Map<UserDto>(user);
         }

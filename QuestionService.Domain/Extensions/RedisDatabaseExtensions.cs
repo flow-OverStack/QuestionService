@@ -18,7 +18,7 @@ public static class RedisDatabaseExtensions
     /// <param name="keyValueMap"></param>
     /// <exception cref="RedisException"></exception>
     public static async Task AddToSetsAsync(this IDatabase redisDatabase,
-        IEnumerable<KeyValuePair<string, string>> keyValueMap)
+        IEnumerable<KeyValuePair<string, string>> keyValueMap, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(keyValueMap);
 
@@ -36,6 +36,8 @@ public static class RedisDatabaseExtensions
         }
 
         if (!keys.Any() || !values.Any()) return;
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         var result = await redisDatabase.ScriptEvaluateAsync(AddToSetsScript, keys.ToArray(), values.ToArray());
 

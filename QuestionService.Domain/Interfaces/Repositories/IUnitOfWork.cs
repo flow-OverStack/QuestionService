@@ -10,5 +10,5 @@ public interface IUnitOfWork : IStateSaveChanges
 
     IBaseRepository<Vote> Votes { get; set; }
 
-    Task<IDbContextTransaction> BeginTransactionAsync();
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

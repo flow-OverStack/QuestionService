@@ -14,13 +14,13 @@ public class UnitOfWork(
 
     public IBaseRepository<Vote> Votes { get; set; } = votes;
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        return await context.Database.BeginTransactionAsync();
+        return await context.Database.BeginTransactionAsync(cancellationToken);
     }
 
-    public async Task<int> SaveChangesAsync()
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await context.SaveChangesAsync();
+        return await context.SaveChangesAsync(cancellationToken);
     }
 }

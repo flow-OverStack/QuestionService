@@ -13,15 +13,16 @@ namespace QuestionService.Application.Services;
 public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepository<Question> questionRepository)
     : IGetVoteService
 {
-    public async Task<CollectionResult<Vote>> GetAllAsync()
+    public async Task<CollectionResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var votes = await voteRepository.GetAll().ToListAsync();
+        var votes = await voteRepository.GetAll().ToListAsync(cancellationToken);
 
         // Since there's can be no votes it is not an exception to have no votes 
         return CollectionResult<Vote>.Success(votes, votes.Count);
     }
 
-    public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos)
+    public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos,
+        CancellationToken cancellationToken = default)
     {
         var keys = dtos.ToList();
 
@@ -33,8 +34,8 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
         var votes = await voteRepository.GetAll()
             .AsExpandable()
             .Where(predicate)
-            .ToListAsync();
-        var totalCount = await voteRepository.GetAll().CountAsync();
+            .ToListAsync(cancellationToken);
+        var totalCount = await voteRepository.GetAll().CountAsync(cancellationToken);
 
         if (!votes.Any())
             return keys.Count switch
@@ -47,13 +48,13 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
-        IEnumerable<long> questionIds)
+        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
         var groupedVotes = await questionRepository.GetAll()
             .Where(x => questionIds.Contains(x.Id))
             .Include(x => x.Votes)
             .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Id, x.Votes))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         if (!groupedVotes.Any())
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
@@ -63,11 +64,11 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
-        IEnumerable<long> userIds)
+        IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
         var votes = await voteRepository.GetAll()
             .Where(x => userIds.Contains(x.UserId))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var groupedVotes = votes
             .GroupBy(x => x.UserId)

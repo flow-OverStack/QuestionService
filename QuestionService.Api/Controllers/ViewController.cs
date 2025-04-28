@@ -24,12 +24,13 @@ public class ViewController(IViewService viewService) : BaseController
     /// </summary>
     /// <param name="questionId"></param>
     /// <param name="fingerprint"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     ///     POST {questionId}
     /// </remarks>
     [HttpPost("{questionId:long}")]
-    public async Task<ActionResult<BaseResult>> IncrementViews(long questionId,
+    public async Task<ActionResult<BaseResult>> IncrementViews(long questionId, CancellationToken cancellationToken,
         [FromHeader(Name = FingerprintHeaderName)]
         string? fingerprint = null)
     {
@@ -40,7 +41,7 @@ public class ViewController(IViewService viewService) : BaseController
 
         var dto = new IncrementViewsDto(questionId, userId, userIp, fingerprint);
 
-        var result = await viewService.IncrementViewsAsync(dto);
+        var result = await viewService.IncrementViewsAsync(dto, cancellationToken);
 
         return HandleResult(result);
     }

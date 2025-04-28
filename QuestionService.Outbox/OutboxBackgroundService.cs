@@ -27,7 +27,7 @@ public class OutboxBackgroundService(ILogger logger, IServiceScopeFactory scopeF
                 await Task.Delay(TimeSpan.FromSeconds(OutboxProcessorFrequencyInSeconds), stoppingToken);
             }
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         {
             logger.Information("{ServiceName} is canceled.", nameof(OutboxBackgroundService));
         }

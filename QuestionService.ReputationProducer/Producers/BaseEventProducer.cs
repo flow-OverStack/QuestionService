@@ -7,7 +7,7 @@ namespace QuestionService.ReputationProducer.Producers;
 
 public class BaseEventProducer(IOutboxService outboxService) : IBaseEventProducer
 {
-    public async Task ProduceAsync(long userId, BaseEventType eventType)
+    public async Task ProduceAsync(long userId, BaseEventType eventType, CancellationToken cancellationToken = default)
     {
         var baseEvent = new BaseEvent
         {
@@ -16,6 +16,6 @@ public class BaseEventProducer(IOutboxService outboxService) : IBaseEventProduce
             EventType = eventType.ToString()
         };
 
-        await outboxService.AddToOutboxAsync(baseEvent);
+        await outboxService.AddToOutboxAsync(baseEvent, cancellationToken);
     }
 }

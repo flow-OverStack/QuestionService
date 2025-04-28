@@ -35,11 +35,12 @@ builder.Services.AddApplication();
 
 var app = builder.Build();
 
-app.UseRouting();
+app.UseStatusCodePages();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<WarningHandlingMiddleware>();
 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -13,12 +13,7 @@ internal static class MockRepositoriesGetters
 {
     private static IMock<IDbContextTransaction> GetMockTransaction()
     {
-        var transaction = new Mock<IDbContextTransaction>();
-
-        transaction.Setup(x => x.CommitAsync(default)).Returns(Task.CompletedTask);
-        transaction.Setup(x => x.RollbackAsync(default)).Returns(Task.CompletedTask);
-
-        return transaction;
+        return new Mock<IDbContextTransaction>();
     }
 
     public static IMock<IUnitOfWork> GetMockUnitOfWork()
@@ -27,8 +22,8 @@ internal static class MockRepositoriesGetters
 
         mockUnitOfWork.Setup(x => x.Questions).Returns(GetMockQuestionRepository().Object);
         mockUnitOfWork.Setup(x => x.Votes).Returns(GetMockVoteRepository().Object);
-        mockUnitOfWork.Setup(x => x.BeginTransactionAsync()).ReturnsAsync(GetMockTransaction().Object);
-        mockUnitOfWork.Setup(x => x.SaveChangesAsync());
+        mockUnitOfWork.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(GetMockTransaction().Object);
 
         return mockUnitOfWork;
     }
@@ -39,7 +34,8 @@ internal static class MockRepositoriesGetters
         var questions = GetQuestions().BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(questions.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Question>())).ReturnsAsync((Question question) => question);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Question>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Question question, CancellationToken _) => question);
         mockRepository.Setup(x => x.Remove(It.IsAny<Question>())).Returns((Question question) => question);
         mockRepository.Setup(x => x.Update(It.IsAny<Question>())).Returns((Question question) => question);
 
@@ -52,7 +48,8 @@ internal static class MockRepositoriesGetters
         var votes = GetVotes().BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(votes.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Vote>())).ReturnsAsync((Vote vote) => vote);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Vote>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Vote vote, CancellationToken _) => vote);
         mockRepository.Setup(x => x.Remove(It.IsAny<Vote>())).Returns((Vote vote) => vote);
         mockRepository.Setup(x => x.Update(It.IsAny<Vote>())).Returns((Vote vote) => vote);
 
@@ -83,7 +80,8 @@ internal static class MockRepositoriesGetters
         var tagsDbSet = tags.BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(tagsDbSet.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Tag>())).ReturnsAsync((Tag tag) => tag);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Tag>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Tag tag, CancellationToken _) => tag);
         mockRepository.Setup(x => x.Remove(It.IsAny<Tag>())).Returns((Tag tag) => tag);
         mockRepository.Setup(x => x.Update(It.IsAny<Tag>())).Returns((Tag tag) => tag);
 
@@ -97,7 +95,8 @@ internal static class MockRepositoriesGetters
         var views = GetViews().BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(views.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<View>())).ReturnsAsync((View view) => view);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<View>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((View view, CancellationToken _) => view);
         mockRepository.Setup(x => x.Remove(It.IsAny<View>())).Returns((View view) => view);
         mockRepository.Setup(x => x.Update(It.IsAny<View>())).Returns((View view) => view);
 

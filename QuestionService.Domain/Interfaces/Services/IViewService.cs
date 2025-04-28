@@ -9,6 +9,7 @@ public interface IViewService
     ///     Increments views of question by one view
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto);
+    Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto, CancellationToken cancellationToken = default);
 }

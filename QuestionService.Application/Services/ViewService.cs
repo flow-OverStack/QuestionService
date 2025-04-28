@@ -18,13 +18,14 @@ public class ViewService(IDatabase redisDatabase, IBaseRepository<Question> ques
     private const string ViewKey = "view:question:";
     private const string ViewKeysKey = "view:keys";
 
-    public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto)
+    public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (!IsValidFormat(dto))
             return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.InvalidDataFormat,
                 (int)ErrorCodes.InvalidDataFormat);
 
-        var questionExists = await questionRepository.GetAll().AnyAsync(x => x.Id == dto.QuestionId);
+        var questionExists = await questionRepository.GetAll().AnyAsync(x => x.Id == dto.QuestionId, cancellationToken);
         if (!questionExists)
             return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.QuestionNotFound,
                 (int)ErrorCodes.QuestionNotFound);
@@ -38,7 +39,7 @@ public class ViewService(IDatabase redisDatabase, IBaseRepository<Question> ques
             { ViewKeysKey, key }
         };
 
-        await redisDatabase.AddToSetsAsync(keyValueMap);
+        await redisDatabase.AddToSetsAsync(keyValueMap, cancellationToken);
 
         return BaseResult.Success();
     }

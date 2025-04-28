@@ -11,19 +11,20 @@ namespace QuestionService.Application.Services;
 public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Question> questionRepository)
     : IGetTagService
 {
-    public async Task<CollectionResult<Tag>> GetAllAsync()
+    public async Task<CollectionResult<Tag>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var tags = await tagRepository.GetAll().ToListAsync();
+        var tags = await tagRepository.GetAll().ToListAsync(cancellationToken);
 
         return CollectionResult<Tag>.Success(tags, tags.Count);
     }
 
-    public async Task<CollectionResult<Tag>> GetByNamesAsync(IEnumerable<string> names)
+    public async Task<CollectionResult<Tag>> GetByNamesAsync(IEnumerable<string> names,
+        CancellationToken cancellationToken = default)
     {
         var tags = await tagRepository.GetAll()
             .Where(x => names.Contains(x.Name))
-            .ToListAsync();
-        var totalCount = await tagRepository.GetAll().CountAsync();
+            .ToListAsync(cancellationToken);
+        var totalCount = await tagRepository.GetAll().CountAsync(cancellationToken);
 
         if (!tags.Any())
             return names.Count() switch
@@ -36,13 +37,13 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTagsAsync(
-        IEnumerable<long> questionIds)
+        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
         var groupedTags = await questionRepository.GetAll()
             .Where(x => questionIds.Contains(x.Id))
             .Include(x => x.Tags)
             .Select(x => new KeyValuePair<long, IEnumerable<Tag>>(x.Id, x.Tags))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         if (!groupedTags.Any())
             return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagsNotFound,

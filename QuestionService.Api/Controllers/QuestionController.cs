@@ -22,6 +22,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     Creates a question
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for ask question:
@@ -36,11 +37,12 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     }
     /// </remarks>
     [HttpPost]
-    public async Task<ActionResult<BaseResult<QuestionDto>>> AskQuestion(AskQuestionDto dto)
+    public async Task<ActionResult<BaseResult<QuestionDto>>> AskQuestion(AskQuestionDto dto,
+        CancellationToken cancellationToken)
     {
         var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var result = await questionService.AskQuestionAsync(userId, dto);
+        var result = await questionService.AskQuestionAsync(userId, dto, cancellationToken);
 
         return HandleResult(result);
     }
@@ -49,6 +51,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     Deletes a question
     /// </summary>
     /// <param name="questionId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for delete question:
@@ -56,11 +59,12 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     DELETE {questionId}
     /// </remarks>
     [HttpDelete("{questionId:long}")]
-    public async Task<ActionResult<BaseResult<QuestionDto>>> DeleteQuestion(long questionId)
+    public async Task<ActionResult<BaseResult<QuestionDto>>> DeleteQuestion(long questionId,
+        CancellationToken cancellationToken)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.DeleteQuestionAsync(userId, questionId);
+        var result = await questionService.DeleteQuestionAsync(userId, questionId, cancellationToken);
 
         return HandleResult(result);
     }
@@ -69,7 +73,8 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     Edits a question
     /// </summary>
     ///  <param name="dto"></param>
-    ///  <returns></returns>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     /// <remarks>
     /// Request for edit question:
     /// 
@@ -84,11 +89,12 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     } 
     /// </remarks>
     [HttpPut]
-    public async Task<ActionResult<BaseResult<QuestionDto>>> EditQuestion(EditQuestionDto dto)
+    public async Task<ActionResult<BaseResult<QuestionDto>>> EditQuestion(EditQuestionDto dto,
+        CancellationToken cancellationToken)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.EditQuestionAsync(userId, dto);
+        var result = await questionService.EditQuestionAsync(userId, dto, cancellationToken);
 
         return HandleResult(result);
     }
@@ -97,6 +103,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     Downvotes a question
     /// </summary>
     /// <param name="questionId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for downvote question:
@@ -104,11 +111,12 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     PATCH downvote/{questionId}
     /// </remarks>
     [HttpPatch("downvote/{questionId:long}")]
-    public async Task<ActionResult<BaseResult<VoteQuestionDto>>> DownvoteQuestion(long questionId)
+    public async Task<ActionResult<BaseResult<VoteQuestionDto>>> DownvoteQuestion(long questionId,
+        CancellationToken cancellationToken)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.DownvoteQuestionAsync(userId, questionId);
+        var result = await questionService.DownvoteQuestionAsync(userId, questionId, cancellationToken);
 
         return HandleResult(result);
     }
@@ -117,6 +125,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     Upvotes a question
     /// </summary>
     /// <param name="questionId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for upvote question:
@@ -124,11 +133,12 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///     PATCH upvote/{questionId}
     /// </remarks>
     [HttpPatch("upvote/{questionId:long}")]
-    public async Task<ActionResult<BaseResult<VoteQuestionDto>>> UpvoteQuestion(long questionId)
+    public async Task<ActionResult<BaseResult<VoteQuestionDto>>> UpvoteQuestion(long questionId,
+        CancellationToken cancellationToken)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var result = await questionService.UpvoteQuestionAsync(userId, questionId);
+        var result = await questionService.UpvoteQuestionAsync(userId, questionId, cancellationToken);
 
         return HandleResult(result);
     }

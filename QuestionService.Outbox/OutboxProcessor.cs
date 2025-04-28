@@ -41,7 +41,7 @@ public class OutboxProcessor(
 
             await producer.ProduceAsync(content, cancellationToken);
 
-            await outboxRepository.MarkAsProcessedAsync(message.Id);
+            await outboxRepository.MarkAsProcessedAsync(message.Id, cancellationToken);
 
             logger.Information("Produced message: {content}. Type: {type}", message.Content, type);
 
