@@ -16,6 +16,7 @@ public static class RedisDatabaseExtensions
     /// </summary>
     /// <param name="redisDatabase"></param>
     /// <param name="keyValueMap"></param>
+    /// <param name="cancellationToken"></param>
     /// <exception cref="RedisException"></exception>
     public static async Task AddToSetsAsync(this IDatabase redisDatabase,
         IEnumerable<KeyValuePair<string, string>> keyValueMap, CancellationToken cancellationToken = default)

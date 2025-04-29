@@ -22,12 +22,12 @@ public class ViewService(IDatabase redisDatabase, IBaseRepository<Question> ques
         CancellationToken cancellationToken = default)
     {
         if (!IsValidFormat(dto))
-            return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.InvalidDataFormat,
+            return BaseResult.Failure(ErrorMessage.InvalidDataFormat,
                 (int)ErrorCodes.InvalidDataFormat);
 
         var questionExists = await questionRepository.GetAll().AnyAsync(x => x.Id == dto.QuestionId, cancellationToken);
         if (!questionExists)
-            return BaseResult<QuestionViewsDto>.Failure(ErrorMessage.QuestionNotFound,
+            return BaseResult.Failure(ErrorMessage.QuestionNotFound,
                 (int)ErrorCodes.QuestionNotFound);
 
         var key = ViewKey + dto.QuestionId;

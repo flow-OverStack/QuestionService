@@ -71,6 +71,27 @@ internal static class GraphQlHelper
                                           }
                                           """;
 
+    public const string RequestQuestionsWithTagsQuery = """
+                                                        {
+                                                          questions {
+                                                            id
+                                                            title
+                                                            body
+                                                            userId
+                                                            createdAt
+                                                            lastModifiedAt
+                                                            tags {
+                                                              name
+                                                              description
+                                                              questions {
+                                                                id
+                                                                title
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                        """;
+
     public static string RequestAllByIdsAndNameQuery(long questionId, long voteQuestionId, long voteUserId,
         string tagName, long viewId)
     {

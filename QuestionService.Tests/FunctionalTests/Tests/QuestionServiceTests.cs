@@ -67,7 +67,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -106,7 +106,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -143,7 +143,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -180,7 +180,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -217,7 +217,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.QuestionNotFound);
+        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }
