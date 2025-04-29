@@ -17,15 +17,7 @@ internal class QuestionServiceFactory
 {
     private readonly IQuestionService _questionService;
 
-    public readonly BusinessRules BusinessRules = new()
-    {
-        TitleMinLength = 10,
-        BodyMinLength = 30,
-        MinReputationToUpvote = 15,
-        MinReputationToDownvote = 125,
-        DownvoteReputationChange = -1,
-        UpvoteReputationChange = 1
-    };
+    public readonly BusinessRules BusinessRules = BusinessRulesConfiguration.GetBusinessRules();
 
     public readonly IBaseEventProducer EventProducer =
         BaseEventProducerConfiguration.GetBaseEventProducerConfiguration();
