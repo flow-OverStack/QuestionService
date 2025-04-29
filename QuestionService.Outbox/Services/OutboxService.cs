@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
-using QuestionService.Outbox.Interfaces.Repositories;
-using QuestionService.Outbox.Interfaces.Services;
+using QuestionService.Outbox.Interfaces.Repository;
+using QuestionService.Outbox.Interfaces.Service;
 using QuestionService.Outbox.Messages;
 
 namespace QuestionService.Outbox.Services;

@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Mappings;
 using QuestionService.Application.Services;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Settings;
 using StackExchange.Redis;
 

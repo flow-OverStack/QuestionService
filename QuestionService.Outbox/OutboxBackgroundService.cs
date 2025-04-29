@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using QuestionService.Outbox.Interfaces.Services;
+using QuestionService.Outbox.Interfaces.Service;
 using Serilog;
 
 namespace QuestionService.Outbox;

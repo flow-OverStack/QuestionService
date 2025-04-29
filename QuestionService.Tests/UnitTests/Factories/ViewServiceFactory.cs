@@ -1,7 +1,7 @@
 using QuestionService.Application.Services;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Repositories;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Configurations;
 using StackExchange.Redis;

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using QuestionService.Domain.Interfaces.Entities;
+using QuestionService.Domain.Interfaces.Entity;
 
 namespace QuestionService.DAL.Interceptors;
 

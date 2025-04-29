@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using QuestionService.Domain.Events;
-using QuestionService.Outbox.Interfaces.Repositories;
-using QuestionService.Outbox.Interfaces.Services;
-using QuestionService.Outbox.Interfaces.TopicProducers;
+using QuestionService.Outbox.Interfaces.Repository;
+using QuestionService.Outbox.Interfaces.Service;
+using QuestionService.Outbox.Interfaces.TopicProducer;
 using QuestionService.Outbox.Repositories;
 using QuestionService.Outbox.Services;
 using QuestionService.Outbox.TopicProducers;

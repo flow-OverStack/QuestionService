@@ -1,4 +1,4 @@
-using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
 
 namespace QuestionService.DAL.Repositories;
 

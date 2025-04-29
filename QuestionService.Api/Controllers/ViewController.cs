@@ -3,8 +3,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using QuestionService.Api.Controllers.Base;
 using QuestionService.Domain.Dtos.View;
-using QuestionService.Domain.Interfaces.Services;
-using QuestionService.Domain.Result;
+using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Results;
 
 namespace QuestionService.Api.Controllers;
 

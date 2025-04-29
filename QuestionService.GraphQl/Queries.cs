@@ -1,7 +1,7 @@
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Service;
 using QuestionService.GraphQl.DataLoaders;
 using Tag = QuestionService.Domain.Entities.Tag;
 

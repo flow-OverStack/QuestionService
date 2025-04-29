@@ -6,12 +6,12 @@ using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Extensions;
-using QuestionService.Domain.Interfaces.Producers;
-using QuestionService.Domain.Interfaces.Providers;
-using QuestionService.Domain.Interfaces.Repositories;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Producer;
+using QuestionService.Domain.Interfaces.Provider;
+using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Resources;
-using QuestionService.Domain.Result;
+using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services;

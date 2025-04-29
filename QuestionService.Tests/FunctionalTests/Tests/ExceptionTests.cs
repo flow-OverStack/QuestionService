@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Resources;
-using QuestionService.Domain.Result;
+using QuestionService.Domain.Results;
 using QuestionService.Tests.FunctionalTests.Base.Exception;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Xunit;

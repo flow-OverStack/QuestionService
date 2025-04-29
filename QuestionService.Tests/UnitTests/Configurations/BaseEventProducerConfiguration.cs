@@ -1,6 +1,6 @@
 using Moq;
 using QuestionService.Domain.Enums;
-using QuestionService.Domain.Interfaces.Producers;
+using QuestionService.Domain.Interfaces.Producer;
 
 namespace QuestionService.Tests.UnitTests.Configurations;
 

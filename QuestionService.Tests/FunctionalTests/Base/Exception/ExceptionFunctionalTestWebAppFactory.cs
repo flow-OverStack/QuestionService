@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using QuestionService.DAL.Repositories;
-using QuestionService.Domain.Interfaces.Repositories;
-using QuestionService.Outbox.Interfaces.TopicProducers;
+using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Outbox.Interfaces.TopicProducer;
 using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.FunctionalTests.Base.Exception;

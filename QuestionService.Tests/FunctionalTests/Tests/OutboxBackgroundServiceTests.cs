@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Events;
-using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Outbox.Messages;
 using QuestionService.Tests.FunctionalTests.Base;
 using Xunit;

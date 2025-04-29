@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
 
 namespace QuestionService.DAL.Repositories;
 

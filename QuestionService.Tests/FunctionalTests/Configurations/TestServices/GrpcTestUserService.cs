@@ -4,7 +4,7 @@ using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Resources;
 using QuestionService.Grpc;
-using QuestionService.Grpc.Mapping;
+using QuestionService.Grpc.Mappings;
 using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.FunctionalTests.Configurations.TestServices;

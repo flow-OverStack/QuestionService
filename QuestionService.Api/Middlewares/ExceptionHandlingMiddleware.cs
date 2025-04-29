@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Mime;
 using QuestionService.Domain.Resources;
-using QuestionService.Domain.Result;
+using QuestionService.Domain.Results;
 using ILogger = Serilog.ILogger;
 
 namespace QuestionService.Api.Middlewares;

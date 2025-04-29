@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
 using QuestionService.Domain.Helpers;
-using QuestionService.Outbox.Interfaces.Repositories;
-using QuestionService.Outbox.Interfaces.Services;
-using QuestionService.Outbox.Interfaces.TopicProducers;
+using QuestionService.Outbox.Interfaces.Repository;
+using QuestionService.Outbox.Interfaces.Service;
+using QuestionService.Outbox.Interfaces.TopicProducer;
 using QuestionService.Outbox.Messages;
 using Serilog;
 

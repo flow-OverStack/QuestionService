@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
 using Newtonsoft.Json;
-using QuestionService.Api.Auth;
+using QuestionService.Api.AuthModels;
 
 namespace QuestionService.Api.Middlewares;
 

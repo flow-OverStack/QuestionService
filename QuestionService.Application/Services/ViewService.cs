@@ -5,10 +5,10 @@ using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Repositories;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Resources;
-using QuestionService.Domain.Result;
+using QuestionService.Domain.Results;
 using StackExchange.Redis;
 
 namespace QuestionService.Application.Services;

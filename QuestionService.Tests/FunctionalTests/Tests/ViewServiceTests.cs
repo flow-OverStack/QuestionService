@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using QuestionService.Domain.Dtos.ExternalEntity;
-using QuestionService.Domain.Result;
+using QuestionService.Domain.Results;
 using QuestionService.Tests.FunctionalTests.Base;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Xunit;

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Service;
 
 namespace QuestionService.GraphQl.DataLoaders;
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
 using View = QuestionService.Domain.Entities.View;
 
 namespace QuestionService.Tests.Configurations;

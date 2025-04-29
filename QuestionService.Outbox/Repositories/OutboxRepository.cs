@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using QuestionService.Domain.Interfaces.Repositories;
-using QuestionService.Outbox.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Outbox.Interfaces.Repository;
 using QuestionService.Outbox.Messages;
 
 namespace QuestionService.Outbox.Repositories;

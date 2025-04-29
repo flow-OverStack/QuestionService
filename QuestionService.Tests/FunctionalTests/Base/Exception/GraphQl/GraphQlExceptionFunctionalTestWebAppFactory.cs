@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
 
 namespace QuestionService.Tests.FunctionalTests.Base.Exception.GraphQl;
 

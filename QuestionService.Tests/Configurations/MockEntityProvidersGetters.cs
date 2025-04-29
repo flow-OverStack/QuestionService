@@ -1,6 +1,6 @@
 using Moq;
 using QuestionService.Domain.Dtos.ExternalEntity;
-using QuestionService.Domain.Interfaces.Providers;
+using QuestionService.Domain.Interfaces.Provider;
 
 namespace QuestionService.Tests.Configurations;
 

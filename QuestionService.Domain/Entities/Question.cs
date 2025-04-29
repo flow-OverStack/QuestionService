@@ -1,4 +1,4 @@
-using QuestionService.Domain.Interfaces.Entities;
+using QuestionService.Domain.Interfaces.Entity;
 
 namespace QuestionService.Domain.Entities;
 

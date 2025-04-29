@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Events;
-using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Tests.FunctionalTests.Base.Exception;
 using Xunit;
 using OutboxMessage = QuestionService.Outbox.Messages.OutboxMessage;

@@ -1,7 +1,7 @@
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Events;
-using QuestionService.Domain.Interfaces.Producers;
-using QuestionService.Outbox.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Producer;
+using QuestionService.Outbox.Interfaces.Service;
 
 namespace QuestionService.ReputationProducer.Producers;
 

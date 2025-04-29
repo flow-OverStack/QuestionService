@@ -2,7 +2,7 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Events;
-using QuestionService.Domain.Interfaces.Producers;
+using QuestionService.Domain.Interfaces.Producer;
 using QuestionService.Domain.Settings;
 using QuestionService.ReputationProducer.Producers;
 

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using QuestionService.DAL.Interceptors;
 using QuestionService.DAL.Repositories;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Repositories;
+using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Outbox.Messages;
 
 namespace QuestionService.DAL.DependencyInjection;

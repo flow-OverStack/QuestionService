@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Domain.Interfaces.Services;
+using QuestionService.Domain.Interfaces.Service;
 using Tag = QuestionService.Domain.Entities.Tag;
 
 namespace QuestionService.GraphQl.DataLoaders;

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Outbox.Interfaces.TopicProducers;
+using QuestionService.Outbox.Interfaces.TopicProducer;
 
 namespace QuestionService.Outbox.TopicProducers;
 
