@@ -275,15 +275,15 @@ public class QuestionService(
 
     private bool IsLengthValid(EditQuestionDto dto)
     {
-        return dto.Title.HasMinimumLength(_businessRules.TitleMinLength)
-               && dto.Body.HasMinimumLength(_businessRules.BodyMinLength)
+        return dto.Title.HasMinLength(_businessRules.TitleMinLength)
+               && dto.Body.HasMinLength(_businessRules.BodyMinLength)
                && dto.TagNames.Any();
     }
 
     private bool IsLengthValid(AskQuestionDto dto)
     {
-        return dto.Title.HasMinimumLength(_businessRules.TitleMinLength)
-               && dto.Body.HasMinimumLength(_businessRules.BodyMinLength)
+        return dto.Title.HasMinLength(_businessRules.TitleMinLength)
+               && dto.Body.HasMinLength(_businessRules.BodyMinLength)
                && dto.TagNames.Any();
     }
 }

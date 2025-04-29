@@ -21,7 +21,7 @@ public class BaseController : ControllerBase
     /// <param name="result"></param>
     /// <typeparam name="T">Type of BaseResult</typeparam>
     /// <returns></returns>
-    protected ActionResult<BaseResult<T>> HandleResult<T>(BaseResult<T> result)
+    protected ActionResult<BaseResult<T>> HandleBaseResult<T>(BaseResult<T> result)
     {
         return result.ErrorCode switch
         {
@@ -36,7 +36,7 @@ public class BaseController : ControllerBase
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    protected ActionResult<BaseResult> HandleResult(BaseResult result)
+    protected ActionResult<BaseResult> HandleBaseResult(BaseResult result)
     {
         return result.ErrorCode switch
         {

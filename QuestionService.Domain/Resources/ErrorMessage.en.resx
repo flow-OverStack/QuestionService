@@ -66,4 +66,7 @@
     <data name="VotesNotFound" xml:space="preserve">
         <value>Votes not found</value>
     </data>
+    <data name="TagAlreadyExists" xml:space="preserve">
+        <value>Tag already exists</value>
+    </data>
 </root>

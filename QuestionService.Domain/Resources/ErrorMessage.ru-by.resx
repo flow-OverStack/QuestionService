@@ -66,4 +66,7 @@
     <data name="VotesNotFound" xml:space="preserve">
         <value>Голоса не найдены</value>
     </data>
+    <data name="TagAlreadyExists" xml:space="preserve">
+        <value>Тэг уже существует</value>
+    </data>
 </root>

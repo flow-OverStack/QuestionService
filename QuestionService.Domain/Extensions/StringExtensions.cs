@@ -8,10 +8,22 @@ public static class StringExtensions
     /// <param name="length"></param>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static bool HasMinimumLength(this string input, int length)
+    public static bool HasMinLength(this string input, int length)
     {
-        return !string.IsNullOrEmpty(input)
+        return !string.IsNullOrWhiteSpace(input)
                && input.Length >= length;
+    }
+
+    /// <summary>
+    ///     Checks if string has a max length or less
+    /// </summary>
+    /// <param name="length"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static bool HasMaxLength(this string input, int length)
+    {
+        return !string.IsNullOrWhiteSpace(input)
+               && input.Length <= length;
     }
 
     /// <summary>

@@ -43,7 +43,7 @@ public class ViewController(IViewService viewService) : BaseController
 
         var result = await viewService.IncrementViewsAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     private long? GetUserIdIfExists()

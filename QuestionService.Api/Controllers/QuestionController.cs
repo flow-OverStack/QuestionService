@@ -45,7 +45,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
 
         var result = await questionService.AskQuestionAsync(userId, dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
 
         var result = await questionService.DeleteQuestionAsync(userId, questionId, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
 
         var result = await questionService.EditQuestionAsync(userId, dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
 
         var result = await questionService.DownvoteQuestionAsync(userId, questionId, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -145,6 +145,6 @@ public class QuestionController(IQuestionService questionService) : BaseControll
 
         var result = await questionService.UpvoteQuestionAsync(userId, questionId, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 }

@@ -23,6 +23,7 @@ public enum ErrorCodes
 
     TagsNotFound = 51,
     TagNotFound = 52,
+    TagAlreadyExists = 53,
 
     ViewNotFound = 61,
     ViewsNotFound = 62,

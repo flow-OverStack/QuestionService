@@ -114,6 +114,15 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tag already exists.
+        /// </summary>
+        public static string TagAlreadyExists {
+            get {
+                return ResourceManager.GetString("TagAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tag not found.
         /// </summary>
         public static string TagNotFound {

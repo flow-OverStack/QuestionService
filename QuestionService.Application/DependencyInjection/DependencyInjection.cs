@@ -21,6 +21,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IQuestionService, Services.QuestionService>();
         services.AddScoped<IViewService, ViewService>();
+        services.AddScoped<ITagService, TagService>();
         services.AddScoped<IGetQuestionService, GetQuestionService>();
         services.AddScoped<IGetVoteService, GetVoteService>();
         services.AddScoped<IGetTagService, GetTagService>();
