@@ -18,9 +18,10 @@ public static class RedisDatabaseExtensions
     /// <param name="keyValueMap"></param>
     /// <param name="cancellationToken"></param>
     /// <exception cref="RedisException"></exception>
-    public static async Task AddToSetsAsync(this IDatabase redisDatabase,
+    public static async Task SetsAddAsync(this IDatabase redisDatabase,
         IEnumerable<KeyValuePair<string, string>> keyValueMap, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(redisDatabase);
         ArgumentNullException.ThrowIfNull(keyValueMap);
 
         var keys = new List<RedisKey>();
@@ -44,5 +45,37 @@ public static class RedisDatabaseExtensions
 
         if (result.IsNull || !(bool)result)
             throw new RedisException("An exception occured while executing the redis command.");
+    }
+
+    //TODO test
+    public static async Task<IEnumerable<string>> SetStringMembersAsync(this IDatabase redisDatabase, RedisKey key,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(redisDatabase);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var values = (await redisDatabase.SetMembersAsync(key)).Select(x => x.ToString());
+        return values;
+    }
+
+    //TODO test
+    public static async Task<IEnumerable<KeyValuePair<string, IEnumerable<string>>>> SetsMembersAsync(
+        this IDatabase redisDatabase, IEnumerable<string> keys, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(redisDatabase);
+        ArgumentNullException.ThrowIfNull(keys);
+
+        var keyValuesDictionary = new Dictionary<string, IEnumerable<string>>();
+        foreach (var key in keys)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+            var values = await redisDatabase.SetStringMembersAsync(key, cancellationToken: cancellationToken);
+            keyValuesDictionary.Add(key, values);
+        }
+
+        return keyValuesDictionary;
     }
 }
