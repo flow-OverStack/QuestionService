@@ -28,7 +28,8 @@ public class ViewService(
     private const string ViewKeySeparator = "_";
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-    public async Task<BaseResult> SyncViewsToDatabaseAsync(CancellationToken cancellationToken = default)
+    public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
+        CancellationToken cancellationToken = default)
     {
         var allViewKeys =
             (await redisDatabase.SetStringMembersAsync(ViewsKeysKey, cancellationToken)).ToList();
@@ -38,12 +39,12 @@ public class ViewService(
 
         var invalidViewEntries = viewEntriesByKey.Select(x =>
             new KeyValuePair<RedisKey, IEnumerable<RedisValue>>(x.Key,
-                x.Value.Where(y => y.Split(ViewKeySeparator).Length != 2).Select(y => new RedisValue(y))));
+                x.Value.Where(y => !IsValidKey(y)).Select(y => new RedisValue(y))));
         await redisDatabase.SetsRemoveAsync(invalidViewEntries, cancellationToken);
 
         var validViewEntries = viewEntriesByKey.Select(x =>
             new KeyValuePair<string, IEnumerable<string>>(x.Key,
-                x.Value.Where(y => y.Split(ViewKeySeparator).Length == 2)));
+                x.Value.Where(IsValidKey)));
 
         var spamFilteredViews = validViewEntries.FilterByMaxValueOccurrences(ViewParsingHelpers.GetKeyFromValue,
             _businessRules.UserViewSpamThreshold);
@@ -62,7 +63,7 @@ public class ViewService(
 
         await redisDatabase.KeyDeleteAsync(keysToDelete);
 
-        return BaseResult.Success();
+        return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Count));
     }
 
     public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,
@@ -107,6 +108,12 @@ public class ViewService(
     {
         return !StringHelper.AnyNullOrWhiteSpace(dto.UserIp, dto.UserFingerprint)
                && IPAddress.TryParse(dto.UserIp, out _);
+    }
+
+    private static bool IsValidKey(string key)
+    {
+        return long.TryParse(key, out _)
+               || key.Split(ViewKeySeparator).Length == 2;
     }
 
     private static class ViewParsingHelpers

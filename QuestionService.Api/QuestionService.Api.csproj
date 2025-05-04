@@ -25,6 +25,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\QuestionService.Application\QuestionService.Application.csproj"/>
+        <ProjectReference Include="..\QuestionService.BackgroundJobs\QuestionService.BackgroundJobs.csproj"/>
       <ProjectReference Include="..\QuestionService.DAL\QuestionService.DAL.csproj" />
       <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj" />
         <ProjectReference Include="..\QuestionService.GraphQl\QuestionService.GraphQl.csproj"/>

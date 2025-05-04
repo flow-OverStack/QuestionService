@@ -1,6 +1,7 @@
 using QuestionService.Api;
 using QuestionService.Api.Middlewares;
 using QuestionService.Application.DependencyInjection;
+using QuestionService.BackgroundJobs.DependencyInjection;
 using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DependencyInjection;
@@ -27,6 +28,7 @@ builder.Services.AddGraphQl();
 builder.Services.AddGrpcClients();
 builder.Services.AddMassTransitServices();
 builder.Services.AddOutbox();
+builder.Services.AddHangfire(builder.Configuration);
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
@@ -43,6 +45,8 @@ app.UseMiddleware<WarningHandlingMiddleware>();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseHangfire();
+app.SetupHangfireJobs();
 
 app.UseMiddleware<ClaimsValidationMiddleware>();
 

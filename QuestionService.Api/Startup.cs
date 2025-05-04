@@ -1,6 +1,8 @@
 using System.Net;
 using System.Reflection;
 using Asp.Versioning;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -156,6 +158,40 @@ public static class Startup
         app.UseForwardedHeaders(options);
     }
 
+    /// <summary>
+    ///     Configures hangfire and adds jobs
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    public static void AddHangfire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(x => x.UsePostgreSqlStorage(options =>
+            {
+                var connectionString = configuration.GetConnectionString("PostgresSQL");
+                options.UseNpgsqlConnection(connectionString);
+            })
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSerilogLogProvider()
+            .UseFilter(new AutomaticRetryAttribute
+            {
+                Attempts = 10,
+                DelaysInSeconds = [30, 60, 300, 600, 1800, 43200, 86400] //30sec, 1min, 5min, 10min, 1h, 12h, 24h
+            }));
+
+        services.AddHangfireServer();
+    }
+
+    /// <summary>
+    ///     Uses hangfire
+    /// </summary>
+    /// <param name="app"></param>
+    public static void UseHangfire(this WebApplication app)
+    {
+        if (app.Environment.IsDevelopment())
+            app.UseHangfireDashboard();
+    }
 
     private static IEnumerable<string> GetHosts(this WebApplication app)
     {
