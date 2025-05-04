@@ -24,78 +24,45 @@ public class ViewService(
     : IViewService, IViewDatabaseService
 {
     private const string ViewKey = "view:question:";
-    private const string ViewKeysKey = "view:keys";
+    private const string ViewsKeysKey = "view:keys";
+    private const string ViewKeySeparator = "_";
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-
-    //TODO make separate methods
-    //TODO test all
-    //TODO reduce code, simplify
     public async Task<BaseResult> SyncViewsToDatabaseAsync(CancellationToken cancellationToken = default)
     {
-        var keys =
-            (await redisDatabase.SetStringMembersAsync(ViewKeysKey, cancellationToken: cancellationToken)).ToList();
+        var allViewKeys =
+            (await redisDatabase.SetStringMembersAsync(ViewsKeysKey, cancellationToken)).ToList();
 
-        var keyValuesCollection = await redisDatabase.SetsMembersAsync(keys, cancellationToken: cancellationToken);
+        var viewEntriesByKey =
+            (await redisDatabase.SetsMembersAsync(allViewKeys, cancellationToken)).ToList();
 
-        var filteredKeyValuesCollection =
-            keyValuesCollection.FilterByMaxValueOccurrences(GetKey, _businessRules.UserViewSpamThreshold);
+        var invalidViewEntries = viewEntriesByKey.Select(x =>
+            new KeyValuePair<RedisKey, IEnumerable<RedisValue>>(x.Key,
+                x.Value.Where(y => y.Split(ViewKeySeparator).Length != 2).Select(y => new RedisValue(y))));
+        await redisDatabase.SetsRemoveAsync(invalidViewEntries, cancellationToken);
 
-        List<View> viewsToAdd = [];
-        foreach (var kvp in filteredKeyValuesCollection)
-        {
-            if (!long.TryParse(kvp.Key.Replace(ViewKey, string.Empty), out var questionId))
-                return BaseResult.Failure($"{ErrorMessage.InvalidDataFormat}: Received data is of invalid format",
-                    (int)ErrorCodes.InvalidDataFormat);
+        var validViewEntries = viewEntriesByKey.Select(x =>
+            new KeyValuePair<string, IEnumerable<string>>(x.Key,
+                x.Value.Where(y => y.Split(ViewKeySeparator).Length == 2)));
 
-            foreach (var value in kvp.Value)
-            {
-                var userId = long.TryParse(value, out var temp) ? temp : (long?)null;
+        var spamFilteredViews = validViewEntries.FilterByMaxValueOccurrences(ViewParsingHelpers.GetKeyFromValue,
+            _businessRules.UserViewSpamThreshold);
 
-                string? ip = null;
-                string? fingerprint = null;
-                if (userId == null)
-                {
-                    ip = value.Split(':')[0];
-                    fingerprint = value.Split(':')[1];
-                }
+        var parsedViews = spamFilteredViews
+            .SelectManyFromGroupedValues(ViewParsingHelpers.ParseQuestionIdFromKey,
+                ViewParsingHelpers.ParseViewFromValue).ToList();
 
-                if (StringHelper.AnyNullOrWhiteSpace(ip, fingerprint))
-                    return BaseResult.Failure($"{ErrorMessage.InvalidDataFormat}: Received data is of invalid format",
-                        (int)ErrorCodes.InvalidDataFormat);
+        var existingViews = await viewRepository.GetAll().ToListAsync(cancellationToken);
+        var newUniqueViews = parsedViews.Except(existingViews, new UniqueViewComparer()).ToList();
 
-                var view = new View
-                {
-                    Id = questionId,
-                    UserId = userId,
-                    UserIp = ip,
-                    UserFingerprint = fingerprint
-                };
-
-                viewsToAdd.Add(view);
-            }
-        }
-
-        var allViews = await viewRepository.GetAll().ToListAsync(cancellationToken);
-        var filteredViews = viewsToAdd.Except(allViews, new ViewComparer()).ToList();
-
-        await viewRepository.CreateRangeAsync(filteredViews, cancellationToken);
+        await viewRepository.CreateRangeAsync(newUniqueViews, cancellationToken);
         await viewRepository.SaveChangesAsync(cancellationToken);
 
-        var keysToDelete = new List<RedisKey> { ViewKeysKey };
-        keysToDelete.AddRange(keys.Select(x => (RedisKey)x));
+        var keysToDelete = allViewKeys.Prepend(ViewsKeysKey).Select(k => (RedisKey)k).ToArray();
 
-        await redisDatabase.KeyDeleteAsync(keysToDelete.ToArray());
+        await redisDatabase.KeyDeleteAsync(keysToDelete);
 
         return BaseResult.Success();
-
-        #region Helper methods
-
-        string GetKey(string s) => IsLong(s) ? s : s.Split(':')[0];
-
-        bool IsLong(string s) => long.TryParse(s, out _);
-
-        #endregion
     }
 
     public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,
@@ -116,7 +83,7 @@ public class ViewService(
         var keyValueMap = new Dictionary<string, string>
         {
             { key, value },
-            { ViewKeysKey, key }
+            { ViewsKeysKey, key }
         };
 
         await redisDatabase.SetsAddAsync(keyValueMap, cancellationToken);
@@ -133,12 +100,59 @@ public class ViewService(
         ArgumentException.ThrowIfNullOrWhiteSpace(dto.UserFingerprint);
         var ip = IPAddress.Parse(dto.UserIp); //Throws an exception if dto.UserIp is not IP
 
-        return $"{ip.ToString()}:{dto.UserFingerprint}";
+        return $"{ip.ToString()}{ViewKeySeparator}{dto.UserFingerprint}";
     }
 
     private static bool IsValidFormat(IncrementViewsDto dto)
     {
         return !StringHelper.AnyNullOrWhiteSpace(dto.UserIp, dto.UserFingerprint)
                && IPAddress.TryParse(dto.UserIp, out _);
+    }
+
+    private static class ViewParsingHelpers
+    {
+        public static long ParseQuestionIdFromKey(string rawKey)
+        {
+            if (!long.TryParse(rawKey.Replace(ViewKey, string.Empty), out var questionId))
+                throw new FormatException(ErrorMessage.InvalidCacheDataFormat);
+
+            return questionId;
+        }
+
+        public static View ParseViewFromValue(long questionId, string value)
+        {
+            string? ip = null, fingerprint = null;
+            if (!long.TryParse(value, out var userId))
+            {
+                var parts = GetValueParts(value);
+
+                ip = parts[0];
+                fingerprint = parts[1];
+            }
+
+            var view = new View
+            {
+                QuestionId = questionId,
+                UserId = userId != 0 ? userId : null,
+                UserIp = ip,
+                UserFingerprint = fingerprint
+            };
+
+            return view;
+        }
+
+        public static string GetKeyFromValue(string value) => IsLong(value) ? value : GetValueParts(value)[0];
+
+        private static string[] GetValueParts(string s)
+        {
+            var parts = s.Split(ViewKeySeparator);
+
+            if (parts.Length != 2 || StringHelper.AnyNullOrWhiteSpace(parts))
+                throw new FormatException(ErrorMessage.InvalidCacheDataFormat);
+
+            return parts;
+        }
+
+        private static bool IsLong(string s) => long.TryParse(s, out _);
     }
 }

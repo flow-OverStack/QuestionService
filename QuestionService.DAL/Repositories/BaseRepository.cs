@@ -42,7 +42,6 @@ public class BaseRepository<TEntity>(ApplicationDbContext dbContext) : IBaseRepo
         return entity;
     }
 
-    //TODO test
     public async Task CreateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entities);

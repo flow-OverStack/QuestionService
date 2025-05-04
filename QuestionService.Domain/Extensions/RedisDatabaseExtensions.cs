@@ -47,7 +47,7 @@ public static class RedisDatabaseExtensions
             throw new RedisException("An exception occured while executing the redis command.");
     }
 
-    //TODO test
+
     public static async Task<IEnumerable<string>> SetStringMembersAsync(this IDatabase redisDatabase, RedisKey key,
         CancellationToken cancellationToken = default)
     {
@@ -60,22 +60,45 @@ public static class RedisDatabaseExtensions
         return values;
     }
 
-    //TODO test
+
     public static async Task<IEnumerable<KeyValuePair<string, IEnumerable<string>>>> SetsMembersAsync(
         this IDatabase redisDatabase, IEnumerable<string> keys, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(redisDatabase);
         ArgumentNullException.ThrowIfNull(keys);
 
-        var keyValuesDictionary = new Dictionary<string, IEnumerable<string>>();
-        foreach (var key in keys)
+
+        var tasks = keys.Distinct().Select(async key =>
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-            var values = await redisDatabase.SetStringMembersAsync(key, cancellationToken: cancellationToken);
-            keyValuesDictionary.Add(key, values);
-        }
+            var values = await redisDatabase.SetStringMembersAsync(key, cancellationToken);
+            return new KeyValuePair<string, IEnumerable<string>>(key, values);
+        });
 
-        return keyValuesDictionary;
+        var results = await Task.WhenAll(tasks);
+
+        return results;
+    }
+
+    public static async Task<long> SetsRemoveAsync(this IDatabase redisDatabase,
+        IEnumerable<KeyValuePair<RedisKey, IEnumerable<RedisValue>>> keyValueMap,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(redisDatabase);
+        ArgumentNullException.ThrowIfNull(keyValueMap);
+
+        var tasks = keyValueMap.Select(x =>
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(x.Key);
+            ArgumentNullException.ThrowIfNull(x.Value);
+
+            cancellationToken.ThrowIfCancellationRequested();
+            return redisDatabase.SetRemoveAsync(x.Key, x.Value.ToArray());
+        });
+
+        var results = await Task.WhenAll(tasks);
+
+        return results.Sum();
     }
 }

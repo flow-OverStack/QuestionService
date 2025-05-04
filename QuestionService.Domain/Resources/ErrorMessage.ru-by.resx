@@ -69,4 +69,7 @@
     <data name="TagAlreadyExists" xml:space="preserve">
         <value>Тэг уже существует</value>
     </data>
+    <data name="InvalidCacheDataFormat" xml:space="preserve">
+        <value>Полученные из кэша данные неверного формата</value>
+    </data>
 </root>

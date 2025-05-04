@@ -69,4 +69,7 @@
     <data name="TagAlreadyExists" xml:space="preserve">
         <value>Tag already exists</value>
     </data>
+    <data name="InvalidCacheDataFormat" xml:space="preserve">
+        <value>Received from cache data is of invalid format</value>
+    </data>
 </root>

@@ -2,7 +2,10 @@ using QuestionService.Domain.Entities;
 
 namespace QuestionService.Domain.Comparers;
 
-public class ViewComparer : IEqualityComparer<View>
+/// <summary>
+///     View comparer that compares views by their content
+/// </summary>
+public class UniqueViewComparer : IEqualityComparer<View>
 {
     public bool Equals(View? x, View? y)
     {
