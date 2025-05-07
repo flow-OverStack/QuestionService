@@ -72,4 +72,7 @@
     <data name="InvalidCacheDataFormat" xml:space="preserve">
         <value>Полученные из кэша данные неверного формата</value>
     </data>
+    <data name="UsersNotFound" xml:space="preserve">
+        <value>Пользователи не найдены</value>
+    </data>
 </root>

@@ -1,12 +1,15 @@
 using System.Net;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Comparers;
+using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.View;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Helpers;
+using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Resources;
@@ -20,6 +23,7 @@ public class ViewService(
     IDatabase redisDatabase,
     IBaseRepository<Question> questionRepository,
     IBaseRepository<View> viewRepository,
+    IEntityProvider<UserDto> userProvider,
     IOptions<BusinessRules> businessRules)
     : IViewService, IViewDatabaseService
 {
@@ -53,8 +57,36 @@ public class ViewService(
             .SelectManyFromGroupedValues(ViewParsingHelpers.ParseQuestionIdFromKey,
                 ViewParsingHelpers.ParseViewFromValue).ToList();
 
-        var existingViews = await viewRepository.GetAll().ToListAsync(cancellationToken);
-        var newUniqueViews = parsedViews.Except(existingViews, new UniqueViewComparer()).ToList();
+        if (!parsedViews.Any()) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
+
+        var predicate = PredicateBuilder.New<View>();
+        predicate = parsedViews.Aggregate(predicate,
+            (current, local) =>
+                current.Or(x =>
+                    x.QuestionId == local.QuestionId && x.UserId == local.UserId && x.UserIp == local.UserIp &&
+                    x.UserFingerprint == local.UserFingerprint));
+
+        var existingViews = await viewRepository.GetAll()
+            .AsExpandable()
+            .Where(predicate)
+            .ToListAsync(cancellationToken);
+        var existingQuestions = await questionRepository.GetAll()
+            .Where(x => parsedViews.Select(y => y.QuestionId).Contains(x.Id))
+            .ToListAsync(cancellationToken);
+        var existingUsers = await userProvider.GetByIdsAsync(
+            parsedViews.Where(x => x.UserId != null).Select(x => (long)x.UserId!),
+            cancellationToken);
+
+        // Hash sets to avoid O(n²) 
+        var existingViewsSet = new HashSet<View>(existingViews, new UniqueViewComparer());
+        var existingQuestionIds = new HashSet<long>(existingQuestions.Select(x => x.Id));
+        var existingUserIds = new HashSet<long>(existingUsers.Select(x => x.Id));
+
+        var newUniqueViews = parsedViews
+            .Where(x => !existingViewsSet.Contains(x)) // Filtering by existing views, excepts all questions 
+            .Where(x => existingQuestionIds.Contains(x.QuestionId)) // Checking question existence
+            .Where(x => x.UserId == null || existingUserIds.Contains((long)x.UserId)) // Checking user existence
+            .ToList();
 
         await viewRepository.CreateRangeAsync(newUniqueViews, cancellationToken);
         await viewRepository.SaveChangesAsync(cancellationToken);
@@ -73,10 +105,9 @@ public class ViewService(
             return BaseResult.Failure(ErrorMessage.InvalidDataFormat,
                 (int)ErrorCodes.InvalidDataFormat);
 
-        var questionExists = await questionRepository.GetAll().AnyAsync(x => x.Id == dto.QuestionId, cancellationToken);
-        if (!questionExists)
-            return BaseResult.Failure(ErrorMessage.QuestionNotFound,
-                (int)ErrorCodes.QuestionNotFound);
+        // We do not check user and question existence
+        // because that may make increase tha request processing time
+        // And this request is called frequently
 
         var key = ViewKey + dto.QuestionId;
         var value = GetViewValue(dto);
@@ -154,7 +185,9 @@ public class ViewService(
         {
             var parts = s.Split(ViewKeySeparator);
 
-            if (parts.Length != 2 || StringHelper.AnyNullOrWhiteSpace(parts))
+            if (parts.Length != 2
+                || StringHelper.AnyNullOrWhiteSpace(parts)
+                || !IPAddress.TryParse(parts[0], out _))
                 throw new FormatException(ErrorMessage.InvalidCacheDataFormat);
 
             return parts;

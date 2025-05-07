@@ -168,6 +168,15 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Users not found.
+        /// </summary>
+        public static string UsersNotFound {
+            get {
+                return ResourceManager.GetString("UsersNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Value cannot be null or empty.
         /// </summary>
         public static string ValueConnotBeNullOrEmpty {
