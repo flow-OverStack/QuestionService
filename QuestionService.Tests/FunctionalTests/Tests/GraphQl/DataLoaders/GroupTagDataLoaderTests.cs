@@ -21,7 +21,7 @@ public class GroupTagDataLoaderTests(FunctionalTestWebAppFactory factory) : Base
         var result = await dataLoader.LoadRequiredAsync(questionId);
 
         //Assert
-        Assert.Equal(1, result.Length); // Question with id 1 has 1 tag
+        Assert.Single(result); // Question with id 1 has 1 tag
     }
 
     [Trait("Category", "Functional")]

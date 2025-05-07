@@ -21,7 +21,7 @@ public class GroupViewDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
         var result = await dataLoader.LoadRequiredAsync(questionId);
 
         //Assert
-        Assert.Equal(1, result.Length); // Question with id 2 has 1 view
+        Assert.Single(result); // Question with id 2 has 1 view
     }
 
     [Trait("Category", "Functional")]
