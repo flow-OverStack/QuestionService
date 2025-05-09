@@ -62,9 +62,7 @@ public class ViewService(
         var predicate = PredicateBuilder.New<View>();
         predicate = parsedViews.Aggregate(predicate,
             (current, local) =>
-                current.Or(x =>
-                    x.QuestionId == local.QuestionId && x.UserId == local.UserId && x.UserIp == local.UserIp &&
-                    x.UserFingerprint == local.UserFingerprint));
+                current.Or(UniqueViewComparer.ViewEquals(local)));
 
         var existingViews = await viewRepository.GetAll()
             .AsExpandable()
@@ -77,13 +75,13 @@ public class ViewService(
             parsedViews.Where(x => x.UserId != null).Select(x => (long)x.UserId!),
             cancellationToken);
 
-        // Hash sets to avoid O(n²) 
+        // Hash sets to avoid O(n²) with Where and Any inside
         var existingViewsSet = new HashSet<View>(existingViews, new UniqueViewComparer());
         var existingQuestionIds = new HashSet<long>(existingQuestions.Select(x => x.Id));
         var existingUserIds = new HashSet<long>(existingUsers.Select(x => x.Id));
 
         var newUniqueViews = parsedViews
-            .Where(x => !existingViewsSet.Contains(x)) // Filtering by existing views, excepts all questions 
+            .Where(x => !existingViewsSet.Contains(x)) // Checking that view is unique, excluding all existing views
             .Where(x => existingQuestionIds.Contains(x.QuestionId)) // Checking question existence
             .Where(x => x.UserId == null || existingUserIds.Contains((long)x.UserId)) // Checking user existence
             .ToList();
@@ -92,7 +90,6 @@ public class ViewService(
         await viewRepository.SaveChangesAsync(cancellationToken);
 
         var keysToDelete = allViewKeys.Prepend(ViewsKeysKey).Select(k => (RedisKey)k).ToArray();
-
         await redisDatabase.KeyDeleteAsync(keysToDelete);
 
         return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Count));
