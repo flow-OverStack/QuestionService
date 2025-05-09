@@ -67,21 +67,20 @@ public class ViewService(
         var existingViews = await viewRepository.GetAll()
             .AsExpandable()
             .Where(predicate)
-            .ToListAsync(cancellationToken);
-        var existingQuestions = await questionRepository.GetAll()
+            .ToHashSetAsync(new UniqueViewComparer(), cancellationToken);
+        var existingQuestionIds = await questionRepository.GetAll()
             .Where(x => parsedViews.Select(y => y.QuestionId).Contains(x.Id))
-            .ToListAsync(cancellationToken);
-        var existingUsers = await userProvider.GetByIdsAsync(
-            parsedViews.Where(x => x.UserId != null).Select(x => (long)x.UserId!),
-            cancellationToken);
+            .Select(x => x.Id)
+            .ToHashSetAsync(cancellationToken);
+        var existingUserIds = (await userProvider.GetByIdsAsync(
+                parsedViews.Where(x => x.UserId != null).Select(x => (long)x.UserId!),
+                cancellationToken))
+            .Select(x => x.Id)
+            .ToHashSet();
 
-        // Hash sets to avoid O(n²) with Where and Any inside
-        var existingViewsSet = new HashSet<View>(existingViews, new UniqueViewComparer());
-        var existingQuestionIds = new HashSet<long>(existingQuestions.Select(x => x.Id));
-        var existingUserIds = new HashSet<long>(existingUsers.Select(x => x.Id));
-
+        // Hash sets to avoid O(n²) with Where and Any inside in-memory filtering
         var newUniqueViews = parsedViews
-            .Where(x => !existingViewsSet.Contains(x)) // Checking that view is unique, excluding all existing views
+            .Where(x => !existingViews.Contains(x)) // Checking that view is unique, excluding all existing views
             .Where(x => existingQuestionIds.Contains(x.QuestionId)) // Checking question existence
             .Where(x => x.UserId == null || existingUserIds.Contains((long)x.UserId)) // Checking user existence
             .ToList();
@@ -103,7 +102,7 @@ public class ViewService(
                 (int)ErrorCodes.InvalidDataFormat);
 
         // We do not check user and question existence
-        // because that may make increase tha request processing time
+        // because that may increase the request processing time
         // And this request is called frequently
 
         var key = ViewKey + dto.QuestionId;
