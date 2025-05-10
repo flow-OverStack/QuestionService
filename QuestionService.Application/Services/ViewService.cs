@@ -35,22 +35,25 @@ public class ViewService(
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
         CancellationToken cancellationToken = default)
     {
+        #region Removing invalid keys
+
         var allViewKeys =
             (await redisDatabase.SetStringMembersAsync(ViewsKeysKey, cancellationToken)).ToList();
+        var invalidKeys = await RemoveInvalidViewKeysAsync(allViewKeys, cancellationToken);
+        var validViewKeys = allViewKeys.Except(invalidKeys);
 
-        var viewEntriesByKey =
-            (await redisDatabase.SetsMembersAsync(allViewKeys, cancellationToken)).ToList();
+        #endregion
 
-        var invalidViewEntries = viewEntriesByKey.Select(x =>
-            new KeyValuePair<RedisKey, IEnumerable<RedisValue>>(x.Key,
-                x.Value.Where(y => !IsValidKey(y)).Select(y => new RedisValue(y))));
-        await redisDatabase.SetsRemoveAsync(invalidViewEntries, cancellationToken);
+        #region Removing invalid values
 
-        var validViewEntries = viewEntriesByKey.Select(x =>
-            new KeyValuePair<string, IEnumerable<string>>(x.Key,
-                x.Value.Where(IsValidKey)));
+        var allViewValues =
+            (await redisDatabase.SetsMembersAsync(validViewKeys, cancellationToken)).ToList();
+        var invalidViewValues = await RemoveInvalidViewValuesAsync(allViewValues, cancellationToken);
+        var validViewValues = allViewValues.FilterByInvalidValues(invalidViewValues);
 
-        var spamFilteredViews = validViewEntries.FilterByMaxValueOccurrences(ViewParsingHelpers.GetKeyFromValue,
+        #endregion
+
+        var spamFilteredViews = validViewValues.FilterByMaxValueOccurrences(ViewParsingHelpers.GetKeyFromValue,
             _businessRules.UserViewSpamThreshold);
 
         var parsedViews = spamFilteredViews
@@ -58,6 +61,8 @@ public class ViewService(
                 ViewParsingHelpers.ParseViewFromValue).ToList();
 
         if (!parsedViews.Any()) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
+
+        #region Filtering views to have real user and question ids and to be unique
 
         var predicate = PredicateBuilder.New<View>();
         predicate = parsedViews.Aggregate(predicate,
@@ -85,6 +90,8 @@ public class ViewService(
             .Where(x => x.UserId == null || existingUserIds.Contains((long)x.UserId)) // Checking user existence
             .ToList();
 
+        #endregion
+
         await viewRepository.CreateRangeAsync(newUniqueViews, cancellationToken);
         await viewRepository.SaveChangesAsync(cancellationToken);
 
@@ -97,7 +104,7 @@ public class ViewService(
     public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!IsValidFormat(dto))
+        if (!IsValidData(dto))
             return BaseResult.Failure(ErrorMessage.InvalidDataFormat,
                 (int)ErrorCodes.InvalidDataFormat);
 
@@ -131,16 +138,45 @@ public class ViewService(
         return $"{ip.ToString()}{ViewKeySeparator}{dto.UserFingerprint}";
     }
 
-    private static bool IsValidFormat(IncrementViewsDto dto)
+    private static bool IsValidData(IncrementViewsDto dto)
     {
         return !StringHelper.AnyNullOrWhiteSpace(dto.UserIp, dto.UserFingerprint)
                && IPAddress.TryParse(dto.UserIp, out _);
     }
 
+    private async Task<IEnumerable<string>> RemoveInvalidViewKeysAsync(IEnumerable<string> allViewKeys,
+        CancellationToken cancellationToken = default)
+    {
+        var invalidValues = allViewKeys.Where(x => !IsValidKey(x)).Select(x => new RedisValue(x)).ToArray();
+
+        cancellationToken.ThrowIfCancellationRequested();
+        await redisDatabase.SetRemoveAsync(new RedisKey(ViewsKeysKey), invalidValues);
+
+        return invalidValues.Select(x => x.ToString());
+    }
+
+    private async Task<IEnumerable<KeyValuePair<string, IEnumerable<string>>>> RemoveInvalidViewValuesAsync(
+        IEnumerable<KeyValuePair<string, IEnumerable<string>>> allViewValues,
+        CancellationToken cancellationToken = default)
+    {
+        var invalidViewValues = allViewValues.Select(x =>
+            new KeyValuePair<RedisKey, IEnumerable<RedisValue>>(x.Key,
+                x.Value.Where(y => !IsValidValue(y)).Select(y => new RedisValue(y)))).ToList();
+        await redisDatabase.SetsRemoveAsync(invalidViewValues, cancellationToken);
+
+        return invalidViewValues.Select(x =>
+            new KeyValuePair<string, IEnumerable<string>>(x.Key.ToString(), x.Value.Select(y => y.ToString())));
+    }
+
     private static bool IsValidKey(string key)
     {
-        return long.TryParse(key, out _)
-               || key.Split(ViewKeySeparator).Length == 2;
+        return long.TryParse(key.Replace(ViewKey, string.Empty), out _);
+    }
+
+    private static bool IsValidValue(string value)
+    {
+        return long.TryParse(value, out _)
+               || value.Split(ViewKeySeparator).Length == 2;
     }
 
     private static class ViewParsingHelpers
@@ -175,7 +211,8 @@ public class ViewService(
             return view;
         }
 
-        public static string GetKeyFromValue(string value) => IsLong(value) ? value : GetValueParts(value)[0];
+        public static string GetKeyFromValue(string value) =>
+            long.TryParse(value, out _) ? value : GetValueParts(value)[0];
 
         private static string[] GetValueParts(string s)
         {
@@ -188,7 +225,5 @@ public class ViewService(
 
             return parts;
         }
-
-        private static bool IsLong(string s) => long.TryParse(s, out _);
     }
 }

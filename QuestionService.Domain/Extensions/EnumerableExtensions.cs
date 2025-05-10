@@ -25,20 +25,51 @@ public static class EnumerableExtensions
         var keyValuePairs = source.ToList();
 
         var valueCounts = keyValuePairs
-            .SelectMany(pair => pair.Value)
+            .SelectMany(x => x.Value)
             .Select(valueSelector)
-            .GroupBy(key => key)
-            .ToDictionary(g => g.Key, g => g.Count());
+            .GroupBy(x => x)
+            .ToDictionary(x => x.Key, x => x.Count());
 
         return keyValuePairs.ToDictionary(
-            pair => pair.Key,
-            pair => pair.Value.Where(value => valueCounts[valueSelector(value)] <= maxOccurrences)
+            x => x.Key,
+            x => x.Value.Where(value => valueCounts[valueSelector(value)] <= maxOccurrences)
         );
     }
 
     /// <summary>
-    /// Projects each key in a sequence of grouped key-value pairs into an intermediate result,
-    /// and then projects each value in the associated value collection into a final result using the key result.
+    ///     Filters the elements of a collection of key-value pairs by removing invalid values 
+    ///     from the corresponding values based on a list of invalid key-value pairs.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key in the key-value pair.</typeparam>
+    /// <typeparam name="TValue">The type of the value in the key-value pair.</typeparam>
+    /// <param name="source">An enumerable collection of key-value pairs to be filtered.</param>
+    /// <param name="invalidValues">An enumerable collection of key-value pairs representing invalid values.</param>
+    /// <returns>A filtered collection of key-value pairs where the values have been filtered 
+    /// based on the invalid values list.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if either <paramref name="source"/> or <paramref name="invalidValues"/> is <c>null</c>.
+    /// </exception>
+    public static IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> FilterByInvalidValues<TKey, TValue>(
+        this IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> source,
+        IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> invalidValues) where TKey : notnull
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(invalidValues);
+
+        var sourceList = source.ToList();
+        var invalidValuesList = invalidValues.ToList();
+
+        if (!sourceList.Any() || !invalidValuesList.Any()) return sourceList;
+
+        var invalidValuesDict = invalidValuesList
+            .ToDictionary(x => x.Key, x => x.Value.ToHashSet());
+
+        return sourceList.FilterByInvalidValuesImpl(invalidValuesDict);
+    }
+
+    /// <summary>
+    ///     Projects each key in a sequence of grouped key-value pairs into an intermediate result,
+    ///     and then projects each value in the associated value collection into a final result using the key result.
     /// </summary>
     /// <typeparam name="TKey">The type of the keys in the source sequence.</typeparam>
     /// <typeparam name="TValue">The type of the values in the inner collections.</typeparam>
@@ -79,6 +110,21 @@ public static class EnumerableExtensions
                 var result = valueSelector(keyResult, value);
                 yield return result;
             }
+        }
+    }
+
+    private static IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> FilterByInvalidValuesImpl<TKey, TValue>(
+        this IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> source,
+        Dictionary<TKey, HashSet<TValue>> invalidDict) where TKey : notnull
+    {
+        foreach (var pair in source)
+        {
+            if (invalidDict.TryGetValue(pair.Key, out var invalidSet))
+            {
+                var filteredValues = pair.Value.Where(x => !invalidSet.Contains(x));
+                yield return new KeyValuePair<TKey, IEnumerable<TValue>>(pair.Key, filteredValues);
+            }
+            else yield return pair;
         }
     }
 }
