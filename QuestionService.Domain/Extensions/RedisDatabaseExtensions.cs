@@ -19,7 +19,7 @@ public static class RedisDatabaseExtensions
     /// <param name="keyValueMap">A collection of key-value pairs where keys are Redis set names and values are items to be added to the sets.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
     /// <exception cref="RedisException">Thrown when the Redis command execution fails.</exception>
-    public static async Task SetsAddAsync(this IDatabase redisDatabase,
+    public static async Task SetsAddAtomicallyAsync(this IDatabase redisDatabase,
         IEnumerable<KeyValuePair<string, string>> keyValueMap, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(redisDatabase);

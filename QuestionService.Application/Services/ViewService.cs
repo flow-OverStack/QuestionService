@@ -121,7 +121,7 @@ public class ViewService(
             { ViewsKeysKey, key }
         };
 
-        await redisDatabase.SetsAddAsync(keyValueMap, cancellationToken);
+        await redisDatabase.SetsAddAtomicallyAsync(keyValueMap, cancellationToken);
 
         return BaseResult.Success();
     }
