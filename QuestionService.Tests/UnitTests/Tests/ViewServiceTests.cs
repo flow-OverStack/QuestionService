@@ -42,27 +42,11 @@ public class ViewServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task IncrementViews_ShouldBe_QuestionNotFound()
-    {
-        //Arrange
-        var dto = new IncrementViewsDto(0, 1, "1.0.0.1", "someFingerprint");
-        var viewService = new ViewServiceFactory().GetService();
-
-        //Act
-        var result = await viewService.IncrementViewsAsync(dto);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
     public async Task IncrementViews_ShouldBe_Exception()
     {
         //Arrange
         var dto = new IncrementViewsDto(1, 1, "1.0.0.1", "someFingerprint");
-        var viewService = new ViewServiceFactory(RedisDatabaseConfiguration.GetExceptionRedisDatabaseConfiguration())
+        var viewService = new ViewServiceFactory(RedisDatabaseConfiguration.GetFalseScriptRedisDatabaseConfiguration())
             .GetService();
 
         //Act
@@ -70,6 +54,67 @@ public class ViewServiceTests
 
         //Assert
         var exception = await Assert.ThrowsAsync<RedisException>(action);
-        Assert.Equal("An exception occured while executing the redis command.", exception.Message);
+        Assert.Equal("An exception occurred while executing the Redis command.", exception.Message);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task SyncViewsToDatabase_ShouldBe_Success()
+    {
+        //Arrange
+        var viewService = new ViewServiceFactory().GetDatabaseService();
+
+        //Act
+        var result = await viewService.SyncViewsToDatabaseAsync();
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(7, result.Data.SyncedViewsCount); //There are 7 new views in total
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task SyncViewsToDatabase_ShouldBe_NoSyncedViews()
+    {
+        //Arrange
+        var viewService = new ViewServiceFactory(RedisDatabaseConfiguration.GetEmptySetValuesDatabaseConfiguration())
+            .GetDatabaseService();
+
+        //Act
+        var result = await viewService.SyncViewsToDatabaseAsync();
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0, result.Data.SyncedViewsCount);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task SyncViewsToDatabase_ShouldBe_NoSyncedViews_When_KeysInvalid()
+    {
+        //Arrange
+        var viewService = new ViewServiceFactory(RedisDatabaseConfiguration.GetInvalidSetKeysDatabaseConfiguration())
+            .GetDatabaseService();
+
+        //Act
+        var result = await viewService.SyncViewsToDatabaseAsync();
+
+        //Assert
+        Assert.Equal(0, result.Data.SyncedViewsCount);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task SyncViewsToDatabase_ShouldBe_NoSyncedViews_When_ValuesInvalid()
+    {
+        //Arrange
+        var viewService = new ViewServiceFactory(RedisDatabaseConfiguration.GetInvalidSetValuesDatabaseConfiguration())
+            .GetDatabaseService();
+
+        //Act
+        var result = await viewService.SyncViewsToDatabaseAsync();
+
+        //Assert
+        Assert.Equal(0, result.Data.SyncedViewsCount);
     }
 }

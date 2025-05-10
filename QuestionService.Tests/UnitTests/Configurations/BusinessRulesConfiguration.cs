@@ -13,6 +13,7 @@ internal static class BusinessRulesConfiguration
         DownvoteReputationChange = -1,
         UpvoteReputationChange = 1,
         TagMaxLength = 35,
-        TagDescriptionMaxLength = 400
+        TagDescriptionMaxLength = 400,
+        UserViewSpamThreshold = 30
     };
 }

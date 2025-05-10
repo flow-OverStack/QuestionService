@@ -15,6 +15,9 @@ internal static class MockEntityProvidersGetters
 
         mockProvider.Setup(x => x.GetByIdAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((long userId, CancellationToken _) => GetUserDtos().FirstOrDefault(x => x.Id == userId));
+        mockProvider.Setup(x => x.GetByIdsAsync(It.IsAny<IEnumerable<long>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IEnumerable<long> userIds, CancellationToken _) =>
+                GetUserDtos().Where(x => userIds.Contains(x.Id)));
 
         return mockProvider;
     }
