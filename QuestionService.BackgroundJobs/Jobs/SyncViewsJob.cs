@@ -3,7 +3,7 @@ using Serilog;
 
 namespace QuestionService.BackgroundJobs.Jobs;
 
-public class SyncViewsToDatabaseJob(IViewDatabaseService viewService, ILogger logger)
+public class SyncViewsJob(IViewDatabaseService viewService, ILogger logger)
 {
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {

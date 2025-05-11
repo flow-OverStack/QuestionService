@@ -14,7 +14,7 @@ public static class DependencyInjection
     {
         app.Lifetime.ApplicationStarted.Register(() =>
             {
-                RecurringJob.AddOrUpdate<SyncViewsToDatabaseJob>("ViewsSynchronization",
+                RecurringJob.AddOrUpdate<SyncViewsJob>("ViewsSynchronization",
                     job => job.RunAsync(CancellationToken.None), "*/10 * * * *"); // Every ten minutes 
             }
         );

@@ -69,7 +69,7 @@ public class ViewServiceTests
 
         //Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal(7, result.Data.SyncedViewsCount); //There are 7 new views in total
+        Assert.Equal(7, result.Data.SyncedViewsCount); // There are 7 new views in total
     }
 
     [Trait("Category", "Unit")]
@@ -116,5 +116,21 @@ public class ViewServiceTests
 
         //Assert
         Assert.Equal(0, result.Data.SyncedViewsCount);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task SyncViewsToDatabase_ShouldBe_SpamFiltered()
+    {
+        //Arrange
+        var viewService = new ViewServiceFactory(RedisDatabaseConfiguration.GetSpamDatabaseConfiguration())
+            .GetDatabaseService();
+
+        //Act
+        var result = await viewService.SyncViewsToDatabaseAsync();
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(2, result.Data.SyncedViewsCount); // Total 2 new views, others filtered or already exist
     }
 }

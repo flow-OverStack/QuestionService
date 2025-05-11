@@ -144,4 +144,37 @@ internal static class RedisDatabaseConfiguration
 
         return mockDatabase.Object;
     }
+
+    public static IDatabase GetSpamDatabaseConfiguration()
+    {
+        var mockDatabase = new Mock<IDatabase>();
+
+        mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
+            .ReturnsAsync((RedisKey key, CommandFlags _) =>
+            {
+                if (key == "view:keys")
+                    return
+                    [
+                        new RedisValue("view:question:1"), new RedisValue("view:question:2"),
+                        new RedisValue("view:question:3"), new RedisValue("view:question:4")
+                    ];
+
+                if (key.ToString().StartsWith("view:question:"))
+                    return
+                    [
+                        new RedisValue("1"), new RedisValue("0.0.0.0_testFingerprint1"),
+                        new RedisValue("0.0.0.0_testFingerprint2"), new RedisValue("0.0.0.0_testFingerprint3"),
+                        new RedisValue("0.0.0.0_testFingerprint4"), new RedisValue("0.0.0.0_testFingerprint5"),
+                        new RedisValue("0.0.0.0_testFingerprint6"), new RedisValue("0.0.0.0_testFingerprint7"),
+                        new RedisValue("0.0.0.0_testFingerprint8")
+                    ];
+
+                throw new NotSupportedException(KeyNotSupportedMessage);
+            });
+        mockDatabase
+            .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
+            .ReturnsAsync(true);
+
+        return mockDatabase.Object;
+    }
 }
