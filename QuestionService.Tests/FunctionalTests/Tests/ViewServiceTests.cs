@@ -78,8 +78,9 @@ public class ViewServiceTests : BaseFunctionalTest
     public async Task IncrementViews_ShouldBe_BadRequest()
     {
         //Arrange
-        const long questionId = 0;
-        HttpClient.DefaultRequestHeaders.Add("X-Fingerprint", "someFingerprint");
+        const long questionId = 1;
+        HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("X-Fingerprint",
+            "tooLongFingerprinttooLongFingerprinttooLongFingerprinttooLongFingerprinttoo");
         HttpClient.DefaultRequestHeaders.Add("X-Forwarded-For", "127.0.0.1");
 
         //Act

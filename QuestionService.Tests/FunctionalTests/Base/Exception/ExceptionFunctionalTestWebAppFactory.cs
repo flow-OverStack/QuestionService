@@ -65,7 +65,7 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
             });
 
             services.RemoveAll<ITopicProducerResolver>();
-            services.AddScoped<ITopicProducerResolver>(provider =>
+            services.AddScoped<ITopicProducerResolver>(_ =>
             {
                 var exceptionTopicProducerResolver = GetExceptionTopicProducerResolver().Object;
 

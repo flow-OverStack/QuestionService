@@ -10,6 +10,6 @@ public class BusinessRules
     public int UpvoteReputationChange { get; set; }
     public int TagMaxLength { get; set; }
     public int TagDescriptionMaxLength { get; set; }
-
     public int UserViewSpamThreshold { get; set; }
+    public int UserFingerprintLength { get; set; }
 }

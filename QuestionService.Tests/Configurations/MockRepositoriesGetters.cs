@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
@@ -240,7 +238,7 @@ internal static class MockRepositoriesGetters
                 QuestionId = 2,
                 UserId = null,
                 UserIp = "0.0.0.0",
-                UserFingerprint = HashString("someFingerprintFromClient")
+                UserFingerprint = "testFingerprint3"
             },
             new View
             {
@@ -248,15 +246,9 @@ internal static class MockRepositoriesGetters
                 QuestionId = 3,
                 UserId = null,
                 UserIp = "1.0.0.1",
-                UserFingerprint = HashString("someAnotherFingerprintFromClient")
+                UserFingerprint = "testFingerprint4"
             },
         }.AsQueryable();
-    }
-
-    private static string HashString(string s)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(s));
-        return Convert.ToBase64String(bytes);
     }
 
     #region Get entities methods

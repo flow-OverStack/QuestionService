@@ -35,7 +35,7 @@ public class ViewController(IViewService viewService) : BaseController
         string? fingerprint = null)
     {
         if (!TryGetUserIp(out var userIp)) return UnprocessableEntity("IP Address is not provided");
-        if (string.IsNullOrWhiteSpace(fingerprint)) return UnprocessableEntity("Fingerprint is not provided");
+        if (fingerprint == null) return UnprocessableEntity("Fingerprint is not provided");
 
         var userId = GetUserIdIfExists();
 

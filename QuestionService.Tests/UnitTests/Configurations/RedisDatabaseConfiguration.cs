@@ -1,4 +1,5 @@
 using Moq;
+using QuestionService.Tests.Configurations;
 using StackExchange.Redis;
 
 namespace QuestionService.Tests.UnitTests.Configurations;
@@ -25,18 +26,10 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
             {
-                if (key == "view:keys")
-                    return
-                    [
-                        new RedisValue("view:question:1"), new RedisValue("view:question:2"),
-                        new RedisValue("view:question:3")
-                    ];
+                var views = ViewConfiguration.GetViews();
 
-                if (key.ToString().StartsWith("view:question:"))
-                    return
-                    [
-                        new RedisValue("1"), new RedisValue("2"), new RedisValue("0.0.0.0_testFingerprint")
-                    ];
+                if (key == "view:keys") return views.Keys;
+                if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
             });
@@ -72,14 +65,10 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
             {
-                if (key == "view:keys")
-                    return
-                    [
-                        new RedisValue("view:question:1"), new RedisValue("view:question:2"),
-                        new RedisValue("view:question:3")
-                    ];
+                var views = ViewConfiguration.GetEmptyValuesViews();
 
-                if (key.ToString().StartsWith("view:question:")) return [];
+                if (key == "view:keys") return views.Keys;
+                if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
             });
@@ -97,19 +86,10 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
             {
-                if (key == "view:keys")
-                    return
-                    [
-                        new RedisValue("view:question:1"), new RedisValue("view:question:2"),
-                        new RedisValue("view:question:3")
-                    ];
+                var views = ViewConfiguration.GetInvalidValuesViews();
 
-                if (key.ToString().StartsWith("view:question:"))
-                    return
-                    [
-                        new RedisValue("WrongFormat")
-                    ];
-
+                if (key == "view:keys") return views.Keys;
+                if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
             });
@@ -127,14 +107,10 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
             {
-                if (key == "view:keys")
-                    return [new RedisValue("view:question:wrongFormat")];
+                var views = ViewConfiguration.GetInvalidKeysViews();
 
-                if (key.ToString().StartsWith("view:question:"))
-                    return
-                    [
-                        new RedisValue("1"), new RedisValue("2"), new RedisValue("0.0.0.0_testFingerprint")
-                    ];
+                if (key == "view:keys") return views.Keys;
+                if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
             });
@@ -152,22 +128,10 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
             {
-                if (key == "view:keys")
-                    return
-                    [
-                        new RedisValue("view:question:1"), new RedisValue("view:question:2"),
-                        new RedisValue("view:question:3"), new RedisValue("view:question:4")
-                    ];
+                var views = ViewConfiguration.GetSpamViews();
 
-                if (key.ToString().StartsWith("view:question:"))
-                    return
-                    [
-                        new RedisValue("1"), new RedisValue("0.0.0.0_testFingerprint1"),
-                        new RedisValue("0.0.0.0_testFingerprint2"), new RedisValue("0.0.0.0_testFingerprint3"),
-                        new RedisValue("0.0.0.0_testFingerprint4"), new RedisValue("0.0.0.0_testFingerprint5"),
-                        new RedisValue("0.0.0.0_testFingerprint6"), new RedisValue("0.0.0.0_testFingerprint7"),
-                        new RedisValue("0.0.0.0_testFingerprint8")
-                    ];
+                if (key == "view:keys") return views.Keys;
+                if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
             });

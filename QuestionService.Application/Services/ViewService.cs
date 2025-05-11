@@ -115,10 +115,10 @@ public class ViewService(
         var key = ViewKey + dto.QuestionId;
         var value = GetViewValue(dto);
 
-        var keyValueMap = new Dictionary<string, string>
+        var keyValueMap = new List<KeyValuePair<string, string>>
         {
-            { key, value },
-            { ViewsKeysKey, key }
+            new(key, value),
+            new(ViewsKeysKey, key)
         };
 
         await redisDatabase.SetsAddAtomicallyAsync(keyValueMap, cancellationToken);
@@ -138,9 +138,10 @@ public class ViewService(
         return $"{ip.ToString()}{ViewKeySeparator}{dto.UserFingerprint}";
     }
 
-    private static bool IsValidData(IncrementViewsDto dto)
+    private bool IsValidData(IncrementViewsDto dto)
     {
         return !StringHelper.AnyNullOrWhiteSpace(dto.UserIp, dto.UserFingerprint)
+               && dto.UserFingerprint.HasMaxLength(_businessRules.UserFingerprintLength)
                && IPAddress.TryParse(dto.UserIp, out _);
     }
 
@@ -191,22 +192,20 @@ public class ViewService(
 
         public static View ParseViewFromValue(long questionId, string value)
         {
-            string? ip = null, fingerprint = null;
+            var view = new View
+            {
+                QuestionId = questionId
+            };
+
             if (!long.TryParse(value, out var userId))
             {
                 var parts = GetValueParts(value);
 
-                ip = parts[0];
-                fingerprint = parts[1];
+                view.UserIp = parts[0];
+                view.UserFingerprint = parts[1];
             }
-
-            var view = new View
-            {
-                QuestionId = questionId,
-                UserId = userId != 0 ? userId : null,
-                UserIp = ip,
-                UserFingerprint = fingerprint
-            };
+            else
+                view.UserId = userId;
 
             return view;
         }

@@ -14,6 +14,7 @@ internal static class BusinessRulesConfiguration
         UpvoteReputationChange = 1,
         TagMaxLength = 35,
         TagDescriptionMaxLength = 400,
-        UserViewSpamThreshold = 30
+        UserViewSpamThreshold = 30,
+        UserFingerprintLength = 64
     };
 }

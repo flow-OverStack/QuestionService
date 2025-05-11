@@ -1,3 +1,4 @@
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using QuestionService.DAL;
@@ -26,6 +27,8 @@ internal static class PrepDb
         var questionTags = MockRepositoriesGetters.GetQuestionTags();
         var votes = MockRepositoriesGetters.GetVotes();
         var views = MockRepositoriesGetters.GetViews();
+
+        views.ForEach(x => x.Id = 0);
 
         var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 

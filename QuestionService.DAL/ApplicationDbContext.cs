@@ -27,6 +27,7 @@ public sealed class ApplicationDbContext(
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         ApplyTagRules(modelBuilder);
+        ApplyViewRules(modelBuilder);
     }
 
     private void ApplyTagRules(ModelBuilder modelBuilder)
@@ -36,5 +37,11 @@ public sealed class ApplicationDbContext(
 
         modelBuilder.Entity<Tag>()
             .Property(x => x.Description).IsRequired().HasMaxLength(_businessRules.TagDescriptionMaxLength);
+    }
+
+    private void ApplyViewRules(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<View>()
+            .Property(x => x.UserFingerprint).HasMaxLength(_businessRules.UserFingerprintLength).IsRequired(false);
     }
 }
