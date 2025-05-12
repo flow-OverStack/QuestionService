@@ -29,7 +29,7 @@ public class ViewService(
 {
     private const string ViewKey = "view:question:";
     private const string ViewsKeysKey = "view:keys";
-    private const string ViewKeySeparator = "_";
+    private const char ViewKeySeparator = ',';
     private readonly BusinessRules _businessRules = businessRules.Value;
 
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
