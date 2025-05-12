@@ -16,5 +16,7 @@ public class ViewConfiguration : IEntityTypeConfiguration<View>
         builder.ToTable(t => t.HasCheckConstraint("CK_View_UserId_Or_UserIpAndFingerprint", """
             "UserId" IS NOT NULL OR ("UserFingerprint" IS NOT NULL AND "UserIp" IS NOT NULL)
             """));
+
+        builder.HasIndex(x => new { x.QuestionId, x.UserId, x.UserIp, x.UserFingerprint }).IsUnique();
     }
 }
