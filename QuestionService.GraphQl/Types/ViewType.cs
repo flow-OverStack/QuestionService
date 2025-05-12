@@ -16,24 +16,28 @@ public class ViewType : ObjectType<View>
         descriptor.Field(x => x.UserIp).Description("The IP address of the viewer.");
         descriptor.Field(x => x.UserFingerprint).Description("The unique fingerprint of the viewer's device.");
 
-        descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!));
+        descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!, default!));
 
         descriptor.Field("user") // Field for user from UserService
             .Description("The viewer.")
-            .ResolveWith<Resolvers>(x => x.GetUserByView(default!))
+            .ResolveWith<Resolvers>(x => x.GetUserByView(default!, default!))
             .Type<UserType>(); // Can be null
     }
 
     private sealed class Resolvers
     {
-        public async Task<Question> GetQuestionAsync([Parent] View view, QuestionDataLoader questionLoader)
+        public async Task<Question> GetQuestionAsync([Parent] View view, QuestionDataLoader questionLoader,
+            CancellationToken cancellationToken)
         {
-            var question = await questionLoader.LoadRequiredAsync(view.QuestionId);
+            var question = await questionLoader.LoadRequiredAsync(view.QuestionId, cancellationToken);
 
             return question;
         }
 
-        public UserDto? GetUserByView([Parent] View view) =>
-            view.UserId != null ? new UserDto { Id = (long)view.UserId } : null;
+        public UserDto? GetUserByView([Parent] View view, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return view.UserId != null ? new UserDto { Id = (long)view.UserId } : null;
+        }
     }
 }

@@ -24,25 +24,26 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.CreatedAt).Description("Question creation time.");
         descriptor.Field(x => x.LastModifiedAt).Description("Question last modification time.");
 
-        descriptor.Field(x => x.Tags).ResolveWith<Resolvers>(x => x.GetTagsAsync(default!, default!));
-        descriptor.Field(x => x.Votes).ResolveWith<Resolvers>(x => x.GetVotesAsync(default!, default!));
-        descriptor.Field(x => x.Views).ResolveWith<Resolvers>(x => x.GetViewsAsync(default!, default!));
+        descriptor.Field(x => x.Tags).ResolveWith<Resolvers>(x => x.GetTagsAsync(default!, default!, default!));
+        descriptor.Field(x => x.Votes).ResolveWith<Resolvers>(x => x.GetVotesAsync(default!, default!, default!));
+        descriptor.Field(x => x.Views).ResolveWith<Resolvers>(x => x.GetViewsAsync(default!, default!, default!));
 
         descriptor.Field("user") // Field for user from UserService
             .Description("The author of the question.")
-            .ResolveWith<Resolvers>(x => x.GetUserByQuestion(default!))
+            .ResolveWith<Resolvers>(x => x.GetUserByQuestion(default!, default!))
             .Type<NonNullType<UserType>>();
 
 
         descriptor.Key(nameof(Question.Id).LowercaseFirstLetter())
-            .ResolveReferenceWith(_ => Resolvers.GetQuestionById(default!, default!));
+            .ResolveReferenceWith(_ => Resolvers.GetQuestionById(default!, default!, default!));
     }
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<Tag>> GetTagsAsync([Parent] Question question, GroupTagDataLoader tagLoader)
+        public async Task<IEnumerable<Tag>> GetTagsAsync([Parent] Question question, GroupTagDataLoader tagLoader,
+            CancellationToken cancellationToken)
         {
-            var tags = await tagLoader.LoadRequiredAsync(question.Id);
+            var tags = await tagLoader.LoadRequiredAsync(question.Id, cancellationToken);
 
             // Have no tags is a business exception
             if (!tags.Any())
@@ -51,27 +52,34 @@ public class QuestionType : ObjectType<Question>
             return tags;
         }
 
-        public async Task<IEnumerable<Vote>> GetVotesAsync([Parent] Question question, GroupVoteDataLoader voteLoader)
+        public async Task<IEnumerable<Vote>> GetVotesAsync([Parent] Question question, GroupVoteDataLoader voteLoader,
+            CancellationToken cancellationToken)
         {
-            var votes = await voteLoader.LoadRequiredAsync(question.Id);
+            var votes = await voteLoader.LoadRequiredAsync(question.Id, cancellationToken);
 
             return votes;
         }
 
-        public async Task<IEnumerable<View>> GetViewsAsync([Parent] Question question, GroupViewDataLoader viewLoader)
+        public async Task<IEnumerable<View>> GetViewsAsync([Parent] Question question, GroupViewDataLoader viewLoader,
+            CancellationToken cancellationToken)
         {
-            var views = await viewLoader.LoadRequiredAsync(question.Id);
+            var views = await viewLoader.LoadRequiredAsync(question.Id, cancellationToken);
 
             return views;
         }
 
-        public static async Task<Question> GetQuestionById(long id, QuestionDataLoader questionLoader)
+        public static async Task<Question> GetQuestionById(long id, QuestionDataLoader questionLoader,
+            CancellationToken cancellationToken)
         {
-            var question = await questionLoader.LoadRequiredAsync(id);
+            var question = await questionLoader.LoadRequiredAsync(id, cancellationToken);
 
             return question;
         }
 
-        public UserDto GetUserByQuestion([Parent] Question question) => new() { Id = question.UserId };
+        public UserDto GetUserByQuestion([Parent] Question question, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return new UserDto { Id = question.UserId };
+        }
     }
 }

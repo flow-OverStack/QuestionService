@@ -14,15 +14,15 @@ public class TagType : ObjectType<Tag>
         descriptor.Field(x => x.Questions).Description("The questions with this tag.");
 
         descriptor.Field(x => x.Questions)
-            .ResolveWith<Resolvers>(x => x.GetQuestionsAsync(default!, default!));
+            .ResolveWith<Resolvers>(x => x.GetQuestionsAsync(default!, default!, default!));
     }
 
     private sealed class Resolvers
     {
         public async Task<IEnumerable<Question>> GetQuestionsAsync([Parent] Tag tag,
-            GroupTagQuestionDataLoader questionLoader)
+            GroupTagQuestionDataLoader questionLoader, CancellationToken cancellationToken)
         {
-            var questions = await questionLoader.LoadRequiredAsync(tag.Name);
+            var questions = await questionLoader.LoadRequiredAsync(tag.Name, cancellationToken);
 
             return questions;
         }

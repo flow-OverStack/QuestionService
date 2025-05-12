@@ -15,23 +15,28 @@ public class VoteType : ObjectType<Vote>
         descriptor.Field(x => x.ReputationChange).Description("The reputation change of the vote.");
         descriptor.Field(x => x.Question).Description("The question that was voted.");
 
-        descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!));
+        descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!, default!));
 
         descriptor.Field("user") // Field for user from UserService
             .Description("The voter.")
-            .ResolveWith<Resolvers>(x => x.GetUserByVote(default!))
+            .ResolveWith<Resolvers>(x => x.GetUserByVote(default!, default!))
             .Type<NonNullType<UserType>>();
     }
 
     private sealed class Resolvers
     {
-        public async Task<Question> GetQuestionAsync([Parent] Vote vote, QuestionDataLoader questionLoader)
+        public async Task<Question> GetQuestionAsync([Parent] Vote vote, QuestionDataLoader questionLoader,
+            CancellationToken cancellationToken)
         {
-            var question = await questionLoader.LoadRequiredAsync(vote.QuestionId);
+            var question = await questionLoader.LoadRequiredAsync(vote.QuestionId, cancellationToken);
 
             return question;
         }
 
-        public UserDto GetUserByVote([Parent] Vote vote) => new() { Id = vote.UserId };
+        public UserDto GetUserByVote([Parent] Vote vote, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return new UserDto { Id = vote.UserId };
+        }
     }
 }

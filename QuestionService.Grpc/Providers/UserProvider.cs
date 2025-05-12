@@ -12,8 +12,8 @@ public class UserProvider(UserService.UserServiceClient client, IMapper mapper) 
     {
         try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var user = await client.GetUserByIdAsync(new GetUserByIdRequest { UserId = id });
+            var user = await client.GetUserByIdAsync(new GetUserByIdRequest { UserId = id },
+                cancellationToken: cancellationToken);
             return mapper.Map<UserDto>(user);
         }
         catch (RpcException e) when (e.Status.Detail == ErrorMessage.UserNotFound)
@@ -27,12 +27,10 @@ public class UserProvider(UserService.UserServiceClient client, IMapper mapper) 
     {
         try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var request = new GetUsersByIdsRequest();
             request.UserIds.AddRange(ids);
 
-            var response = await client.GetUsersByIdsAsync(request);
+            var response = await client.GetUsersByIdsAsync(request, cancellationToken: cancellationToken);
 
             return response.Users.Select(mapper.Map<UserDto>);
         }
