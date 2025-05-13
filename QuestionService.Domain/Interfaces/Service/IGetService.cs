@@ -1,8 +1,9 @@
+using QuestionService.Domain.Interfaces.Entity;
 using QuestionService.Domain.Results;
 
 namespace QuestionService.Domain.Interfaces.Service;
 
-public interface IGetService<T>
+public interface IGetService<T> where T : IEntityId<long>
 {
     /// <summary>
     ///     Gets all of T
