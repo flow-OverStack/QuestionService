@@ -35,7 +35,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
     public async Task GetAllByIdsAndNames_ShouldBe_Success()
     {
         //Arrange
-        var requestBody = new { query = GraphQlHelper.RequestAllByIdsAndNameQuery(2, 2, 1, ".NET", 1) };
+        var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(2, 2, 1, 1, 1) };
 
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
@@ -55,7 +55,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
     public async Task GetAllByIdsAndName_ShouldBe_Null()
     {
         //Arrange
-        var requestBody = new { query = GraphQlHelper.RequestAllByIdsAndNameQuery(0, 0, 0, "WrongTag", 0) };
+        var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(0, 0, 0, 0, 0) };
 
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);

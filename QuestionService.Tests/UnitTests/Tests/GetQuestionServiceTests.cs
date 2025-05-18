@@ -77,11 +77,11 @@ public class GetQuestionServiceTests
     public async Task GetQuestionsWithTags_ShouldBe_Success()
     {
         //Arrange
-        var tagNames = new List<string> { ".NET", "Java", "WrongTag" };
+        var tagIds = new List<long> { 1, 2, 0 };
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetQuestionsWithTagsAsync(tagNames);
+        var result = await getQuestionService.GetQuestionsWithTagsAsync(tagIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -93,11 +93,11 @@ public class GetQuestionServiceTests
     public async Task GetQuestionsWithTags_ShouldBe_QuestionsNotFound()
     {
         //Arrange
-        var tagNames = new List<string> { "WrongTag", "WrongTag" };
+        var tagIds = new List<long> { 0, 0, 0 };
         var getQuestionService = new GetQuestionServiceFactory().GetService();
 
         //Act
-        var result = await getQuestionService.GetQuestionsWithTagsAsync(tagNames);
+        var result = await getQuestionService.GetQuestionsWithTagsAsync(tagIds);
 
         //Assert
         Assert.False(result.IsSuccess);

@@ -15,10 +15,10 @@ public class GroupTagQuestionDataLoaderTests(FunctionalTestWebAppFactory factory
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupTagQuestionDataLoader>();
-        const string tagName = ".NET";
+        const long tagId = 1;
 
         //Act
-        var result = await dataLoader.LoadRequiredAsync(tagName);
+        var result = await dataLoader.LoadRequiredAsync(tagId);
 
         //Assert
         Assert.Equal(3, result.Length); // Tag with name ".NET" has 3 questions
@@ -31,10 +31,10 @@ public class GroupTagQuestionDataLoaderTests(FunctionalTestWebAppFactory factory
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupTagQuestionDataLoader>();
-        const string tagName = "WrongTag";
+        const long tagId = 0;
 
         //Act
-        var result = await dataLoader.LoadRequiredAsync(tagName);
+        var result = await dataLoader.LoadRequiredAsync(tagId);
 
         //Assert
         Assert.Empty(result);

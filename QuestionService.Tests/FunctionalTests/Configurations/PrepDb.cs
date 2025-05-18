@@ -29,6 +29,7 @@ internal static class PrepDb
         var views = MockRepositoriesGetters.GetViews();
 
         views.ForEach(x => x.Id = 0);
+        tags.ForEach(x => x.Id = 0);
 
         var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -37,9 +38,13 @@ internal static class PrepDb
 
         dbContext.Set<Question>().AddRange(questions);
         dbContext.Set<Tag>().AddRange(tags);
-        dbContext.Set<QuestionTag>().AddRange(questionTags);
         dbContext.Set<Vote>().AddRange(votes);
         dbContext.Set<View>().AddRange(views);
+
+        dbContext.SaveChanges();
+
+        // Adding many-to-many entities
+        dbContext.Set<QuestionTag>().AddRange(questionTags);
 
         dbContext.SaveChanges();
     }

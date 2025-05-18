@@ -9,14 +9,14 @@ public class TagServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddTag_ShouldBe_Success()
+    public async Task CreateTag_ShouldBe_Success()
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        var dto = new TagDto("NewTag", "NewTagDescription");
+        var dto = new CreateTagDto("NewTag", "NewTagDescription");
 
         //Act
-        var result = await tagService.AddTagAsync(dto);
+        var result = await tagService.CreateTagAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -25,14 +25,14 @@ public class TagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddTag_ShouldBe_LengthOutOfRange()
+    public async Task CreateTag_ShouldBe_LengthOutOfRange()
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        var dto = new TagDto("TooLongTagNameTooLongTagNameTooLongTagName", "NewTagDescription");
+        var dto = new CreateTagDto("TooLongTagNameTooLongTagNameTooLongTagName", "NewTagDescription");
 
         //Act
-        var result = await tagService.AddTagAsync(dto);
+        var result = await tagService.CreateTagAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -42,14 +42,14 @@ public class TagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddTag_ShouldBe_TagAlreadyExists()
+    public async Task CreateTag_ShouldBe_TagAlreadyExists()
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        var dto = new TagDto(".NET", "NewTagDescription");
+        var dto = new CreateTagDto(".NET", "NewTagDescription");
 
         //Act
-        var result = await tagService.AddTagAsync(dto);
+        var result = await tagService.CreateTagAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -63,7 +63,7 @@ public class TagServiceTests
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        var dto = new TagDto(".NET", "NewTagDescription");
+        var dto = new TagDto(1, ".NET", "NewTagDescription");
 
         //Act
         var result = await tagService.UpdateTagAsync(dto);
@@ -79,7 +79,7 @@ public class TagServiceTests
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        var dto = new TagDto("TooLongTagNameTooLongTagNameTooLongTagName", "NewTagDescription");
+        var dto = new TagDto(1, "TooLongTagNameTooLongTagNameTooLongTagName", "NewTagDescription");
 
         //Act
         var result = await tagService.UpdateTagAsync(dto);
@@ -96,7 +96,7 @@ public class TagServiceTests
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        var dto = new TagDto("WrongTag", "NewTagDescription");
+        var dto = new TagDto(0, "NewTag", "NewTagDescription");
 
         //Act
         var result = await tagService.UpdateTagAsync(dto);
@@ -113,10 +113,10 @@ public class TagServiceTests
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        const string tagName = "Python";
+        const long tagId = 3;
 
         //Act
-        var result = await tagService.DeleteTagAsync(tagName);
+        var result = await tagService.DeleteTagAsync(tagId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -129,10 +129,10 @@ public class TagServiceTests
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        const string tagName = "WrongTag";
+        const long tagId = 0;
 
         //Act
-        var result = await tagService.DeleteTagAsync(tagName);
+        var result = await tagService.DeleteTagAsync(tagId);
 
         //Assert
         Assert.False(result.IsSuccess);

@@ -14,10 +14,10 @@ public class TagDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunct
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<TagDataLoader>();
-        const string tagName = ".NET";
+        const long tagId = 1;
 
         //Act
-        var result = await dataLoader.LoadAsync(tagName);
+        var result = await dataLoader.LoadAsync(tagId);
 
         //Assert
         Assert.NotNull(result);
@@ -30,10 +30,10 @@ public class TagDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunct
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<TagDataLoader>();
-        const string tagName = "WrongTag";
+        const long tagId = 0;
 
         //Act
-        var result = await dataLoader.LoadAsync(tagName);
+        var result = await dataLoader.LoadAsync(tagId);
 
         //Assert
         Assert.Null(result);

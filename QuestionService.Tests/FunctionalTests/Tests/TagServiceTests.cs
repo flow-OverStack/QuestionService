@@ -26,10 +26,10 @@ public class TagServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddTag_ShouldBe_Success()
+    public async Task CreateTag_ShouldBe_Success()
     {
         //Arrange
-        var dto = new TagDto("NewTag", "NewTagDescription");
+        var dto = new CreateTagDto("NewTag", "NewTagDescription");
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/tag", dto);
@@ -44,10 +44,10 @@ public class TagServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddTag_ShouldBe_BadRequest()
+    public async Task CreateTag_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new TagDto("TooLongTagNameTooLongTagNameTooLongTagName", "NewTagDescription");
+        var dto = new CreateTagDto("TooLongTagNameTooLongTagNameTooLongTagName", "NewTagDescription");
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/tag", dto);
@@ -66,7 +66,7 @@ public class TagServiceTests : SequentialFunctionalTest
     public async Task UpdateTag_ShouldBe_Success()
     {
         //Arrange
-        var dto = new TagDto(".NET", "NewTagDescription");
+        var dto = new TagDto(1, "NewTag", "NewTagDescription");
 
         //Act
         var response = await HttpClient.PutAsJsonAsync("/api/v1.0/tag", dto);
@@ -84,7 +84,7 @@ public class TagServiceTests : SequentialFunctionalTest
     public async Task UpdateTag_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new TagDto("WrongTag", "NewTagDescription");
+        var dto = new TagDto(0, "NewTag", "NewTagDescription");
 
         //Act
         var response = await HttpClient.PutAsJsonAsync("/api/v1.0/tag", dto);
@@ -103,10 +103,10 @@ public class TagServiceTests : SequentialFunctionalTest
     public async Task DeleteTag_ShouldBe_Success()
     {
         //Arrange
-        const string tagName = "Python";
+        const long tagId = 3;
 
         //Act
-        var response = await HttpClient.DeleteAsync($"/api/v1.0/tag/{tagName}");
+        var response = await HttpClient.DeleteAsync($"/api/v1.0/tag/{tagId}");
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<TagDto>>(body);
 
@@ -121,10 +121,10 @@ public class TagServiceTests : SequentialFunctionalTest
     public async Task DeleteTag_ShouldBe_BadRequest()
     {
         //Arrange
-        const string tagName = "WrongTag";
+        const long tagId = 0;
 
         //Act
-        var response = await HttpClient.DeleteAsync($"/api/v1.0/tag/{tagName}");
+        var response = await HttpClient.DeleteAsync($"/api/v1.0/tag/{tagId}");
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<TagDto>>(body);
 

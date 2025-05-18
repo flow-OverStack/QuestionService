@@ -67,7 +67,7 @@ internal static class MockRepositoriesGetters
 
         foreach (var questionTag in questionTags)
         {
-            var tag = tags.First(x => x.Name == questionTag.TagName);
+            var tag = tags.First(x => x.Id == questionTag.TagId);
             var question = questions.First(x => x.Id == questionTag.QuestionId);
 
             tag.Questions.Add(question);
@@ -182,32 +182,32 @@ internal static class MockRepositoriesGetters
             new QuestionTag
             {
                 QuestionId = 1,
-                TagName = ".NET"
+                TagId = 1
             },
             new QuestionTag
             {
                 QuestionId = 2,
-                TagName = ".NET"
+                TagId = 1
             },
             new QuestionTag
             {
                 QuestionId = 2,
-                TagName = "Java"
+                TagId = 2
             },
             new QuestionTag
             {
                 QuestionId = 3,
-                TagName = ".NET"
+                TagId = 1
             },
             new QuestionTag
             {
                 QuestionId = 3,
-                TagName = "Java"
+                TagId = 2
             },
             new QuestionTag
             {
                 QuestionId = 3,
-                TagName = "Python"
+                TagId = 3
             }
         }.AsQueryable();
     }
@@ -257,6 +257,7 @@ internal static class MockRepositoriesGetters
     {
         return new Tag
         {
+            Id = 1,
             Name = ".NET",
             Description = ".NET is a secure, reliable, and high-performance application platform."
         };
@@ -266,6 +267,7 @@ internal static class MockRepositoriesGetters
     {
         return new Tag
         {
+            Id = 2,
             Name = "Java",
             Description = "Java is a high-level, general-purpose, memory-safe, object-oriented programming language."
         };
@@ -275,6 +277,7 @@ internal static class MockRepositoriesGetters
     {
         return new Tag
         {
+            Id = 3,
             Name = "Python",
             Description = "Python is a high-level, general-purpose programming language."
         };

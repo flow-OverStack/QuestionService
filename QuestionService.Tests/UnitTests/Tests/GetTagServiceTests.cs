@@ -26,11 +26,11 @@ public class GetTagServiceTests
     public async Task GetByNames_ShouldBe_Success()
     {
         //Arrange
-        var tagNames = new List<string> { ".NET", "Java", "WrongTag" };
+        var tagIds = new List<long> { 1, 2, 0 };
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetByNamesAsync(tagNames);
+        var result = await getTagService.GetByIdsAsync(tagIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -42,11 +42,11 @@ public class GetTagServiceTests
     public async Task GetByNames_ShouldBe_TagNotFound()
     {
         //Arrange
-        var tagNames = new List<string> { "WrongTag" };
+        var tagIds = new List<long> { 0 };
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetByNamesAsync(tagNames);
+        var result = await getTagService.GetByIdsAsync(tagIds);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -59,11 +59,11 @@ public class GetTagServiceTests
     public async Task GetByNames_ShouldBe_TagsNotFound()
     {
         //Arrange
-        var tagNames = new List<string> { "WrongTag", "WrongTag" };
+        var tagIds = new List<long> { 0, 0 };
         var getTagService = new GetTagServiceFactory().GetService();
 
         //Act
-        var result = await getTagService.GetByNamesAsync(tagNames);
+        var result = await getTagService.GetByIdsAsync(tagIds);
 
         //Assert
         Assert.False(result.IsSuccess);

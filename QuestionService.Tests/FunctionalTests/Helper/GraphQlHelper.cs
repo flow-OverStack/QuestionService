@@ -14,6 +14,7 @@ internal static class GraphQlHelper
                                               createdAt
                                               lastModifiedAt
                                               tags {
+                                                id
                                                 name
                                                 description
                                                 questions {
@@ -50,6 +51,7 @@ internal static class GraphQlHelper
                                               }
                                             }
                                             tags {
+                                              id
                                               name
                                               description
                                               questions {
@@ -81,6 +83,7 @@ internal static class GraphQlHelper
                                                             createdAt
                                                             lastModifiedAt
                                                             tags {
+                                                              id
                                                               name
                                                               description
                                                               questions {
@@ -92,8 +95,8 @@ internal static class GraphQlHelper
                                                         }
                                                         """;
 
-    public static string RequestAllByIdsAndNameQuery(long questionId, long voteQuestionId, long voteUserId,
-        string tagName, long viewId)
+    public static string RequestAllByIdsQuery(long questionId, long voteQuestionId, long voteUserId,
+        long tagId, long viewId)
     {
         return """
             {
@@ -105,6 +108,7 @@ internal static class GraphQlHelper
                 createdAt
                 lastModifiedAt
                 tags {
+                  id
                   name
                   description
                   questions {
@@ -132,7 +136,7 @@ internal static class GraphQlHelper
                   }
                 }
               }
-              vote(userId: $VOTEUSERID,questionId: $VOTEQUESTIONID) {
+              vote(userId: $VOTEUSERID, questionId: $VOTEQUESTIONID) {
                 userId
                 reputationChange
                 question {
@@ -140,7 +144,7 @@ internal static class GraphQlHelper
                   title
                 }
               }
-              tag(name: "$TAGNAME") {
+              tag(id: $TAGID) {
                 name
                 description
                 questions {
@@ -164,7 +168,7 @@ internal static class GraphQlHelper
             .Replace("$QUESTIONID", questionId.ToString())
             .Replace("$VOTEQUESTIONID", voteQuestionId.ToString())
             .Replace("$VOTEUSERID", voteUserId.ToString())
-            .Replace("$TAGNAME", tagName)
+            .Replace("$TAGID", tagId.ToString())
             .Replace("$VIEWID", viewId.ToString());
     }
 }
