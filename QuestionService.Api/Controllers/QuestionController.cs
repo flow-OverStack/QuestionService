@@ -26,7 +26,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for ask question:
+    /// Request to ask a question:
     /// 
     ///     POST
     ///     {
@@ -55,7 +55,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for delete question:
+    /// Request to delete a question:
     /// 
     ///     DELETE {questionId}
     /// </remarks>
@@ -78,7 +78,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for edit question:
+    /// Request to edit a question:
     /// 
     ///     PUT
     ///     {
@@ -111,7 +111,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for downvote question:
+    /// Request to downvote a question:
     /// 
     ///     PATCH downvote/{questionId}
     /// </remarks>
@@ -133,7 +133,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for upvote question:
+    /// Request to upvote a question:
     /// 
     ///     PATCH upvote/{questionId}
     /// </remarks>

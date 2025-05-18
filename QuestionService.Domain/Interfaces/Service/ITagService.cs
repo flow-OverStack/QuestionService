@@ -6,7 +6,7 @@ namespace QuestionService.Domain.Interfaces.Service;
 public interface ITagService
 {
     /// <summary>
-    ///     Adds tag
+    ///     Creates tag
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -22,7 +22,7 @@ public interface ITagService
     Task<BaseResult<TagDto>> UpdateTagAsync(TagDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Deletes tag by its name
+    ///     Deletes tag by its id
     /// </summary>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>

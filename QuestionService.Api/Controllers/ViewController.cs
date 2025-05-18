@@ -27,6 +27,8 @@ public class ViewController(IViewService viewService) : BaseController
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
+    /// Request to increment views of a question
+    /// 
     ///     POST {questionId}
     /// </remarks>
     [HttpPost("{questionId:long}")]

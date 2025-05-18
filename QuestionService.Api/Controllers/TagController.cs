@@ -24,7 +24,7 @@ public class TagController(ITagService tagService) : BaseController
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Request for adding a tag:
+    /// Request to create a tag:
     /// 
     ///     POST
     ///     {
@@ -48,7 +48,7 @@ public class TagController(ITagService tagService) : BaseController
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Request for updating a tag:
+    /// Request to update a tag:
     /// 
     ///     PUT
     ///     {
@@ -73,7 +73,7 @@ public class TagController(ITagService tagService) : BaseController
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Request for deleting a tag:
+    /// Request to delete a tag:
     /// 
     ///     DELETE {id:long}
     /// </remarks>
