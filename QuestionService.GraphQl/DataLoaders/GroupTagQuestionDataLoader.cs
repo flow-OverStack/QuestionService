@@ -14,18 +14,18 @@ public class GroupTagQuestionDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : GroupedDataLoader<string, Question>(batchScheduler, options)
+    : GroupedDataLoader<long, Question>(batchScheduler, options)
 {
-    protected override async Task<ILookup<string, Question>> LoadGroupedBatchAsync(IReadOnlyList<string> keys,
+    protected override async Task<ILookup<long, Question>> LoadGroupedBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
         var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
 
-        var result = await questionService.GetQuestionsWithTagsAsync(keys);
+        var result = await questionService.GetQuestionsWithTagsAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
-            return Enumerable.Empty<KeyValuePair<string, IEnumerable<Question>>>()
+            return Enumerable.Empty<KeyValuePair<long, IEnumerable<Question>>>()
                 .SelectMany(x => x.Value.Select(y => new { x.Key, Question = y }))
                 .ToLookup(x => x.Key, x => x.Question);
 

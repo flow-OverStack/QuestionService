@@ -22,7 +22,7 @@ public class GroupUserViewDataLoader(
         using var scope = scopeFactory.CreateScope();
         var viewService = scope.ServiceProvider.GetRequiredService<IGetViewService>();
 
-        var result = await viewService.GetUsersViewsAsync(keys);
+        var result = await viewService.GetUsersViewsAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<KeyValuePair<long, IEnumerable<View>>>()

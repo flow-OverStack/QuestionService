@@ -3,24 +3,8 @@ using QuestionService.Domain.Results;
 
 namespace QuestionService.Domain.Interfaces.Service;
 
-public interface IGetTagService
+public interface IGetTagService : IGetService<Tag>
 {
-    /// <summary>
-    ///     Gets all tags
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<CollectionResult<Tag>> GetAllAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    ///     Gets tags by their names
-    /// </summary>
-    /// <param name="names"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<CollectionResult<Tag>> GetByNamesAsync(IEnumerable<string> names,
-        CancellationToken cancellationToken = default);
-
     /// <summary>
     ///     Gets tags of questions by their ids
     /// </summary>

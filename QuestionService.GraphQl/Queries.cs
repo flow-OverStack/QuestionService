@@ -51,9 +51,9 @@ public class Queries
     [GraphQLDescription("Returns a tag by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Tag?> GetTag(string name, TagDataLoader tagLoader, CancellationToken cancellationToken)
+    public async Task<Tag?> GetTag(long id, TagDataLoader tagLoader, CancellationToken cancellationToken)
     {
-        var tag = await tagLoader.LoadAsync(name, cancellationToken);
+        var tag = await tagLoader.LoadAsync(id, cancellationToken);
 
         return tag;
     }

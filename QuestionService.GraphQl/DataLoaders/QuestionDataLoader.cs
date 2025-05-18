@@ -16,7 +16,7 @@ public class QuestionDataLoader(
         using var scope = scopeFactory.CreateScope();
         var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
 
-        var result = await questionService.GetByIdsAsync(keys);
+        var result = await questionService.GetByIdsAsync(keys, cancellationToken);
 
         var dictionary = new Dictionary<long, Question>();
 

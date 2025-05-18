@@ -22,7 +22,7 @@ public class GroupUserVoteDataLoader(
         using var scope = scopeFactory.CreateScope();
         var questionService = scope.ServiceProvider.GetRequiredService<IGetVoteService>();
 
-        var result = await questionService.GetUsersVotesAsync(keys);
+        var result = await questionService.GetUsersVotesAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<KeyValuePair<long, IEnumerable<Vote>>>()

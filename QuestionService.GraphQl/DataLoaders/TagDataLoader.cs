@@ -8,22 +8,22 @@ public class TagDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : BatchDataLoader<string, Tag>(batchScheduler, options)
+    : BatchDataLoader<long, Tag>(batchScheduler, options)
 {
-    protected override async Task<IReadOnlyDictionary<string, Tag>> LoadBatchAsync(IReadOnlyList<string> keys,
+    protected override async Task<IReadOnlyDictionary<long, Tag>> LoadBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
         var tagService = scope.ServiceProvider.GetRequiredService<IGetTagService>();
 
-        var result = await tagService.GetByNamesAsync(keys);
+        var result = await tagService.GetByIdsAsync(keys, cancellationToken);
 
-        var dictionary = new Dictionary<string, Tag>();
+        var dictionary = new Dictionary<long, Tag>();
 
         if (!result.IsSuccess)
             return dictionary.AsReadOnly();
 
-        dictionary = result.Data.ToDictionary(x => x.Name, x => x);
+        dictionary = result.Data.ToDictionary(x => x.Id, x => x);
 
         return dictionary.AsReadOnly();
     }

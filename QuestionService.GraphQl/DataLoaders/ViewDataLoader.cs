@@ -16,7 +16,7 @@ public class ViewDataLoader(
         using var scope = scopeFactory.CreateScope();
         var viewService = scope.ServiceProvider.GetRequiredService<IGetViewService>();
 
-        var result = await viewService.GetByIdsAsync(keys);
+        var result = await viewService.GetByIdsAsync(keys, cancellationToken);
 
         var dictionary = new Dictionary<long, View>();
 

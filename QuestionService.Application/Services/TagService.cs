@@ -18,7 +18,8 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
 {
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-    public async Task<BaseResult<TagDto>> AddTagAsync(TagDto dto, CancellationToken cancellationToken = default)
+    public async Task<BaseResult<TagDto>> CreateTagAsync(CreateTagDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (!IsValidData(dto))
             return BaseResult<TagDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
@@ -32,7 +33,7 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
         await tagRepository.CreateAsync(tag, cancellationToken);
         await tagRepository.SaveChangesAsync(cancellationToken);
 
-        return BaseResult<TagDto>.Success(dto);
+        return BaseResult<TagDto>.Success(mapper.Map<TagDto>(tag));
     }
 
     public async Task<BaseResult<TagDto>> UpdateTagAsync(TagDto dto, CancellationToken cancellationToken = default)
@@ -40,7 +41,7 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
         if (!IsValidData(dto))
             return BaseResult<TagDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
 
-        var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name, cancellationToken);
+        var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
         if (tag == null)
             return BaseResult<TagDto>.Failure(ErrorMessage.TagNotFound, (int)ErrorCodes.TagNotFound);
 
@@ -53,9 +54,9 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
         return BaseResult<TagDto>.Success(dto);
     }
 
-    public async Task<BaseResult<TagDto>> DeleteTagAsync(string tagName, CancellationToken cancellationToken = default)
+    public async Task<BaseResult<TagDto>> DeleteTagAsync(long id, CancellationToken cancellationToken = default)
     {
-        var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Name == tagName, cancellationToken);
+        var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (tag == null)
             return BaseResult<TagDto>.Failure(ErrorMessage.TagNotFound, (int)ErrorCodes.TagNotFound);
 
@@ -63,6 +64,12 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
         await tagRepository.SaveChangesAsync(cancellationToken);
 
         return BaseResult<TagDto>.Success(mapper.Map<TagDto>(tag));
+    }
+
+    private bool IsValidData(CreateTagDto dto)
+    {
+        return dto.Name.HasMaxLength(_businessRules.TagMaxLength) &&
+               dto.Description.HasMaxLength(_businessRules.TagDescriptionMaxLength);
     }
 
     private bool IsValidData(TagDto dto)

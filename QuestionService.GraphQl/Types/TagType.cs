@@ -22,7 +22,7 @@ public class TagType : ObjectType<Tag>
         public async Task<IEnumerable<Question>> GetQuestionsAsync([Parent] Tag tag,
             GroupTagQuestionDataLoader questionLoader, CancellationToken cancellationToken)
         {
-            var questions = await questionLoader.LoadRequiredAsync(tag.Name, cancellationToken);
+            var questions = await questionLoader.LoadRequiredAsync(tag.Id, cancellationToken);
 
             return questions;
         }

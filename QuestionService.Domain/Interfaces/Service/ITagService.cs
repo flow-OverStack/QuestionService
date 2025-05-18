@@ -11,7 +11,7 @@ public interface ITagService
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<TagDto>> AddTagAsync(TagDto dto, CancellationToken cancellationToken = default);
+    Task<BaseResult<TagDto>> CreateTagAsync(CreateTagDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Edits tag
@@ -24,8 +24,8 @@ public interface ITagService
     /// <summary>
     ///     Deletes tag by its name
     /// </summary>
-    /// <param name="tagName"></param>
+    /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<TagDto>> DeleteTagAsync(string tagName, CancellationToken cancellationToken = default);
+    Task<BaseResult<TagDto>> DeleteTagAsync(long id, CancellationToken cancellationToken = default);
 }

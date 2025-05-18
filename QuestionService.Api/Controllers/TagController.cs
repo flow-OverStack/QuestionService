@@ -19,12 +19,12 @@ namespace QuestionService.Api.Controllers;
 public class TagController(ITagService tagService) : BaseController
 {
     /// <summary>
-    ///     Adds a tag
+    ///     Creates a tag
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Request for adding a question:
+    /// Request for adding a tag:
     /// 
     ///     POST
     ///     {
@@ -34,10 +34,10 @@ public class TagController(ITagService tagService) : BaseController
     /// </remarks>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ActionResult<BaseResult<TagDto>>> AddTag([FromBody] TagDto dto,
+    public async Task<ActionResult<BaseResult<TagDto>>> CreateTag([FromBody] CreateTagDto dto,
         CancellationToken cancellationToken)
     {
-        var result = await tagService.AddTagAsync(dto, cancellationToken);
+        var result = await tagService.CreateTagAsync(dto, cancellationToken);
 
         return HandleBaseResult(result);
     }
@@ -48,10 +48,11 @@ public class TagController(ITagService tagService) : BaseController
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Request for adding a question:
+    /// Request for updating a tag:
     /// 
     ///     PUT
     ///     {
+    ///         "id":1,
     ///         "name":"string",
     ///         "description":"string"
     ///     }
@@ -69,19 +70,19 @@ public class TagController(ITagService tagService) : BaseController
     /// <summary>
     ///     Deletes a tag
     /// </summary>
-    /// <param name="name"></param>
+    /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Request for adding a question:
+    /// Request for deleting a tag:
     /// 
-    ///     DELETE {name}
+    ///     DELETE {id:long}
     /// </remarks>
     /// <returns></returns>
-    [HttpDelete("{name}")]
-    public async Task<ActionResult<BaseResult<TagDto>>> DeleteTag(string name,
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<BaseResult<TagDto>>> DeleteTag(long id,
         CancellationToken cancellationToken)
     {
-        var result = await tagService.DeleteTagAsync(name, cancellationToken);
+        var result = await tagService.DeleteTagAsync(id, cancellationToken);
 
         return HandleBaseResult(result);
     }

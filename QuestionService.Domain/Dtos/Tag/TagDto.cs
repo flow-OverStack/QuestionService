@@ -1,3 +1,3 @@
 namespace QuestionService.Domain.Dtos.Tag;
 
-public record TagDto(string Name, string Description);
+public record TagDto(long Id, string Name, string Description);

@@ -22,7 +22,7 @@ public class GroupViewDataLoader(
         using var scope = scopeFactory.CreateScope();
         var viewService = scope.ServiceProvider.GetRequiredService<IGetViewService>();
 
-        var result = await viewService.GetQuestionsViewsAsync(keys);
+        var result = await viewService.GetQuestionsViewsAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<KeyValuePair<long, IEnumerable<View>>>()

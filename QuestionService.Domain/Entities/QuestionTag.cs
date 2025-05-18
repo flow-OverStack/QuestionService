@@ -4,5 +4,5 @@ public class QuestionTag
 {
     public long QuestionId { get; set; }
 
-    public string TagName { get; set; }
+    public long TagId { get; set; }
 }

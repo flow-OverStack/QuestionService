@@ -8,6 +8,10 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
 {
     public void Configure(EntityTypeBuilder<Tag> builder)
     {
-        builder.HasKey(x => x.Name);
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
+        builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.Description);
+
+        builder.HasIndex(x => x.Name).IsUnique();
     }
 }

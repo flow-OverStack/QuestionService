@@ -39,20 +39,20 @@ public class GetQuestionService(
         return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
     }
 
-    public async Task<CollectionResult<KeyValuePair<string, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
-        IEnumerable<string> tagNames, CancellationToken cancellationToken = default)
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
+        IEnumerable<long> tagIds, CancellationToken cancellationToken = default)
     {
         var groupedQuestions = await tagRepository.GetAll()
-            .Where(x => tagNames.Contains(x.Name))
+            .Where(x => tagIds.Contains(x.Id))
             .Include(x => x.Questions)
-            .Select(x => new KeyValuePair<string, IEnumerable<Question>>(x.Name, x.Questions))
+            .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Id, x.Questions))
             .ToListAsync(cancellationToken);
 
         if (!groupedQuestions.Any())
-            return CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
+            return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 
-        return CollectionResult<KeyValuePair<string, IEnumerable<Question>>>.Success(groupedQuestions,
+        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions,
             groupedQuestions.Count);
     }
 

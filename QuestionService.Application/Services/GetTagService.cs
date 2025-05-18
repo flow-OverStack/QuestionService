@@ -18,16 +18,16 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
         return CollectionResult<Tag>.Success(tags, tags.Count);
     }
 
-    public async Task<CollectionResult<Tag>> GetByNamesAsync(IEnumerable<string> names,
+    public async Task<CollectionResult<Tag>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
         var tags = await tagRepository.GetAll()
-            .Where(x => names.Contains(x.Name))
+            .Where(x => ids.Contains(x.Id))
             .ToListAsync(cancellationToken);
         var totalCount = await tagRepository.GetAll().CountAsync(cancellationToken);
 
         if (!tags.Any())
-            return names.Count() switch
+            return ids.Count() switch
             {
                 <= 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagNotFound, (int)ErrorCodes.TagNotFound),
                 > 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound)

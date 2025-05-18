@@ -39,7 +39,7 @@ public class QuestionService(
 
         var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name))
             .ToListAsync(cancellationToken);
-        if (tags.Count != dto.TagNames.Count)
+        if (tags.Count != dto.TagNames.Count())
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
         Question question;
@@ -58,7 +58,7 @@ public class QuestionService(
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(CancellationToken.None);
                 throw;
             }
         }
@@ -90,7 +90,7 @@ public class QuestionService(
 
         var tags = await tagRepository.GetAll().Where(x => dto.TagNames.Contains(x.Name))
             .ToListAsync(cancellationToken);
-        if (tags.Count != dto.TagNames.Count)
+        if (tags.Count != dto.TagNames.Count())
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
         await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
@@ -107,7 +107,7 @@ public class QuestionService(
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(CancellationToken.None);
                 throw;
             }
         }
@@ -192,7 +192,7 @@ public class QuestionService(
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(CancellationToken.None);
                 throw;
             }
         }
@@ -256,7 +256,7 @@ public class QuestionService(
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(CancellationToken.None);
                 throw;
             }
         }

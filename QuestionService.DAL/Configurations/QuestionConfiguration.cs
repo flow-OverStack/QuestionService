@@ -17,7 +17,7 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
 
         builder.HasMany(x => x.Tags)
             .WithMany(x => x.Questions)
-            .UsingEntity<QuestionTag>(x => x.HasOne<Tag>().WithMany().HasForeignKey(y => y.TagName),
+            .UsingEntity<QuestionTag>(x => x.HasOne<Tag>().WithMany().HasForeignKey(y => y.TagId),
                 x => x.HasOne<Question>().WithMany().HasForeignKey(y => y.QuestionId));
 
         builder.HasMany(x => x.Votes)

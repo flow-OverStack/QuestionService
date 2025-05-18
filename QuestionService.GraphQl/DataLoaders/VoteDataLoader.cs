@@ -17,7 +17,7 @@ public class VoteDataLoader(
         using var scope = scopeFactory.CreateScope();
         var voteService = scope.ServiceProvider.GetRequiredService<IGetVoteService>();
 
-        var result = await voteService.GetByDtosAsync(keys);
+        var result = await voteService.GetByDtosAsync(keys, cancellationToken);
 
         var dictionary = new Dictionary<GetVoteDto, Vote>();
 
