@@ -15,7 +15,7 @@ public class QuestionType : ObjectType<Question>
     protected override void Configure(IObjectTypeDescriptor<Question> descriptor)
     {
         descriptor.Description("The question type.");
-        descriptor.Field(x => x.Id).Description("The ID of the user.");
+        descriptor.Field(x => x.Id).Description("The ID of the question.");
         descriptor.Field(x => x.Title).Description("The tile of the question.");
         descriptor.Field(x => x.Body).Description("The body of the question.");
         descriptor.Field(x => x.UserId).Description("The ID of the author of the question.");

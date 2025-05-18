@@ -9,6 +9,7 @@ public class TagType : ObjectType<Tag>
     protected override void Configure(IObjectTypeDescriptor<Tag> descriptor)
     {
         descriptor.Description("The tag type.");
+        descriptor.Field(x => x.Id).Description("The ID of the tag.");
         descriptor.Field(x => x.Name).Description("The name of the tag.");
         descriptor.Field(x => x.Description).Description("The description of the tag.");
         descriptor.Field(x => x.Questions).Description("The questions with this tag.");
