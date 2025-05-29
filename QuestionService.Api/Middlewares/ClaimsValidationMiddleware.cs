@@ -39,15 +39,8 @@ public class ClaimsValidationMiddleware(RequestDelegate next)
         var jsonToken = handler.ReadJwtToken(token);
         var payload = jsonToken.Payload.SerializeToJson();
 
-        try
-        {
-            var claims = JsonConvert.DeserializeObject<RequiredClaims>(payload);
+        var claims = JsonConvert.DeserializeObject<RequiredClaims>(payload);
 
-            return claims != null && claims.IsValid();
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        return claims != null && claims.IsValid();
     }
 }
