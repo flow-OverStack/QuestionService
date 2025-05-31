@@ -75,4 +75,7 @@
     <data name="UsersNotFound" xml:space="preserve">
         <value>Users not found</value>
     </data>
+    <data name="InvalidPagination" xml:space="preserve">
+        <value>Pagination parametrs are invalid</value>
+    </data>
 </root>

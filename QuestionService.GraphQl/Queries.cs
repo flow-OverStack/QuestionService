@@ -10,9 +10,10 @@ namespace QuestionService.GraphQl;
 public class Queries
 {
     [GraphQLDescription("Returns a list of all questions")]
+    [UsePaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<Question>> GetQuestions([Service] IGetQuestionService questionService,
+    public async Task<IQueryable<Question>> GetQuestions([Service] IGetQuestionService questionService,
         CancellationToken cancellationToken)
     {
         var result = await questionService.GetAllAsync(cancellationToken);
@@ -35,9 +36,10 @@ public class Queries
     }
 
     [GraphQLDescription("Returns a list of all tags")]
+    [UsePaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<Tag>> GetTags([Service] IGetTagService tagService,
+    public async Task<IQueryable<Tag>> GetTags([Service] IGetTagService tagService,
         CancellationToken cancellationToken)
     {
         var result = await tagService.GetAllAsync(cancellationToken);
@@ -59,9 +61,10 @@ public class Queries
     }
 
     [GraphQLDescription("Returns a list of all votes")]
+    [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<Vote>> GetVotes([Service] IGetVoteService voteService,
+    public async Task<IQueryable<Vote>> GetVotes([Service] IGetVoteService voteService,
         CancellationToken cancellationToken)
     {
         var result = await voteService.GetAllAsync(cancellationToken);
@@ -85,9 +88,10 @@ public class Queries
     }
 
     [GraphQLDescription("Returns a list of all views")]
+    [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<View>> GetViews([Service] IGetViewService viewService,
+    public async Task<IQueryable<View>> GetViews([Service] IGetViewService viewService,
         CancellationToken cancellationToken)
     {
         var result = await viewService.GetAllAsync(cancellationToken);

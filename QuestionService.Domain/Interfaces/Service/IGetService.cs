@@ -10,7 +10,7 @@ public interface IGetService<T> where T : IEntityId<long>
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<T>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<QueryableResult<T>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets multiple T's by their ids

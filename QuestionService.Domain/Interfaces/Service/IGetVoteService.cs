@@ -11,7 +11,7 @@ public interface IGetVoteService
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<QueryableResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets vote of questions by pairs of question id and user id

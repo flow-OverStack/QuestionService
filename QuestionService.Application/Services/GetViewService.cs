@@ -11,11 +11,13 @@ namespace QuestionService.Application.Services;
 public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepository<Question> questionRepository)
     : IGetViewService
 {
-    public async Task<CollectionResult<View>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<QueryableResult<View>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var views = await viewRepository.GetAll().ToListAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
 
-        return CollectionResult<View>.Success(views, views.Count);
+        var views = viewRepository.GetAll();
+
+        return Task.FromResult(QueryableResult<View>.Success(views));
     }
 
 
@@ -23,7 +25,6 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
         CancellationToken cancellationToken = default)
     {
         var views = await viewRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
-        var totalCount = await viewRepository.GetAll().CountAsync(cancellationToken);
 
         if (!views.Any())
             return ids.Count() switch
@@ -32,7 +33,7 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
                 > 1 => CollectionResult<View>.Failure(ErrorMessage.ViewsNotFound, (int)ErrorCodes.ViewsNotFound),
             };
 
-        return CollectionResult<View>.Success(views, views.Count, totalCount);
+        return CollectionResult<View>.Success(views);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(
@@ -52,7 +53,7 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews, groupedViews.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
@@ -68,6 +69,6 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews, groupedViews.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews);
     }
 }

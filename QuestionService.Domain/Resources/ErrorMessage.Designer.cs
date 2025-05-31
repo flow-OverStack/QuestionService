@@ -87,6 +87,15 @@ namespace QuestionService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pagination parametrs are invalid.
+        /// </summary>
+        public static string InvalidPagination {
+            get {
+                return ResourceManager.GetString("InvalidPagination", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Length out of range.
         /// </summary>
         public static string LengthOutOfRange {

@@ -2,9 +2,12 @@ using GraphQL.Server.Ui.Voyager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ErrorFilters;
 using QuestionService.GraphQl.ExtensionTypes;
+using QuestionService.GraphQl.Middlewares;
 using QuestionService.GraphQl.Types;
 
 namespace QuestionService.GraphQl.DependencyInjection;
@@ -40,7 +43,20 @@ public static class DependencyInjection
             .AddDataLoader<GroupUserQuestionDataLoader>()
             .AddDataLoader<GroupUserViewDataLoader>()
             .AddDataLoader<GroupUserVoteDataLoader>()
-            .AddApolloFederation();
+            .AddApolloFederation()
+            .ModifyPagingOptions(opt =>
+            {
+                using var provider = services.BuildServiceProvider();
+                using var scope = provider.CreateScope();
+                var defaultSize = scope.ServiceProvider.GetRequiredService<IOptions<BusinessRules>>().Value
+                    .DefaultPageSize;
+
+                opt.DefaultPageSize = defaultSize;
+                opt.IncludeTotalCount = true;
+            })
+            .UseField<CursorPagingValidationMiddleware>()
+            .UseField<OffsetPagingValidationMiddleware>()
+            .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
     }
 
     /// <summary>

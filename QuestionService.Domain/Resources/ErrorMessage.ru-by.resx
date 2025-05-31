@@ -75,4 +75,7 @@
     <data name="UsersNotFound" xml:space="preserve">
         <value>Пользователи не найдены</value>
     </data>
+    <data name="InvalidPagination" xml:space="preserve">
+        <value>Параметры пагинации невалидны</value>
+    </data>
 </root>

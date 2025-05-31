@@ -13,12 +13,14 @@ namespace QuestionService.Application.Services;
 public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepository<Question> questionRepository)
     : IGetVoteService
 {
-    public async Task<CollectionResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<QueryableResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var votes = await voteRepository.GetAll().ToListAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var votes = voteRepository.GetAll();
 
         // Since there's can be no votes it is not an exception to have no votes 
-        return CollectionResult<Vote>.Success(votes, votes.Count);
+        return Task.FromResult(QueryableResult<Vote>.Success(votes));
     }
 
     public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos,
@@ -35,7 +37,6 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
             .AsExpandable()
             .Where(predicate)
             .ToListAsync(cancellationToken);
-        var totalCount = await voteRepository.GetAll().CountAsync(cancellationToken);
 
         if (!votes.Any())
             return keys.Count switch
@@ -44,7 +45,7 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
                 > 1 => CollectionResult<Vote>.Failure(ErrorMessage.VotesNotFound, (int)ErrorCodes.VotesNotFound)
             };
 
-        return CollectionResult<Vote>.Success(votes, votes.Count, totalCount);
+        return CollectionResult<Vote>.Success(votes);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
@@ -60,7 +61,7 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
                 (int)ErrorCodes.VotesNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes, groupedVotes.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
@@ -79,6 +80,6 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
                 (int)ErrorCodes.VotesNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes, groupedVotes.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes);
     }
 }

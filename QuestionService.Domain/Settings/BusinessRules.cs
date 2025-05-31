@@ -12,4 +12,6 @@ public class BusinessRules
     public int TagDescriptionMaxLength { get; set; }
     public int UserViewSpamThreshold { get; set; }
     public int UserFingerprintLength { get; set; }
+    public int MaxPageSize { get; set; }
+    public int DefaultPageSize { get; set; }
 }

@@ -11,11 +11,13 @@ namespace QuestionService.Application.Services;
 public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Question> questionRepository)
     : IGetTagService
 {
-    public async Task<CollectionResult<Tag>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<QueryableResult<Tag>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var tags = await tagRepository.GetAll().ToListAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
 
-        return CollectionResult<Tag>.Success(tags, tags.Count);
+        var tags = tagRepository.GetAll();
+
+        return Task.FromResult(QueryableResult<Tag>.Success(tags));
     }
 
     public async Task<CollectionResult<Tag>> GetByIdsAsync(IEnumerable<long> ids,
@@ -24,7 +26,6 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
         var tags = await tagRepository.GetAll()
             .Where(x => ids.Contains(x.Id))
             .ToListAsync(cancellationToken);
-        var totalCount = await tagRepository.GetAll().CountAsync(cancellationToken);
 
         if (!tags.Any())
             return ids.Count() switch
@@ -33,7 +34,7 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
                 > 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound)
             };
 
-        return CollectionResult<Tag>.Success(tags, tags.Count, totalCount);
+        return CollectionResult<Tag>.Success(tags);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTagsAsync(
@@ -49,6 +50,6 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
             return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagsNotFound,
                 (int)ErrorCodes.TagsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Success(groupedTags, groupedTags.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Success(groupedTags);
     }
 }

@@ -2,7 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Mappings;
 using QuestionService.Application.Services;
+using QuestionService.Application.Validators;
+using QuestionService.Domain.Dtos.Request.Page;
 using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Domain.Settings;
 using StackExchange.Redis;
 
@@ -27,6 +30,9 @@ public static class DependencyInjection
         services.AddScoped<IGetVoteService, GetVoteService>();
         services.AddScoped<IGetTagService, GetTagService>();
         services.AddScoped<IGetViewService, GetViewService>();
+
+        services.AddScoped<INullSafeValidator<OffsetPageDto>, OffsetPageDtoValidator>();
+        services.AddScoped<INullSafeValidator<CursorPageDto>, CursorPageDtoValidator>();
     }
 
     private static void InitRedisCaching(this IServiceCollection services)

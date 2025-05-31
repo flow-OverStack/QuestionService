@@ -13,19 +13,20 @@ public class GetQuestionService(
     IBaseRepository<Tag> tagRepository)
     : IGetQuestionService
 {
-    public async Task<CollectionResult<Question>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<QueryableResult<Question>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var questions = await questionRepository.GetAll().ToListAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var questions = questionRepository.GetAll();
 
         // Since there's can be no questions it is not exception to have no questions
-        return CollectionResult<Question>.Success(questions, questions.Count);
+        return Task.FromResult(QueryableResult<Question>.Success(questions));
     }
 
     public async Task<CollectionResult<Question>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
         var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
-        var totalCount = await questionRepository.GetAll().CountAsync(cancellationToken);
 
         if (!questions.Any())
             return ids.Count() switch
@@ -36,7 +37,7 @@ public class GetQuestionService(
                     (int)ErrorCodes.QuestionsNotFound)
             };
 
-        return CollectionResult<Question>.Success(questions, questions.Count, totalCount);
+        return CollectionResult<Question>.Success(questions);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
@@ -52,8 +53,7 @@ public class GetQuestionService(
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions,
-            groupedQuestions.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(
@@ -72,7 +72,6 @@ public class GetQuestionService(
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions,
-            groupedQuestions.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions);
     }
 }
