@@ -3,6 +3,7 @@ using QuestionService.Domain.Entities;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.GraphQl.DataLoaders;
+using QuestionService.GraphQl.Middlewares;
 using Tag = QuestionService.Domain.Entities.Tag;
 
 namespace QuestionService.GraphQl;
@@ -11,6 +12,7 @@ public class Queries
 {
     [GraphQLDescription("Returns a list of all questions")]
     [UsePaging]
+    [UseCursorPagingValidationMiddleware]
     [UseFiltering]
     [UseSorting]
     public async Task<IQueryable<Question>> GetQuestions([Service] IGetQuestionService questionService,
@@ -36,6 +38,7 @@ public class Queries
     }
 
     [GraphQLDescription("Returns a list of all tags")]
+    [UseCursorPagingValidationMiddleware]
     [UsePaging]
     [UseFiltering]
     [UseSorting]
@@ -61,6 +64,7 @@ public class Queries
     }
 
     [GraphQLDescription("Returns a list of all votes")]
+    [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
@@ -88,6 +92,7 @@ public class Queries
     }
 
     [GraphQLDescription("Returns a list of all views")]
+    [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]

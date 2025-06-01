@@ -1,4 +1,7 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using HotChocolate.Resolvers;
+using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Dtos.Request.Page;
 using QuestionService.Domain.Helpers;
@@ -19,29 +22,39 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
         INullSafeValidator<CursorPageDto> cursorPageValidator,
         IOptions<BusinessRules> businessRules)
     {
-        if (context.Selection.Field.Arguments.Any(x =>
-                x.Name is BeforeArgName or AfterArgName or FirstArgName or LastArgName))
-        {
-            var first = context.ArgumentValue<int?>(FirstArgName);
-            var after = context.ArgumentValue<string?>(AfterArgName);
-            var before = context.ArgumentValue<string?>(BeforeArgName);
-            var last = context.ArgumentValue<int?>(LastArgName);
+        var first = context.ArgumentValue<int?>(FirstArgName);
+        var after = context.ArgumentValue<string?>(AfterArgName);
+        var before = context.ArgumentValue<string?>(BeforeArgName);
+        var last = context.ArgumentValue<int?>(LastArgName);
 
-            // Specifying default values if need
-            if (after == null && first == null && before == null && last == null)
-                first = businessRules.Value.DefaultPageSize;
-            if (after != null && first == null)
-                first = businessRules.Value.DefaultPageSize;
-            if (before != null && last == null)
-                last = businessRules.Value.DefaultPageSize;
+        // Specifying default values if need
+        if (after == null && first == null && before == null && last == null)
+            first = businessRules.Value.DefaultPageSize;
+        if (after != null && first == null)
+            first = businessRules.Value.DefaultPageSize;
+        if (before != null && last == null)
+            last = businessRules.Value.DefaultPageSize;
 
-            var pagination = new CursorPageDto(first, after, before, last);
+        var pagination = new CursorPageDto(first, after, before, last);
 
-            if (!cursorPageValidator.IsValid(pagination, out var errors))
-                throw GraphQlExceptionHelper.GetException(
-                    $"{ErrorMessage.InvalidPagination}: {string.Join(' ', errors)}");
-        }
+        if (!cursorPageValidator.IsValid(pagination, out var errors))
+            throw GraphQlExceptionHelper.GetException(
+                $"{ErrorMessage.InvalidPagination}: {string.Join(' ', errors)}");
 
         await next(context);
+    }
+}
+
+public class UseCursorPagingValidationMiddlewareAttribute : ObjectFieldDescriptorAttribute
+{
+    public UseCursorPagingValidationMiddlewareAttribute([CallerLineNumber] int order = 0)
+    {
+        Order = order;
+    }
+
+    protected override void OnConfigure(IDescriptorContext context,
+        IObjectFieldDescriptor descriptor, MemberInfo member)
+    {
+        descriptor.Use<CursorPagingValidationMiddleware>();
     }
 }

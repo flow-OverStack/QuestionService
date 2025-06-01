@@ -7,7 +7,6 @@ using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ErrorFilters;
 using QuestionService.GraphQl.ExtensionTypes;
-using QuestionService.GraphQl.Middlewares;
 using QuestionService.GraphQl.Types;
 
 namespace QuestionService.GraphQl.DependencyInjection;
@@ -54,8 +53,6 @@ public static class DependencyInjection
                 opt.DefaultPageSize = defaultSize;
                 opt.IncludeTotalCount = true;
             })
-            .UseField<CursorPagingValidationMiddleware>()
-            .UseField<OffsetPagingValidationMiddleware>()
             .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
     }
 
