@@ -10,7 +10,7 @@ namespace QuestionService.GraphQl;
 
 public class Queries
 {
-    [GraphQLDescription("Returns a list of all questions")]
+    [GraphQLDescription("Returns a list of paginated questions")]
     [UsePaging]
     [UseCursorPagingValidationMiddleware]
     [UseFiltering]
@@ -37,7 +37,7 @@ public class Queries
         return question;
     }
 
-    [GraphQLDescription("Returns a list of all tags")]
+    [GraphQLDescription("Returns a list of paginated tags")]
     [UseCursorPagingValidationMiddleware]
     [UsePaging]
     [UseFiltering]
@@ -63,7 +63,7 @@ public class Queries
         return tag;
     }
 
-    [GraphQLDescription("Returns a list of all votes")]
+    [GraphQLDescription("Returns a list of paginated votes")]
     [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]
     [UseFiltering]
@@ -91,7 +91,7 @@ public class Queries
         return vote;
     }
 
-    [GraphQLDescription("Returns a list of all views")]
+    [GraphQLDescription("Returns a list of paginated views")]
     [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]
     [UseFiltering]
