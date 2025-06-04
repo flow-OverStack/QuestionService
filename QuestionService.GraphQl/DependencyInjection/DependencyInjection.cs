@@ -53,6 +53,7 @@ public static class DependencyInjection
                 opt.DefaultPageSize = defaultSize;
                 opt.IncludeTotalCount = true;
             })
+            .AddDbContextCursorPagingProvider()
             .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
     }
 

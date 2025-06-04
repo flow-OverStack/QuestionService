@@ -1,9 +1,11 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using HotChocolate.Language;
 using HotChocolate.Resolvers;
 using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Dtos.Request.Page;
+using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Domain.Resources;
@@ -17,6 +19,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
     private const string AfterArgName = "after";
     private const string FirstArgName = "first";
     private const string LastArgName = "last";
+    private const string OrderArgName = "order";
 
     public async Task InvokeAsync(IMiddlewareContext context,
         INullSafeValidator<CursorPageDto> cursorPageValidator,
@@ -26,6 +29,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
         var after = context.ArgumentValue<string?>(AfterArgName);
         var before = context.ArgumentValue<string?>(BeforeArgName);
         var last = context.ArgumentValue<int?>(LastArgName);
+        var order = GetOrderArg(context);
 
         // Specifying default values if need
         if (after == null && first == null && before == null && last == null)
@@ -35,13 +39,28 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
         if (before != null && last == null)
             last = businessRules.Value.DefaultPageSize;
 
-        var pagination = new CursorPageDto(first, after, before, last);
+        var pagination =
+            new CursorPageDto(first, after, before, last, order.ToDomainOrderBy());
 
         if (!cursorPageValidator.IsValid(pagination, out var errors))
             throw GraphQlExceptionHelper.GetException(
                 $"{ErrorMessage.InvalidPagination}: {string.Join(' ', errors)}");
 
         await next(context);
+    }
+
+    private static ListValueNode? GetOrderArg(IMiddlewareContext context)
+    {
+        try
+        {
+            // If no exception, order argument is null
+            context.ArgumentLiteral<NullValueNode>(OrderArgName);
+            return null;
+        }
+        catch (GraphQLException)
+        {
+            return context.ArgumentLiteral<ListValueNode>(OrderArgName);
+        }
     }
 }
 

@@ -29,6 +29,16 @@ public class CursorPageDtoValidator : AbstractValidator<CursorPageDto>, INullSaf
             .When(x => x.Before != null)
             .WithMessage($"'{nameof(CursorPageDto.Before)}' must be a valid base64 string.");
 
+        RuleFor(x => x.Order).NotEmpty()
+            .ForEach(eachOrder =>
+            {
+                eachOrder.NotNull().ChildRules(order =>
+                {
+                    order.RuleFor(o => o.Field).NotEmpty();
+                    order.RuleFor(o => o.Direction).NotNull().IsInEnum();
+                });
+            });
+
         var errorMessage = string.Format(
             "You must specify either '{0}' (optionally with '{1}'), without '{2}' and '{3}', " +
             "or '{2}' (optionally with '{3}'), without '{1}' and '{2}'.",
