@@ -6,23 +6,56 @@ internal static class GraphQlHelper
 
     public const string RequestAllQuery = """
                                           {
-                                            questions {
-                                              id
-                                              title
-                                              body
-                                              userId
-                                              createdAt
-                                              lastModifiedAt
-                                              tags {
-                                                id
-                                                name
-                                                description
-                                                questions {
+                                            questions(after: "e30x", first: 2, order: [{id: ASC}]) {
+                                              edges {
+                                                cursor
+                                                node {
                                                   id
                                                   title
+                                                  body
+                                                  userId
+                                                  createdAt
+                                                  lastModifiedAt
+                                                  tags {
+                                                    id
+                                                    name
+                                                    description
+                                                    questions {
+                                                      id
+                                                      title
+                                                    }
+                                                  }
+                                                  votes {
+                                                    userId
+                                                    reputationChange
+                                                    question {
+                                                      id
+                                                      title
+                                                    }
+                                                  }
+                                                  views {
+                                                    id
+                                                    questionId
+                                                    userId
+                                                    userIp
+                                                    userFingerprint
+                                                    question {
+                                                      id
+                                                      title
+                                                    }
+                                                  }
                                                 }
                                               }
-                                              votes {
+                                              pageInfo {
+                                                endCursor
+                                                startCursor
+                                                hasNextPage
+                                                hasPreviousPage
+                                              }
+                                              totalCount
+                                            }
+                                            votes(skip: 1, take: 2) {
+                                              items {
                                                 userId
                                                 reputationChange
                                                 question {
@@ -30,7 +63,31 @@ internal static class GraphQlHelper
                                                   title
                                                 }
                                               }
-                                              views {
+                                              totalCount
+                                            }
+                                            tags(after: "e30x", first: 2, order: [{id: ASC}]) {
+                                              edges {
+                                                cursor
+                                                node {
+                                                  id
+                                                  name
+                                                  description
+                                                  questions {
+                                                    id
+                                                    title
+                                                  }
+                                                }
+                                              }
+                                              pageInfo {
+                                                endCursor
+                                                startCursor
+                                                hasNextPage
+                                                hasPreviousPage
+                                              }
+                                              totalCount
+                                            }
+                                            views(skip: 1, take: 2) {
+                                              items {
                                                 id
                                                 questionId
                                                 userId
@@ -41,59 +98,148 @@ internal static class GraphQlHelper
                                                   title
                                                 }
                                               }
-                                            }
-                                            votes {
-                                              userId
-                                              reputationChange
-                                              question {
-                                                id
-                                                title
-                                              }
-                                            }
-                                            tags {
-                                              id
-                                              name
-                                              description
-                                              questions {
-                                                id
-                                                title
-                                              }
-                                            }
-                                            views {
-                                              id
-                                              questionId
-                                              userId
-                                              userIp
-                                              userFingerprint
-                                              question {
-                                                id
-                                                title
-                                              }
+                                              totalCount
                                             }
                                           }
                                           """;
 
     public const string RequestQuestionsWithTagsQuery = """
                                                         {
-                                                          questions {
-                                                            id
-                                                            title
-                                                            body
-                                                            userId
-                                                            createdAt
-                                                            lastModifiedAt
-                                                            tags {
-                                                              id
-                                                              name
-                                                              description
-                                                              questions {
+                                                          questions(after: "e30x", first: 2, order: [{ id: ASC }]) {
+                                                            edges {
+                                                              cursor
+                                                              node {
                                                                 id
                                                                 title
+                                                                body
+                                                                userId
+                                                                createdAt
+                                                                lastModifiedAt
+                                                                tags {
+                                                                  name
+                                                                }
                                                               }
                                                             }
+                                                            pageInfo {
+                                                              endCursor
+                                                              startCursor
+                                                              hasNextPage
+                                                              hasPreviousPage
+                                                            }
+                                                            totalCount
                                                           }
                                                         }
                                                         """;
+
+    public const string RequestWithWrongArgument = """
+                                                   tag(wrongArg) {
+                                                     name
+                                                     description
+                                                     questions {
+                                                       id
+                                                       title
+                                                     }
+                                                   }
+                                                   """;
+
+    public const string RequestAllWithInvalidPaginationQuery = """
+                                                               {
+                                                                 questions(after: "notValidAfter", first: -1) {
+                                                                   edges {
+                                                                     cursor
+                                                                     node {
+                                                                       id
+                                                                       title
+                                                                       body
+                                                                       userId
+                                                                       createdAt
+                                                                       lastModifiedAt
+                                                                       tags {
+                                                                         id
+                                                                         name
+                                                                         description
+                                                                         questions {
+                                                                           id
+                                                                           title
+                                                                         }
+                                                                       }
+                                                                       votes {
+                                                                         userId
+                                                                         reputationChange
+                                                                         question {
+                                                                           id
+                                                                           title
+                                                                         }
+                                                                       }
+                                                                       views {
+                                                                         id
+                                                                         questionId
+                                                                         userId
+                                                                         userIp
+                                                                         userFingerprint
+                                                                         question {
+                                                                           id
+                                                                           title
+                                                                         }
+                                                                       }
+                                                                     }
+                                                                   }
+                                                                   pageInfo {
+                                                                     endCursor
+                                                                     startCursor
+                                                                     hasNextPage
+                                                                     hasPreviousPage
+                                                                   }
+                                                                   totalCount
+                                                                 }
+                                                                 votes(skip: -1, take: 101) {
+                                                                   items {
+                                                                     userId
+                                                                     reputationChange
+                                                                     question {
+                                                                       id
+                                                                       title
+                                                                     }
+                                                                   }
+                                                                   totalCount
+                                                                 }
+                                                                 tags(after: "notValidAftre", last: 2, order: []) {
+                                                                   edges {
+                                                                     cursor
+                                                                     node {
+                                                                       id
+                                                                       name
+                                                                       description
+                                                                       questions {
+                                                                         id
+                                                                         title
+                                                                       }
+                                                                     }
+                                                                   }
+                                                                   pageInfo {
+                                                                     endCursor
+                                                                     startCursor
+                                                                     hasNextPage
+                                                                     hasPreviousPage
+                                                                   }
+                                                                   totalCount
+                                                                 }
+                                                                 views(skip: -1, take: -1) {
+                                                                   items {
+                                                                     id
+                                                                     questionId
+                                                                     userId
+                                                                     userIp
+                                                                     userFingerprint
+                                                                     question {
+                                                                       id
+                                                                       title
+                                                                     }
+                                                                   }
+                                                                   totalCount
+                                                                 }
+                                                               }
+                                                               """;
 
     public static string RequestAllByIdsQuery(long questionId, long voteQuestionId, long voteUserId,
         long tagId, long viewId)

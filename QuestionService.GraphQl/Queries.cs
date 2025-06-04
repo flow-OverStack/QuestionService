@@ -11,8 +11,8 @@ namespace QuestionService.GraphQl;
 public class Queries
 {
     [GraphQLDescription("Returns a list of paginated questions")]
-    [UsePaging]
     [UseCursorPagingValidationMiddleware]
+    [UsePaging]
     [UseFiltering]
     [UseSorting]
     public async Task<IQueryable<Question>> GetQuestions([Service] IGetQuestionService questionService,

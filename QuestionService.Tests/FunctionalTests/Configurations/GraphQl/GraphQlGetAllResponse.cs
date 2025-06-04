@@ -9,8 +9,8 @@ internal class GraphQlGetAllResponse
 
 internal class GraphQlGetAllData
 {
-    public List<Question> Questions { get; set; }
-    public List<Tag> Tags { get; set; }
-    public List<Vote> Votes { get; set; }
-    public List<View> Views { get; set; }
+    public GraphQlCursorPaginatedResponse<Question> Questions { get; set; }
+    public GraphQlCursorPaginatedResponse<Tag> Tags { get; set; }
+    public GraphQlOffsetPaginatedResponse<Vote> Votes { get; set; }
+    public GraphQlOffsetPaginatedResponse<View> Views { get; set; }
 }
