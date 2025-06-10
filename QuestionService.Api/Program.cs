@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using QuestionService.Api;
 using QuestionService.Api.Middlewares;
 using QuestionService.Application.DependencyInjection;
@@ -8,7 +10,6 @@ using QuestionService.GraphQl.DependencyInjection;
 using QuestionService.Grpc.DependencyInjection;
 using QuestionService.Outbox.DependencyInjection;
 using QuestionService.ReputationProducer.DependencyInjection;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,10 +31,13 @@ builder.Services.AddMassTransitServices();
 builder.Services.AddOutbox();
 builder.Services.AddHangfire(builder.Configuration);
 
-builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+builder.Host.AddLogging(builder.Configuration);
 
 builder.Services.AddDataAccessLayer(builder.Configuration);
 builder.Services.AddApplication();
+
+builder.AddOpenTelemetry();
+builder.Services.AddHealthChecks(builder.Configuration);
 
 var app = builder.Build();
 
@@ -47,6 +51,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfire();
 app.SetupHangfireJobs();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.MapHealthChecks("health", new HealthCheckOptions { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
 
 app.UseMiddleware<ClaimsValidationMiddleware>();
 
