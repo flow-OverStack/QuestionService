@@ -26,9 +26,14 @@ namespace QuestionService.Api;
 public static class Startup
 {
     private const string AppStartupSectionName = "AppStartupSettings";
-    private const string OpenTelemetrySectionName = "OpenTelemetrySettings";
+    private const string TelemetrySectionName = "TelemetrySettings";
     private const string AspireDashboardUrlName = "AspireDashboardUrl";
     private const string JaegerUrlName = "JaegerUrl";
+    private const string LogstashUrlName = "LogstashUrl";
+    private const string AspireDashboardHealthCheckUrlName = "AspireDashboardHealthCheckUrl";
+    private const string JaegerHealthCheckUrlName = "JaegerHealthCheckUrl";
+    private const string PrometheusUrlName = "PrometheusUrl";
+    private const string UserServiceHealthCheckUrlName = "UserServiceHealthCheckUrl";
     private const string ElasticSearchUrlName = "ElasticSearchUrl";
     private const string AppStartupUrlLogName = "AppStartupUrlLog";
     private const string ServiceName = "QuestionService";
@@ -211,11 +216,11 @@ public static class Startup
     /// <param name="builder">The instance of <see cref="WebApplicationBuilder" /> being configured.</param>
     public static void AddOpenTelemetry(this WebApplicationBuilder builder)
     {
-        var openTelemetryConfiguration =
-            builder.Configuration.GetSection(AppStartupSectionName).GetSection(OpenTelemetrySectionName);
+        var telemetryConfiguration =
+            builder.Configuration.GetSection(AppStartupSectionName).GetSection(TelemetrySectionName);
 
-        var aspireDashboardUri = new Uri(openTelemetryConfiguration.GetValue<string>(AspireDashboardUrlName)!);
-        var jaegerUri = new Uri(openTelemetryConfiguration.GetValue<string>(JaegerUrlName)!);
+        var aspireDashboardUri = new Uri(telemetryConfiguration.GetValue<string>(AspireDashboardUrlName)!);
+        var jaegerUri = new Uri(telemetryConfiguration.GetValue<string>(JaegerUrlName)!);
 
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(res => res.AddService(ServiceName))
@@ -252,7 +257,7 @@ public static class Startup
             .OpenTelemetry(options =>
             {
                 options.Endpoint = appConfiguration.GetSection(AppStartupSectionName)
-                    .GetSection(OpenTelemetrySectionName).GetValue<string>(AspireDashboardUrlName);
+                    .GetSection(TelemetrySectionName).GetValue<string>(AspireDashboardUrlName);
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
                     [serviceNameKey] = ServiceName,
@@ -271,21 +276,33 @@ public static class Startup
     {
         var kafkaHost = configuration.GetSection(nameof(KafkaSettings)).GetValue<string>(nameof(KafkaSettings.Host));
         var redisSettings = configuration.GetSection(nameof(RedisSettings)).Get<RedisSettings>()!;
+        var keycloakSettings = configuration.GetSection(nameof(KeycloakSettings)).Get<KeycloakSettings>()!;
         var redisConnectionString = $"{redisSettings.Host}:{redisSettings.Port},password={redisSettings.Password}";
 
-        var elasticSearchHost = configuration.GetSection(AppStartupSectionName).GetSection(OpenTelemetrySectionName)
-            .GetValue<string>(ElasticSearchUrlName)!;
+        var telemetrySection = configuration.GetSection(AppStartupSectionName).GetSection(TelemetrySectionName);
+        var elasticSearchUrl = telemetrySection.GetValue<string>(ElasticSearchUrlName)!;
+        var logstashUrl = telemetrySection.GetValue<string>(LogstashUrlName)!;
+        var prometheusUrl = telemetrySection.GetValue<string>(PrometheusUrlName)!;
+        var jaegerUrl = telemetrySection.GetValue<string>(JaegerHealthCheckUrlName)!;
+        var aspireDashboardUrl = telemetrySection.GetValue<string>(AspireDashboardHealthCheckUrlName)!;
+        var userServiceHealthCheckUrl = telemetrySection.GetValue<string>(UserServiceHealthCheckUrlName)!;
 
         services.AddHealthChecks()
             .AddDbContextCheck<ApplicationDbContext>()
             .AddKafka(new ProducerConfig { BootstrapServers = kafkaHost })
             .AddRedis(redisConnectionString)
-            .AddElasticsearch(elasticSearchHost)
+            .AddElasticsearch(elasticSearchUrl)
             .AddHangfire(options =>
             {
                 options.MinimumAvailableServers = 1;
                 options.MaximumJobsFailed = 10; // 10 failed jobs means the server is down
-            });
+            })
+            .AddUrlGroup(new Uri(prometheusUrl), name: "prometheus")
+            .AddUrlGroup(new Uri(logstashUrl), name: "logstash")
+            .AddUrlGroup(new Uri(keycloakSettings.Host), name: "keycloak")
+            .AddUrlGroup(new Uri(jaegerUrl), name: "jaeger")
+            .AddUrlGroup(new Uri(aspireDashboardUrl), name: "aspire")
+            .AddUrlGroup(new Uri(userServiceHealthCheckUrl), name: "user-service");
     }
 
     private static IEnumerable<string> GetHosts(this WebApplication app)
