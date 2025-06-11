@@ -1,30 +1,43 @@
 ﻿services:
+  question-service:
+    image: maratkk/flow-overstack_question-service:latest
+    container_name: question-service
+    depends_on:
+      - postgres-db
+      - logstash
+    ports:
+      - "8087:8080"
+    networks:
+      - question-service-network
+      - flow-overstack_common
+    environment:
+      ConnectionStrings__PostgresSQL: Server=postgres-db;Port=5432;Database=question-service-db;User Id=postgres; Password=${QUESTION_DB_PASSWORD}
+      Serilog__WriteTo__2__Args__requestUri: http://logstash:8080
+      GrpcHosts__UsersHost: http://user-service:8081
+      KeycloakSettings__Host: http://keycloak:8080
+      KafkaSettings__Host: broker:29092
+      AppStartupSettings__KnownProxies: "[]"
+      AppStartupSettings__OpenTelemetrySettings__AspireDashboardUrl: http://aspire-dashboard:18889
+      AppStartupSettings__OpenTelemetrySettings__JaegerUrl: http://jaeger:4317
+      AppStartupSettings__OpenTelemetrySettings__ElasticSearchUrl: http://elasticsearch:9200
+      RedisSettings__Host: redis
+      RedisSettings__Port: 6379
+      RedisSettings__Password: ${REDIS_PASSWORD}
+  
   postgres-db:
     image: postgres:latest
     container_name: postgres-question-db
     ports:
       - "5435:5432"
     networks:
+      - pg-network
       - question-service-network
     environment:
-      POSTGRES_USER: ${QUESTION_DB_USER}
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${QUESTION_DB_PASSWORD}
       POSTGRES_DB: question-service-db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: question-pgadmin
-    ports:
-      - "8889:80"
-    networks:
-      - question-service-network
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    depends_on:
-      - postgres-db
   
   logstash:
     container_name: logstash-question-service
@@ -39,9 +52,10 @@
       - flow-overstack_common
 
 networks:
+  pg-network:
+    external: true
   question-service-network:
   flow-overstack_common:
     external: true
 volumes:
   postgres_data:
-  redis_data:
