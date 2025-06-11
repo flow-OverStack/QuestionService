@@ -59,7 +59,7 @@ public static class EnumerableExtensions
         var sourceList = source.ToList();
         var invalidValuesList = invalidValues.ToList();
 
-        if (!sourceList.Any() || !invalidValuesList.Any()) return sourceList;
+        if (sourceList.Count == 0 || invalidValuesList.Count == 0) return sourceList;
 
         var invalidValuesDict = invalidValuesList
             .ToDictionary(x => x.Key, x => x.Value.ToHashSet());

@@ -60,7 +60,7 @@ public class ViewService(
             .SelectManyFromGroupedValues(ViewParsingHelpers.ParseQuestionIdFromKey,
                 ViewParsingHelpers.ParseViewFromValue).ToList();
 
-        if (!parsedViews.Any()) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
+        if (parsedViews.Count == 0) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
 
         #region Filtering views to have real user and question ids and to be unique
 

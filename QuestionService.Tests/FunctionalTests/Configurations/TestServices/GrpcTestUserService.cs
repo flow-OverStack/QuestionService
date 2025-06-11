@@ -70,7 +70,7 @@ internal class GrpcTestUserService : UserService.UserServiceClient
     {
         var users = Users.Where(x => userIds.Contains(x.Id)).ToList();
 
-        if (!users.Any())
+        if (users.Count == 0)
             return userIds.Count() switch
             {
                 <= 1 => throw new RpcException(new Status(StatusCode.InvalidArgument, ErrorMessage.UserNotFound),

@@ -46,7 +46,7 @@ public class QuestionType : ObjectType<Question>
             var tags = await tagLoader.LoadRequiredAsync(question.Id, cancellationToken);
 
             // Have no tags is a business exception
-            if (!tags.Any())
+            if (tags.Length == 0)
                 throw GraphQlExceptionHelper.GetException(ErrorMessage.TagsNotFound);
 
             return tags;

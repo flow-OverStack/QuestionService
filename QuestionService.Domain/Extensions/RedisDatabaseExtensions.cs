@@ -38,7 +38,7 @@ public static class RedisDatabaseExtensions
             values.Add(kvp.Value);
         }
 
-        if (!keys.Any() || !values.Any()) return;
+        if (keys.Count == 0 || values.Count == 0) return;
 
         cancellationToken.ThrowIfCancellationRequested();
 

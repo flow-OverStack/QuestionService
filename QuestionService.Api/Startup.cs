@@ -160,7 +160,7 @@ public static class Startup
     {
         var knownProxiesString =
             configuration.GetSection(AppStartupSectionName).GetSection("KnownProxies").Get<string[]>();
-        if (knownProxiesString == null || !knownProxiesString.Any()) return;
+        if (knownProxiesString == null || knownProxiesString.Length == 0) return;
 
         var options = new ForwardedHeadersOptions
         {

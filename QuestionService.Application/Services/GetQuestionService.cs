@@ -28,7 +28,7 @@ public class GetQuestionService(
     {
         var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
 
-        if (!questions.Any())
+        if (questions.Count == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<Question>.Failure(ErrorMessage.QuestionNotFound,
@@ -49,7 +49,7 @@ public class GetQuestionService(
             .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Id, x.Questions))
             .ToListAsync(cancellationToken);
 
-        if (!groupedQuestions.Any())
+        if (groupedQuestions.Count == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 
@@ -68,7 +68,7 @@ public class GetQuestionService(
             .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x))
             .ToList();
 
-        if (!groupedQuestions.Any())
+        if (groupedQuestions.Count == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 

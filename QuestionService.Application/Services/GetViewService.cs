@@ -26,7 +26,7 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
     {
         var views = await viewRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
 
-        if (!views.Any())
+        if (views.Count == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<View>.Failure(ErrorMessage.ViewNotFound, (int)ErrorCodes.ViewNotFound),
@@ -49,7 +49,7 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
             .ToList();
 
 
-        if (!groupedViews.Any())
+        if (groupedViews.Count == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 
@@ -65,7 +65,7 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
             .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Id, x.Views))
             .ToListAsync(cancellationToken);
 
-        if (!groupedViews.Any())
+        if (groupedViews.Count == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 
