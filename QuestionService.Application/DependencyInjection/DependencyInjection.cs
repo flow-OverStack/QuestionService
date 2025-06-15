@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Mappings;
 using QuestionService.Application.Services;
+using QuestionService.Application.Services.Cache;
 using QuestionService.Application.Validators;
 using QuestionService.Domain.Dtos.Request.Page;
 using QuestionService.Domain.Interfaces.Service;
@@ -26,7 +27,8 @@ public static class DependencyInjection
         services.AddScoped<IViewService, ViewService>();
         services.AddScoped<IViewDatabaseService, ViewService>();
         services.AddScoped<ITagService, TagService>();
-        services.AddScoped<IGetQuestionService, GetQuestionService>();
+        services.AddScoped<GetQuestionService>();
+        services.AddScoped<IGetQuestionService, CacheGetQuestionService>();
         services.AddScoped<IGetVoteService, GetVoteService>();
         services.AddScoped<IGetTagService, GetTagService>();
         services.AddScoped<IGetViewService, GetViewService>();

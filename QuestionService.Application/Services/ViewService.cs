@@ -47,7 +47,7 @@ public class ViewService(
         #region Removing invalid values
 
         var allViewValues =
-            (await redisDatabase.SetsMembersAsync(validViewKeys, cancellationToken)).ToList();
+            (await redisDatabase.SetsStringMembersAsync(validViewKeys, cancellationToken)).ToList();
         var invalidViewValues = await RemoveInvalidViewValuesAsync(allViewValues, cancellationToken);
         var validViewValues = allViewValues.FilterByInvalidValues(invalidViewValues);
 
