@@ -51,6 +51,47 @@ public static class RedisDatabaseExtensions
             throw new RedisException(RedisErrorMessage);
     }
 
+    /// <summary>
+    ///     Adds multiple sets to Redis, where each key represents a set and its corresponding value
+    ///     contains the members to be added to that set. Optionally sets a time-to-live for the keys.
+    /// </summary>
+    /// <param name="redisDatabase">The Redis database where the operation is performed.</param>
+    /// <param name="keysWithValues">A collection of key-value pairs where each key identifies a set and the value is a collection of members to add.</param>
+    /// <param name="timeToLiveInSeconds">The time-to-live (in seconds) for the keys being added. If set to zero or negative, no expiration is applied.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
+    /// <returns>The total number of members added to the sets.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="redisDatabase"/> or <paramref name="keysWithValues"/> is null.</exception>
+    /// <exception cref="OperationCanceledException">Thrown if the operation is canceled via the provided <paramref name="cancellationToken"/>.</exception>
+    /// <exception cref="RedisException">Thrown when setting expiration fails for any of the keys.</exception>
+    public static async Task<long> SetsAddAsync(this IDatabase redisDatabase,
+        IEnumerable<KeyValuePair<string, IEnumerable<string>>> keysWithValues,
+        int timeToLiveInSeconds,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(redisDatabase);
+        ArgumentNullException.ThrowIfNull(keysWithValues);
+
+        var keyValuePairs = keysWithValues.ToList();
+        var setAddTasks = keyValuePairs.Select(x =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return redisDatabase.SetAddAsync(x.Key, x.Value.Select(y => new RedisValue(y.ToString())).ToArray());
+        });
+        var keyExpiresTasks = keyValuePairs.Select(x =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return redisDatabase.KeyExpireAsync(x.Key, TimeSpan.FromSeconds(timeToLiveInSeconds));
+        });
+
+        var setAddResult = await Task.WhenAll(setAddTasks);
+        var keyExpiresResult = await Task.WhenAll(keyExpiresTasks);
+
+        if (keyExpiresResult.Any(x => !x))
+            throw new RedisException(RedisErrorMessage);
+
+        return setAddResult.Sum();
+    }
+
 
     /// <summary>
     ///     Retrieves the members of a set in Redis as a collection of strings.
@@ -100,7 +141,7 @@ public static class RedisDatabaseExtensions
     }
 
     /// <summary>
-    ///     Not atomically removes specified members from the sets in Redis. The sets and members are identified
+    ///     Removes specified members from the sets in Redis. The sets and members are identified
     ///     by a collection of key-value pairs where each key is a Redis set and the value is the
     ///     list of members to remove.
     /// </summary>
@@ -127,6 +168,44 @@ public static class RedisDatabaseExtensions
         var results = await Task.WhenAll(tasks);
 
         return results.Sum();
+    }
+
+    /// <summary>
+    ///     Asynchronously sets multiple string key-value pairs in Redis with a specified time-to-live (TTL).
+    /// </summary>
+    /// <typeparam name="TValue">The type of the values to be stored. Values are serialized to JSON.</typeparam>
+    /// <param name="redisDatabase">The Redis database instance to operate on.</param>
+    /// <param name="keysWithValues">A collection of key-value pairs to store in Redis.</param>
+    /// <param name="timeToLiveInSeconds">The time-to-live (TTL) for each key-value pair in seconds.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="redisDatabase"/> or <paramref name="keysWithValues"/> is null.</exception>
+    /// <exception cref="OperationCanceledException">Thrown if the operation is canceled via the <paramref name="cancellationToken"/>.</exception>
+    /// <exception cref="RedisException">Thrown if any of the key-value pairs fail to be set in Redis.</exception>
+    public static async Task StringSetAsync<TValue>(this IDatabase redisDatabase,
+        IEnumerable<KeyValuePair<string, TValue>> keysWithValues,
+        int timeToLiveInSeconds,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(redisDatabase);
+        ArgumentNullException.ThrowIfNull(keysWithValues);
+
+        var redisKeyWithValues = keysWithValues.DistinctBy(x => x.Key).Select(x =>
+        {
+            var jsonValue = JsonConvert.SerializeObject(x.Value);
+            return new KeyValuePair<RedisKey, RedisValue>(x.Key, new RedisValue(jsonValue));
+        });
+
+        var tasks = redisKeyWithValues.Select(x =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return redisDatabase.StringSetAsync(x.Key, x.Value, TimeSpan.FromSeconds(timeToLiveInSeconds));
+        });
+
+        var result = await Task.WhenAll(tasks);
+
+        if (result.Any(x => !x))
+            throw new RedisException(RedisErrorMessage);
     }
 
     /// <summary>
@@ -174,84 +253,5 @@ public static class RedisDatabaseExtensions
         }
 
         return jsonResult;
-    }
-
-    /// <summary>
-    ///     Asynchronously sets multiple string key-value pairs in Redis with a specified time-to-live (TTL).
-    /// </summary>
-    /// <typeparam name="TValue">The type of the values to be stored. Values are serialized to JSON.</typeparam>
-    /// <param name="redisDatabase">The Redis database instance to operate on.</param>
-    /// <param name="keysWithValues">A collection of key-value pairs to store in Redis.</param>
-    /// <param name="timeToLiveInSeconds">The time-to-live (TTL) for each key-value pair in seconds.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="redisDatabase"/> or <paramref name="keysWithValues"/> is null.</exception>
-    /// <exception cref="OperationCanceledException">Thrown if the operation is canceled via the <paramref name="cancellationToken"/>.</exception>
-    /// <exception cref="RedisException">Thrown if any of the key-value pairs fail to be set in Redis.</exception>
-    public static async Task StringSetAsync<TValue>(this IDatabase redisDatabase,
-        IEnumerable<KeyValuePair<string, TValue>> keysWithValues,
-        int timeToLiveInSeconds,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(redisDatabase);
-        ArgumentNullException.ThrowIfNull(keysWithValues);
-
-        var redisKeyWithValues = keysWithValues.DistinctBy(x => x.Key).Select(x =>
-        {
-            var jsonValue = JsonConvert.SerializeObject(x.Value);
-            return new KeyValuePair<RedisKey, RedisValue>(x.Key, new RedisValue(jsonValue));
-        });
-
-        var tasks = redisKeyWithValues.Select(x =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.StringSetAsync(x.Key, x.Value, TimeSpan.FromSeconds(timeToLiveInSeconds));
-        });
-
-        var result = await Task.WhenAll(tasks);
-
-        if (result.Any(x => !x))
-            throw new RedisException(RedisErrorMessage);
-    }
-
-    /// <summary>
-    /// Adds multiple sets to Redis, where each key represents a set and its corresponding value
-    /// contains the members to be added to that set. Optionally sets a time-to-live for the keys.
-    /// </summary>
-    /// <param name="redisDatabase">The Redis database where the operation is performed.</param>
-    /// <param name="keysWithValues">A collection of key-value pairs where each key identifies a set and the value is a collection of members to add.</param>
-    /// <param name="timeToLiveInSeconds">The time-to-live (in seconds) for the keys being added. If set to zero or negative, no expiration is applied.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
-    /// <returns>The total number of members added to the sets.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="redisDatabase"/> or <paramref name="keysWithValues"/> is null.</exception>
-    /// <exception cref="OperationCanceledException">Thrown if the operation is canceled via the provided <paramref name="cancellationToken"/>.</exception>
-    /// <exception cref="RedisException">Thrown when setting expiration fails for any of the keys.</exception>
-    public static async Task<long> SetsAddAsync(this IDatabase redisDatabase,
-        IEnumerable<KeyValuePair<string, IEnumerable<string>>> keysWithValues,
-        int timeToLiveInSeconds,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(redisDatabase);
-        ArgumentNullException.ThrowIfNull(keysWithValues);
-
-        var keyValuePairs = keysWithValues.ToList();
-        var setAddTasks = keyValuePairs.Select(x =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.SetAddAsync(x.Key, x.Value.Select(y => new RedisValue(y.ToString())).ToArray());
-        });
-        var keyExpiresTasks = keyValuePairs.Select(x =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.KeyExpireAsync(x.Key, TimeSpan.FromSeconds(timeToLiveInSeconds));
-        });
-
-        var setAddResult = await Task.WhenAll(setAddTasks);
-        var keyExpiresResult = await Task.WhenAll(keyExpiresTasks);
-
-        if (keyExpiresResult.Any(x => !x))
-            throw new RedisException(RedisErrorMessage);
-
-        return setAddResult.Sum();
     }
 }
