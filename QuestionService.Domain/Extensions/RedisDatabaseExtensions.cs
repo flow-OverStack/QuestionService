@@ -224,8 +224,6 @@ public static class RedisDatabaseExtensions
     /// A collection of deserialized objects of type T, corresponding to the retrieved JSON data.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when the redisDatabase or keys argument is null.</exception>
-    /// <exception cref="KeyNotFoundException">Thrown when one or more keys are not found in the cache.</exception>
-    /// <exception cref="InvalidCastException">Thrown when the JSON deserialization process fails.</exception>
     public static async Task<IEnumerable<T>> GetJsonParsedAsync<T>(this IDatabase redisDatabase,
         IEnumerable<string> keys,
         CancellationToken cancellationToken = default) where T : class
@@ -247,8 +245,7 @@ public static class RedisDatabaseExtensions
 
             var jsonValue = JsonConvert.DeserializeObject<T>(value.ToString());
 
-            if (jsonValue == null)
-                throw new InvalidCastException($"Could not cast {typeof(T).Name} from cache.");
+            if (jsonValue == null) continue;
 
             jsonResult.Add(jsonValue);
         }
