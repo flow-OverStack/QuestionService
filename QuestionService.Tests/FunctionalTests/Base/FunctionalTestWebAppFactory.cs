@@ -100,7 +100,6 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
                 _redisContainer.GetConnectionString().ParseConnectionString(out var host, out var port);
                 x.Host = host;
                 x.Port = port;
-                x.InstanceName = "TestQuestionService";
                 x.Password = null!;
             });
         });
