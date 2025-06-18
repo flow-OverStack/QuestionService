@@ -45,7 +45,7 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
 
         var groupedViews = views
             .GroupBy(x => (long)x.UserId!)
-            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x))
+            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x.ToList()))
             .ToList();
 
 

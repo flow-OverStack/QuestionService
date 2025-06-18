@@ -65,7 +65,7 @@ public class GetQuestionService(
 
         var groupedQuestions = questions
             .GroupBy(x => x.UserId)
-            .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x))
+            .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x.ToList()))
             .ToList();
 
         if (groupedQuestions.Count == 0)

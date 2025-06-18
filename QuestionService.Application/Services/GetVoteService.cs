@@ -73,7 +73,7 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
 
         var groupedVotes = votes
             .GroupBy(x => x.UserId)
-            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x))
+            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x.ToList()))
             .ToList();
 
         if (groupedVotes.Count == 0)
