@@ -71,7 +71,7 @@ public static class RedisDatabaseExtensions
         ArgumentNullException.ThrowIfNull(redisDatabase);
         ArgumentNullException.ThrowIfNull(keysWithValues);
 
-        var keyValuePairs = keysWithValues.ToList();
+        var keyValuePairs = keysWithValues.Where(x => x.Value.Any()).ToList();
         var setAddTasks = keyValuePairs.Select(x =>
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -80,7 +80,8 @@ public static class RedisDatabaseExtensions
         var keyExpiresTasks = keyValuePairs.Select(x =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.KeyExpireAsync(x.Key, TimeSpan.FromSeconds(timeToLiveInSeconds));
+            return redisDatabase.KeyExpireAsync(x.Key,
+                TimeSpan.FromSeconds(timeToLiveInSeconds));
         });
 
         var setAddResult = await Task.WhenAll(setAddTasks);
