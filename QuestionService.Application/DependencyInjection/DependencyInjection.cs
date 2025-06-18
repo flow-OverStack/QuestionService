@@ -29,9 +29,12 @@ public static class DependencyInjection
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<GetQuestionService>();
         services.AddScoped<IGetQuestionService, CacheGetQuestionService>();
-        services.AddScoped<IGetVoteService, GetVoteService>();
-        services.AddScoped<IGetTagService, GetTagService>();
-        services.AddScoped<IGetViewService, GetViewService>();
+        services.AddScoped<GetVoteService>();
+        services.AddScoped<IGetVoteService, CacheGetVoteService>();
+        services.AddScoped<GetTagService>();
+        services.AddScoped<IGetTagService, CacheGetTagService>();
+        services.AddScoped<GetViewService>();
+        services.AddScoped<IGetViewService, CacheGetViewService>();
 
         services.AddScoped<INullSafeValidator<OffsetPageDto>, OffsetPageDtoValidator>();
         services.AddScoped<INullSafeValidator<CursorPageDto>, CursorPageDtoValidator>();

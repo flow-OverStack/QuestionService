@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Extensions;
+using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
@@ -13,10 +14,6 @@ public class CacheGetQuestionService(
     IDatabase redisDatabase,
     IOptions<RedisSettings> redisSettings) : IGetQuestionService
 {
-    private const string QuestionKeyPattern = "question:{0}";
-    private const string TagQuestionsKeyPattern = "tag:{0}:questions";
-    private const string UserQuestionsKeyPattern = "user:{0}:questions";
-
     private readonly RedisSettings _redisSettings = redisSettings.Value;
 
     public Task<QueryableResult<Question>> GetAllAsync(CancellationToken cancellationToken = default) =>
@@ -29,7 +26,7 @@ public class CacheGetQuestionService(
 
         try
         {
-            var keys = idsList.Select(GetQuestionKey);
+            var keys = idsList.Select(RedisKeyHelper.GetQuestionKey);
             var questions = (await redisDatabase.GetJsonParsedAsync<Question>(keys, cancellationToken)).ToList();
 
             var missingIds = idsList.Except(questions.Select(x => x.Id)).ToList();
@@ -51,14 +48,16 @@ public class CacheGetQuestionService(
             var result = await inner.GetByIdsAsync(missingIds, cancellationToken);
 
             if (!result.IsSuccess)
-                return alreadyCachedList.Count != 0 ? CollectionResult<Question>.Success(alreadyCachedList) : result;
+                return alreadyCachedList.Count > 0
+                    ? CollectionResult<Question>.Success(alreadyCachedList)
+                    : result;
 
             var allQuestions = result.Data.UnionBy(alreadyCachedList, x => x.Id).ToList();
 
-            var keysWithQuestions = allQuestions.Select(x =>
-                new KeyValuePair<string, Question>(GetQuestionKey(x.Id), x));
+            var keyQuestions = allQuestions.Select(x =>
+                new KeyValuePair<string, Question>(RedisKeyHelper.GetQuestionKey(x.Id), x));
 
-            await redisDatabase.StringSetAsync(keysWithQuestions, _redisSettings.TimeToLiveInSeconds,
+            await redisDatabase.StringSetAsync(keyQuestions, _redisSettings.TimeToLiveInSeconds,
                 cancellationToken);
 
             return CollectionResult<Question>.Success(allQuestions);
@@ -72,14 +71,16 @@ public class CacheGetQuestionService(
 
         try
         {
-            var tagKeys = idsList.Select(GetTagQuestionsKey);
+            var tagQuestionKeys = idsList.Select(RedisKeyHelper.GetTagQuestionsKey);
             var tagsQuestionStringIds =
-                (await redisDatabase.SetsStringMembersAsync(tagKeys, cancellationToken)).Where(x => x.Value.Any());
+                (await redisDatabase.SetsStringMembersAsync(tagQuestionKeys, cancellationToken)).Where(x =>
+                    x.Value.Any());
 
             var tagQuestionIds = tagsQuestionStringIds.Select(x =>
-                new KeyValuePair<long, IEnumerable<long>>(GetIdFromKey(x.Key), x.Value.Select(long.Parse))).ToList();
+                new KeyValuePair<long, IEnumerable<long>>(RedisKeyHelper.GetIdFromKey(x.Key),
+                    x.Value.Select(long.Parse))).ToList();
 
-            var questionKeys = tagQuestionIds.SelectMany(x => x.Value.Select(GetQuestionKey)).Distinct();
+            var questionKeys = tagQuestionIds.SelectMany(x => x.Value.Select(RedisKeyHelper.GetQuestionKey)).Distinct();
             var questions = await redisDatabase.GetJsonParsedAsync<Question>(questionKeys, cancellationToken);
 
             var tagQuestions = tagQuestionIds.Select(kvp =>
@@ -122,20 +123,21 @@ public class CacheGetQuestionService(
             var result = await inner.GetQuestionsWithTagsAsync(missingIds, cancellationToken);
 
             if (!result.IsSuccess)
-                return alreadyCachedList.Count != 0
+                return alreadyCachedList.Count > 0
                     ? CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(alreadyCachedList)
                     : result;
 
             var allTagQuestions = result.Data.UnionBy(alreadyCachedList, x => x.Key).ToList();
 
             var tagQuestionStringIds = allTagQuestions.Select(kvp =>
-                new KeyValuePair<string, IEnumerable<string>>(GetTagQuestionsKey(kvp.Key),
+                new KeyValuePair<string, IEnumerable<string>>(RedisKeyHelper.GetTagQuestionsKey(kvp.Key),
                     kvp.Value.Select(x => x.Id.ToString())));
 
             var questions = allTagQuestions.SelectMany(x => x.Value);
-            var keysWithQuestions = questions.Select(x => new KeyValuePair<string, Question>(GetQuestionKey(x.Id), x));
+            var questionKeys = questions.Select(x =>
+                new KeyValuePair<string, Question>(RedisKeyHelper.GetQuestionKey(x.Id), x));
 
-            await redisDatabase.StringSetAsync(keysWithQuestions, _redisSettings.TimeToLiveInSeconds,
+            await redisDatabase.StringSetAsync(questionKeys, _redisSettings.TimeToLiveInSeconds,
                 cancellationToken);
             await redisDatabase.SetsAddAsync(tagQuestionStringIds, _redisSettings.TimeToLiveInSeconds,
                 cancellationToken);
@@ -151,14 +153,17 @@ public class CacheGetQuestionService(
 
         try
         {
-            var userKeys = idsList.Select(GetUserQuestionsKey);
+            var userQuestionKeys = idsList.Select(RedisKeyHelper.GetUserQuestionsKey);
             var userQuestionStringIds =
-                (await redisDatabase.SetsStringMembersAsync(userKeys, cancellationToken)).Where(x => x.Value.Any());
+                (await redisDatabase.SetsStringMembersAsync(userQuestionKeys, cancellationToken)).Where(x =>
+                    x.Value.Any());
 
             var userQuestionIds = userQuestionStringIds.Select(x =>
-                new KeyValuePair<long, IEnumerable<long>>(GetIdFromKey(x.Key), x.Value.Select(long.Parse))).ToList();
+                new KeyValuePair<long, IEnumerable<long>>(RedisKeyHelper.GetIdFromKey(x.Key),
+                    x.Value.Select(long.Parse))).ToList();
 
-            var questionKeys = userQuestionIds.SelectMany(x => x.Value.Select(GetQuestionKey)).Distinct();
+            var questionKeys = userQuestionIds.SelectMany(x => x.Value.Select(RedisKeyHelper.GetQuestionKey))
+                .Distinct();
             var questions = await redisDatabase.GetJsonParsedAsync<Question>(questionKeys, cancellationToken);
 
             var userQuestions = userQuestionIds.Select(kvp =>
@@ -201,38 +206,26 @@ public class CacheGetQuestionService(
             var result = await inner.GetUsersQuestionsAsync(missingIds, cancellationToken);
 
             if (!result.IsSuccess)
-                return alreadyCachedList.Count != 0
+                return alreadyCachedList.Count > 0
                     ? CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(alreadyCachedList)
                     : result;
 
             var allUserQuestions = result.Data.UnionBy(alreadyCachedList, x => x.Key).ToList();
 
             var userQuestionStringIds = allUserQuestions.Select(kvp =>
-                new KeyValuePair<string, IEnumerable<string>>(GetUserQuestionsKey(kvp.Key),
+                new KeyValuePair<string, IEnumerable<string>>(RedisKeyHelper.GetUserQuestionsKey(kvp.Key),
                     kvp.Value.Select(x => x.Id.ToString())));
 
             var questions = allUserQuestions.SelectMany(x => x.Value);
-            var keysWithQuestions = questions.Select(x => new KeyValuePair<string, Question>(GetQuestionKey(x.Id), x));
+            var questionKeys = questions.Select(x =>
+                new KeyValuePair<string, Question>(RedisKeyHelper.GetQuestionKey(x.Id), x));
 
-            await redisDatabase.StringSetAsync(keysWithQuestions, _redisSettings.TimeToLiveInSeconds,
+            await redisDatabase.StringSetAsync(questionKeys, _redisSettings.TimeToLiveInSeconds,
                 cancellationToken);
             await redisDatabase.SetsAddAsync(userQuestionStringIds, _redisSettings.TimeToLiveInSeconds,
                 cancellationToken);
 
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(allUserQuestions);
         }
-    }
-
-    private static string GetQuestionKey(long id) => string.Format(QuestionKeyPattern, id);
-    private static string GetTagQuestionsKey(long tagId) => string.Format(TagQuestionsKeyPattern, tagId);
-
-    private static string GetUserQuestionsKey(long userId) => string.Format(UserQuestionsKeyPattern, userId);
-
-    private static long GetIdFromKey(string key)
-    {
-        var parts = key.Split(':');
-        if (parts.Length < 2)
-            throw new ArgumentException($"Invalid key format: {key}");
-        return long.Parse(parts[1]);
     }
 }
