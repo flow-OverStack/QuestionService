@@ -7,6 +7,7 @@ using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ErrorFilters;
 using QuestionService.GraphQl.ExtensionTypes;
+using QuestionService.GraphQl.ExtensionTypes.Sharable;
 using QuestionService.GraphQl.Types;
 
 namespace QuestionService.GraphQl.DependencyInjection;
@@ -28,6 +29,7 @@ public static class DependencyInjection
             .AddType<VoteType>()
             .AddType<TagType>()
             .AddType<UserType>()
+            .AddTypeExtension<CollectionSegmentInfoType>()
             .AddSorting()
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>()
