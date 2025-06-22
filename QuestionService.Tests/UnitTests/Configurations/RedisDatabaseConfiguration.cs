@@ -28,7 +28,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetViews();
 
-                if (key == "view:keys") return views.Keys;
+                if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
@@ -67,7 +67,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetEmptyValuesViews();
 
-                if (key == "view:keys") return views.Keys;
+                if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
@@ -88,7 +88,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetInvalidValuesViews();
 
-                if (key == "view:keys") return views.Keys;
+                if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
@@ -109,7 +109,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetInvalidKeysViews();
 
-                if (key == "view:keys") return views.Keys;
+                if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);
@@ -130,7 +130,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetSpamViews();
 
-                if (key == "view:keys") return views.Keys;
+                if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
                 throw new NotSupportedException(KeyNotSupportedMessage);

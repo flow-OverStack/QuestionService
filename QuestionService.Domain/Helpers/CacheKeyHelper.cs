@@ -1,6 +1,6 @@
 namespace QuestionService.Domain.Helpers;
 
-public static class RedisKeyHelper
+public static class CacheKeyHelper
 {
     private const string QuestionKeyPattern = "question:{0}";
     private const string TagQuestionsKeyPattern = "tag:{0}:questions";

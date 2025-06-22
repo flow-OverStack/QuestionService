@@ -9,9 +9,9 @@ public class VoteDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : BatchDataLoader<GetVoteDto, Vote>(batchScheduler, options)
+    : BatchDataLoader<VoteDto, Vote>(batchScheduler, options)
 {
-    protected override async Task<IReadOnlyDictionary<GetVoteDto, Vote>> LoadBatchAsync(IReadOnlyList<GetVoteDto> keys,
+    protected override async Task<IReadOnlyDictionary<VoteDto, Vote>> LoadBatchAsync(IReadOnlyList<VoteDto> keys,
         CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
@@ -19,12 +19,12 @@ public class VoteDataLoader(
 
         var result = await voteService.GetByDtosAsync(keys, cancellationToken);
 
-        var dictionary = new Dictionary<GetVoteDto, Vote>();
+        var dictionary = new Dictionary<VoteDto, Vote>();
 
         if (!result.IsSuccess)
             return dictionary.AsReadOnly();
 
-        dictionary = result.Data.ToDictionary(x => new GetVoteDto(x.QuestionId, x.UserId), x => x);
+        dictionary = result.Data.ToDictionary(x => new VoteDto(x.QuestionId, x.UserId), x => x);
 
         return dictionary.AsReadOnly();
     }

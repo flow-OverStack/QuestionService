@@ -23,7 +23,7 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
         return Task.FromResult(QueryableResult<Vote>.Success(votes));
     }
 
-    public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos,
+    public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<VoteDto> dtos,
         CancellationToken cancellationToken = default)
     {
         var keys = dtos.ToList();

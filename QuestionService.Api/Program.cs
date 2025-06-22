@@ -4,6 +4,7 @@ using QuestionService.Api;
 using QuestionService.Api.Middlewares;
 using QuestionService.Application.DependencyInjection;
 using QuestionService.BackgroundJobs.DependencyInjection;
+using QuestionService.Cache.DependencyInjection;
 using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DependencyInjection;
@@ -34,6 +35,7 @@ builder.Services.AddHangfire(builder.Configuration);
 builder.Host.AddLogging(builder.Configuration);
 
 builder.Services.AddDataAccessLayer(builder.Configuration);
+builder.Services.AddCache();
 builder.Services.AddApplication();
 
 builder.AddOpenTelemetry();

@@ -15,12 +15,11 @@ using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Resources;
 using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
-using StackExchange.Redis;
 
 namespace QuestionService.Application.Services;
 
 public class ViewService(
-    IDatabase redisDatabase,
+    ICacheProvider cache,
     IBaseRepository<Question> questionRepository,
     IBaseRepository<View> viewRepository,
     IEntityProvider<UserDto> userProvider,
@@ -28,7 +27,7 @@ public class ViewService(
     : IViewService, IViewDatabaseService
 {
     private const string ViewKey = "view:question:";
-    private const string ViewsKeysKey = "view:keys";
+    private const string ViewsQuestionsKey = "view:questions";
     private const char ViewKeySeparator = ',';
     private readonly BusinessRules _businessRules = businessRules.Value;
 
@@ -38,7 +37,7 @@ public class ViewService(
         #region Removing invalid keys
 
         var allViewKeys =
-            (await redisDatabase.SetStringMembersAsync(ViewsKeysKey, cancellationToken)).ToList();
+            (await cache.SetStringMembersAsync(ViewsQuestionsKey, cancellationToken)).ToList();
         var invalidKeys = await RemoveInvalidViewKeysAsync(allViewKeys, cancellationToken);
         var validViewKeys = allViewKeys.Except(invalidKeys);
 
@@ -47,7 +46,7 @@ public class ViewService(
         #region Removing invalid values
 
         var allViewValues =
-            (await redisDatabase.SetsStringMembersAsync(validViewKeys, cancellationToken)).ToList();
+            (await cache.SetsStringMembersAsync(validViewKeys, cancellationToken)).ToList();
         var invalidViewValues = await RemoveInvalidViewValuesAsync(allViewValues, cancellationToken);
         var validViewValues = allViewValues.FilterByInvalidValues(invalidViewValues);
 
@@ -85,7 +84,7 @@ public class ViewService(
 
         // Hash sets to avoid O(n²) with Where and Any inside in-memory filtering
         var newUniqueViews = parsedViews
-            .Where(x => !existingViews.Contains(x)) // Checking that view is unique, excluding all existing views
+            .Where(x => !existingViews.Contains(x)) // Checking that a view is unique, excluding all existing views
             .Where(x => existingQuestionIds.Contains(x.QuestionId)) // Checking question existence
             .Where(x => x.UserId == null || existingUserIds.Contains((long)x.UserId)) // Checking user existence
             .ToList();
@@ -95,8 +94,8 @@ public class ViewService(
         await viewRepository.CreateRangeAsync(newUniqueViews, cancellationToken);
         await viewRepository.SaveChangesAsync(cancellationToken);
 
-        var keysToDelete = allViewKeys.Prepend(ViewsKeysKey).Select(k => (RedisKey)k).ToArray();
-        await redisDatabase.KeyDeleteAsync(keysToDelete);
+        var keysToDelete = allViewKeys.Prepend(ViewsQuestionsKey);
+        await cache.KeyDeleteAsync(keysToDelete, cancellationToken);
 
         return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Count));
     }
@@ -118,10 +117,10 @@ public class ViewService(
         var keyValueMap = new List<KeyValuePair<string, string>>
         {
             new(key, value),
-            new(ViewsKeysKey, key)
+            new(ViewsQuestionsKey, key)
         };
 
-        await redisDatabase.SetsAddAtomicallyAsync(keyValueMap, cancellationToken);
+        await cache.SetsAddAtomicallyAsync(keyValueMap, cancellationToken);
 
         return BaseResult.Success();
     }
@@ -148,12 +147,11 @@ public class ViewService(
     private async Task<IEnumerable<string>> RemoveInvalidViewKeysAsync(IEnumerable<string> allViewKeys,
         CancellationToken cancellationToken = default)
     {
-        var invalidValues = allViewKeys.Where(x => !IsValidKey(x)).Select(x => new RedisValue(x)).ToArray();
+        var invalidValues = allViewKeys.Where(x => !IsValidKey(x)).ToList();
 
-        cancellationToken.ThrowIfCancellationRequested();
-        await redisDatabase.SetRemoveAsync(new RedisKey(ViewsKeysKey), invalidValues);
+        await cache.SetRemoveAsync(ViewsQuestionsKey, invalidValues, cancellationToken);
 
-        return invalidValues.Select(x => x.ToString());
+        return invalidValues;
     }
 
     private async Task<IEnumerable<KeyValuePair<string, IEnumerable<string>>>> RemoveInvalidViewValuesAsync(
@@ -161,12 +159,10 @@ public class ViewService(
         CancellationToken cancellationToken = default)
     {
         var invalidViewValues = allViewValues.Select(x =>
-            new KeyValuePair<RedisKey, IEnumerable<RedisValue>>(x.Key,
-                x.Value.Where(y => !IsValidValue(y)).Select(y => new RedisValue(y)))).ToList();
-        await redisDatabase.SetsRemoveAsync(invalidViewValues, cancellationToken);
+            new KeyValuePair<string, IEnumerable<string>>(x.Key, x.Value.Where(y => !IsValidValue(y)))).ToList();
+        await cache.SetsRemoveAsync(invalidViewValues, cancellationToken);
 
-        return invalidViewValues.Select(x =>
-            new KeyValuePair<string, IEnumerable<string>>(x.Key.ToString(), x.Value.Select(y => y.ToString())));
+        return invalidViewValues;
     }
 
     private static bool IsValidKey(string key)

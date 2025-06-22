@@ -85,7 +85,7 @@ public class Queries
     public async Task<Vote?> GetVote(long questionId, long userId, VoteDataLoader voteLoader,
         CancellationToken cancellationToken)
     {
-        var dto = new GetVoteDto(questionId, userId);
+        var dto = new VoteDto(questionId, userId);
         var vote = await voteLoader.LoadAsync(dto, cancellationToken);
 
         return vote;

@@ -19,7 +19,7 @@ public interface IGetVoteService
     /// <param name="dtos"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<GetVoteDto> dtos,
+    Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<VoteDto> dtos,
         CancellationToken cancellationToken = default);
 
     /// <summary>

@@ -27,7 +27,7 @@ public class GetVoteServiceTests
     public async Task GetByDtos_ShouldBe_Success()
     {
         //Arrange
-        var dtos = new List<GetVoteDto>
+        var dtos = new List<VoteDto>
         {
             new(1, 1),
             new(2, 2),
@@ -48,7 +48,7 @@ public class GetVoteServiceTests
     public async Task GetByDtos_ShouldBe_VoteNotFound()
     {
         //Arrange
-        var dtos = new List<GetVoteDto>
+        var dtos = new List<VoteDto>
         {
             new(0, 0),
         };
@@ -68,7 +68,7 @@ public class GetVoteServiceTests
     public async Task GetByDtos_ShouldBe_VotesNotFound()
     {
         //Arrange
-        var dtos = new List<GetVoteDto>
+        var dtos = new List<VoteDto>
         {
             new(0, 0),
             new(0, 0),

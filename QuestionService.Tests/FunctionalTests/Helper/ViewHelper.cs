@@ -14,7 +14,7 @@ public static class ViewHelper
         foreach (var key in views.Keys)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
-            keyValueMap.Add(new KeyValuePair<string, string>("view:keys", key!));
+            keyValueMap.Add(new KeyValuePair<string, string>("view:questions", key!));
             foreach (var value in views.Values)
             {
                 ArgumentException.ThrowIfNullOrWhiteSpace(value);
@@ -33,7 +33,7 @@ public static class ViewHelper
         foreach (var key in views.Keys)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
-            keyValueMap.Add(new KeyValuePair<string, string>("view:keys", key!));
+            keyValueMap.Add(new KeyValuePair<string, string>("view:questions", key!));
             foreach (var value in views.Values)
             {
                 ArgumentException.ThrowIfNullOrWhiteSpace(value);

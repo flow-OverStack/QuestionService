@@ -15,7 +15,7 @@ public class VoteDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunc
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<VoteDataLoader>();
-        var dto = new GetVoteDto(2, 1);
+        var dto = new VoteDto(2, 1);
 
         //Act
         var result = await dataLoader.LoadAsync(dto);
@@ -31,7 +31,7 @@ public class VoteDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunc
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<VoteDataLoader>();
-        var dto = new GetVoteDto(0, 0);
+        var dto = new VoteDto(0, 0);
 
         //Act
         var result = await dataLoader.LoadAsync(dto);
