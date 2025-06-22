@@ -95,7 +95,7 @@ public class ViewService(
         await viewRepository.SaveChangesAsync(cancellationToken);
 
         var keysToDelete = allViewKeys.Prepend(ViewsQuestionsKey);
-        await cache.KeyDeleteAsync(keysToDelete, cancellationToken);
+        await cache.KeyDeleteAsync(keysToDelete, false, cancellationToken);
 
         return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Count));
     }
@@ -149,7 +149,7 @@ public class ViewService(
     {
         var invalidValues = allViewKeys.Where(x => !IsValidKey(x)).ToList();
 
-        await cache.SetRemoveAsync(ViewsQuestionsKey, invalidValues, cancellationToken);
+        await cache.SetRemoveAsync(ViewsQuestionsKey, invalidValues, true, cancellationToken);
 
         return invalidValues;
     }
@@ -160,7 +160,7 @@ public class ViewService(
     {
         var invalidViewValues = allViewValues.Select(x =>
             new KeyValuePair<string, IEnumerable<string>>(x.Key, x.Value.Where(y => !IsValidValue(y)))).ToList();
-        await cache.SetsRemoveAsync(invalidViewValues, cancellationToken);
+        await cache.SetsRemoveAsync(invalidViewValues, true, cancellationToken);
 
         return invalidViewValues;
     }

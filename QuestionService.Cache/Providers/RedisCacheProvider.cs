@@ -44,27 +44,31 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
     }
 
     public async Task<long> SetsAddAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> keysWithValues,
-        int timeToLiveInSeconds, CancellationToken cancellationToken = default)
+        int timeToLiveInSeconds, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(keysWithValues);
+
+        var commandFlags = fireAndForget
+            ? CommandFlags.FireAndForget
+            : CommandFlags.None;
 
         var keyValuePairs = keysWithValues.Where(x => x.Value.Any()).ToList();
         var setAddTasks = keyValuePairs.Select(x =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.SetAddAsync(x.Key, x.Value.Select(y => new RedisValue(y.ToString())).ToArray());
+            return redisDatabase.SetAddAsync(x.Key, x.Value.Select(y => new RedisValue(y.ToString())).ToArray(),
+                commandFlags);
         });
         var keyExpiresTasks = keyValuePairs.Select(x =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.KeyExpireAsync(x.Key,
-                TimeSpan.FromSeconds(timeToLiveInSeconds));
+            return redisDatabase.KeyExpireAsync(x.Key, TimeSpan.FromSeconds(timeToLiveInSeconds), commandFlags);
         });
 
         var setAddResult = await Task.WhenAll(setAddTasks);
         var keyExpiresResult = await Task.WhenAll(keyExpiresTasks);
 
-        if (keyExpiresResult.Any(x => !x))
+        if (!fireAndForget && keyExpiresResult.Any(x => !x))
             throw new RedisException(RedisErrorMessage);
 
         return setAddResult.Sum();
@@ -101,9 +105,13 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
     }
 
     public async Task<long> SetsRemoveAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> keyValueMap,
-        CancellationToken cancellationToken = default)
+        bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(keyValueMap);
+
+        var commandFlags = fireAndForget
+            ? CommandFlags.FireAndForget
+            : CommandFlags.None;
 
         var tasks = keyValueMap.Select(x =>
         {
@@ -111,7 +119,8 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
             ArgumentNullException.ThrowIfNull(x.Value);
 
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.SetRemoveAsync((RedisKey)x.Key, x.Value.Select(v => new RedisValue(v)).ToArray());
+            return redisDatabase.SetRemoveAsync((RedisKey)x.Key, x.Value.Select(v => new RedisValue(v)).ToArray(),
+                commandFlags);
         });
 
         var results = await Task.WhenAll(tasks);
@@ -119,9 +128,21 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         return results.Sum();
     }
 
-    public async Task StringSetAsync<TValue>(IEnumerable<KeyValuePair<string, TValue>> keysWithValues,
-        int timeToLiveInSeconds,
+    public async Task<long> SetRemoveAsync(string key, IEnumerable<string> values, bool fireAndForget = false,
         CancellationToken cancellationToken = default)
+    {
+        var commandFlags = fireAndForget
+            ? CommandFlags.FireAndForget
+            : CommandFlags.None;
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return await redisDatabase.SetRemoveAsync((RedisKey)key, values.Select(x => (RedisValue)x).ToArray(),
+            commandFlags);
+    }
+
+    public async Task StringSetAsync<TValue>(IEnumerable<KeyValuePair<string, TValue>> keysWithValues,
+        int timeToLiveInSeconds, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(keysWithValues);
 
@@ -131,20 +152,25 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
             return new KeyValuePair<RedisKey, RedisValue>(x.Key, new RedisValue(jsonValue));
         });
 
+        var commandFlags = fireAndForget
+            ? CommandFlags.FireAndForget
+            : CommandFlags.None;
+
         var tasks = redisKeyWithValues.Select(x =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.StringSetAsync(x.Key, x.Value, TimeSpan.FromSeconds(timeToLiveInSeconds));
+            return redisDatabase.StringSetAsync(x.Key, x.Value, TimeSpan.FromSeconds(timeToLiveInSeconds),
+                flags: commandFlags);
         });
 
         var result = await Task.WhenAll(tasks);
 
-        if (result.Any(x => !x))
+        if (!fireAndForget && result.Any(x => !x))
             throw new RedisException(RedisErrorMessage);
     }
 
     public async Task<IEnumerable<T>> GetJsonParsedAsync<T>(IEnumerable<string> keys,
-        CancellationToken cancellationToken = default) where T : class
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(keys);
 
@@ -170,10 +196,15 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         return jsonResult;
     }
 
-    public Task KeyDeleteAsync(IEnumerable<string> key, CancellationToken cancellationToken = default) =>
-        redisDatabase.KeyDeleteAsync(key.Select(x => (RedisKey)x).ToArray());
+    public async Task<long> KeyDeleteAsync(IEnumerable<string> key, bool fireAndForget = false,
+        CancellationToken cancellationToken = default)
+    {
+        var commandFlags = fireAndForget
+            ? CommandFlags.FireAndForget
+            : CommandFlags.None;
 
-    public Task<long> SetRemoveAsync(string key, IEnumerable<string> values,
-        CancellationToken cancellationToken = default) =>
-        redisDatabase.SetRemoveAsync((RedisKey)key, values.Select(x => (RedisValue)x).ToArray());
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return await redisDatabase.KeyDeleteAsync(key.Select(x => (RedisKey)x).ToArray(), commandFlags);
+    }
 }

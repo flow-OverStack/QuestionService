@@ -75,7 +75,7 @@ public class BaseCacheRepository<TEntity, TEntityId>
 
             var keyValues = result.Data.Select(x =>
                 new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(x)), x));
-            await _cache.StringSetAsync(keyValues, timeToLiveInSeconds, CancellationToken.None);
+            await _cache.StringSetAsync(keyValues, timeToLiveInSeconds, true, CancellationToken.None);
 
             var allEntities = result.Data.UnionBy(alreadyCachedData, _entityIdSelector).ToList();
             return CollectionResult<TEntity>.Success(allEntities);
@@ -168,8 +168,8 @@ public class BaseCacheRepository<TEntity, TEntityId>
             var entityToCache = entities.Select(e =>
                 new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(e)), e));
 
-            await _cache.StringSetAsync(entityToCache, timeToLiveInSeconds, CancellationToken.None);
-            await _cache.SetsAddAsync(outerSetToCache, timeToLiveInSeconds, CancellationToken.None);
+            await _cache.StringSetAsync(entityToCache, timeToLiveInSeconds, true, CancellationToken.None);
+            await _cache.SetsAddAsync(outerSetToCache, timeToLiveInSeconds, true, CancellationToken.None);
 
             var allData = fetchedData.UnionBy(alreadyCachedData, x => x.Key).ToList();
             return CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>.Success(allData);
