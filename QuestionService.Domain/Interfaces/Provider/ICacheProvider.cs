@@ -44,29 +44,6 @@ public interface ICacheProvider
     Task<IEnumerable<string>> SetStringMembersAsync(string key, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Removes specified members from the sets in the cache. The sets and members are identified
-    ///     by a collection of key-value pairs where each key is a set and the value is the
-    ///     list of members to remove.
-    /// </summary>
-    /// <param name="keyValueMap">A collection of key-value pairs where the key is a set key and the value is a collection of members to remove from the set.</param>
-    /// <param name="fireAndForget">If true, sends the command in fire-and-forget mode (no result or error reported).</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
-    /// <returns>The total number of members removed from the sets.</returns>
-    Task<long> SetsRemoveAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> keyValueMap,
-        bool fireAndForget = false, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    ///     Removes specified members from a single set in the cache.
-    /// </summary>
-    /// <param name="key">The key of the set from which members will be removed.</param>
-    /// <param name="values">A collection of members to remove from the set.</param>
-    /// <param name="fireAndForget">If true, sends the command in fire-and-forget mode (no result or error reported).</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
-    /// <returns>The number of members removed from the set.</returns>
-    Task<long> SetRemoveAsync(string key, IEnumerable<string> values, bool fireAndForget = false,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
     ///     Asynchronously sets multiple string key-value pairs in the cache with a specified time-to-live (TTL).
     /// </summary>
     /// <typeparam name="TValue">The type of the values to be stored. Values are serialized to JSON.</typeparam>
@@ -97,6 +74,6 @@ public interface ICacheProvider
     /// <param name="fireAndForget">If true, sends the command in fire-and-forget mode (no result or error reported).</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
     /// <returns>The number of keys that were removed from the cache.</returns>
-    Task<long> KeyDeleteAsync(IEnumerable<string> key, bool fireAndForget = false,
+    Task<long> KeysDeleteAsync(IEnumerable<string> key, bool fireAndForget = false,
         CancellationToken cancellationToken = default);
 }

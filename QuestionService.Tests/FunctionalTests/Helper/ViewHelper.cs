@@ -1,4 +1,3 @@
-using QuestionService.Domain.Extensions;
 using QuestionService.Tests.Configurations;
 using StackExchange.Redis;
 

@@ -38,8 +38,7 @@ public class ViewService(
 
         var allViewKeys =
             (await cache.SetStringMembersAsync(ViewsQuestionsKey, cancellationToken)).ToList();
-        var invalidKeys = await RemoveInvalidViewKeysAsync(allViewKeys, cancellationToken);
-        var validViewKeys = allViewKeys.Except(invalidKeys);
+        var validViewKeys = allViewKeys.Where(IsValidKey).ToList();
 
         #endregion
 
@@ -47,8 +46,8 @@ public class ViewService(
 
         var allViewValues =
             (await cache.SetsStringMembersAsync(validViewKeys, cancellationToken)).ToList();
-        var invalidViewValues = await RemoveInvalidViewValuesAsync(allViewValues, cancellationToken);
-        var validViewValues = allViewValues.FilterByInvalidValues(invalidViewValues);
+        var validViewValues = allViewValues.Select(x =>
+            new KeyValuePair<string, IEnumerable<string>>(x.Key, x.Value.Where(IsValidValue)));
 
         #endregion
 
@@ -95,7 +94,7 @@ public class ViewService(
         await viewRepository.SaveChangesAsync(cancellationToken);
 
         var keysToDelete = allViewKeys.Prepend(ViewsQuestionsKey);
-        await cache.KeyDeleteAsync(keysToDelete, false, cancellationToken);
+        await cache.KeysDeleteAsync(keysToDelete, false, cancellationToken);
 
         return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Count));
     }
@@ -142,27 +141,6 @@ public class ViewService(
         return !StringHelper.AnyNullOrWhiteSpace(dto.UserIp, dto.UserFingerprint)
                && dto.UserFingerprint.HasMaxLength(_businessRules.UserFingerprintLength)
                && IPAddress.TryParse(dto.UserIp, out _);
-    }
-
-    private async Task<IEnumerable<string>> RemoveInvalidViewKeysAsync(IEnumerable<string> allViewKeys,
-        CancellationToken cancellationToken = default)
-    {
-        var invalidValues = allViewKeys.Where(x => !IsValidKey(x)).ToList();
-
-        await cache.SetRemoveAsync(ViewsQuestionsKey, invalidValues, true, cancellationToken);
-
-        return invalidValues;
-    }
-
-    private async Task<IEnumerable<KeyValuePair<string, IEnumerable<string>>>> RemoveInvalidViewValuesAsync(
-        IEnumerable<KeyValuePair<string, IEnumerable<string>>> allViewValues,
-        CancellationToken cancellationToken = default)
-    {
-        var invalidViewValues = allViewValues.Select(x =>
-            new KeyValuePair<string, IEnumerable<string>>(x.Key, x.Value.Where(y => !IsValidValue(y)))).ToList();
-        await cache.SetsRemoveAsync(invalidViewValues, true, cancellationToken);
-
-        return invalidViewValues;
     }
 
     private static bool IsValidKey(string key)

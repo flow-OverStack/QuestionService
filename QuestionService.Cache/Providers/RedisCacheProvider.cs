@@ -104,43 +104,6 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         return results;
     }
 
-    public async Task<long> SetsRemoveAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> keyValueMap,
-        bool fireAndForget = false, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(keyValueMap);
-
-        var commandFlags = fireAndForget
-            ? CommandFlags.FireAndForget
-            : CommandFlags.None;
-
-        var tasks = keyValueMap.Select(x =>
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(x.Key);
-            ArgumentNullException.ThrowIfNull(x.Value);
-
-            cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.SetRemoveAsync((RedisKey)x.Key, x.Value.Select(v => new RedisValue(v)).ToArray(),
-                commandFlags);
-        });
-
-        var results = await Task.WhenAll(tasks);
-
-        return results.Sum();
-    }
-
-    public async Task<long> SetRemoveAsync(string key, IEnumerable<string> values, bool fireAndForget = false,
-        CancellationToken cancellationToken = default)
-    {
-        var commandFlags = fireAndForget
-            ? CommandFlags.FireAndForget
-            : CommandFlags.None;
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return await redisDatabase.SetRemoveAsync((RedisKey)key, values.Select(x => (RedisValue)x).ToArray(),
-            commandFlags);
-    }
-
     public async Task StringSetAsync<TValue>(IEnumerable<KeyValuePair<string, TValue>> keysWithValues,
         int timeToLiveInSeconds, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
@@ -196,7 +159,7 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         return jsonResult;
     }
 
-    public async Task<long> KeyDeleteAsync(IEnumerable<string> key, bool fireAndForget = false,
+    public async Task<long> KeysDeleteAsync(IEnumerable<string> key, bool fireAndForget = false,
         CancellationToken cancellationToken = default)
     {
         var commandFlags = fireAndForget
