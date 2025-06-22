@@ -73,9 +73,16 @@ public class BaseCacheRepository<TEntity, TEntityId>
                     ? CollectionResult<TEntity>.Success(alreadyCachedData)
                     : result;
 
-            var keyValues = result.Data.Select(x =>
-                new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(x)), x));
-            await _cache.StringSetAsync(keyValues, timeToLiveInSeconds, true, CancellationToken.None);
+            try
+            {
+                var keyValues = result.Data.Select(x =>
+                    new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(x)), x));
+                await _cache.StringSetAsync(keyValues, timeToLiveInSeconds, true, CancellationToken.None);
+            }
+            catch (Exception)
+            {
+                // If caching fails, we still return the fetched data without caching it.
+            }
 
             var allEntities = result.Data.UnionBy(alreadyCachedData, _entityIdSelector).ToList();
             return CollectionResult<TEntity>.Success(allEntities);
@@ -159,17 +166,24 @@ public class BaseCacheRepository<TEntity, TEntityId>
 
             var fetchedData = result.Data.ToList();
 
-            var outerSetToCache = fetchedData.Select(kvp =>
-                new KeyValuePair<string, IEnumerable<string>>(
-                    getOuterKey(kvp.Key),
-                    kvp.Value.Select(_getEntityValue)));
+            try
+            {
+                var outerSetToCache = fetchedData.Select(kvp =>
+                    new KeyValuePair<string, IEnumerable<string>>(
+                        getOuterKey(kvp.Key),
+                        kvp.Value.Select(_getEntityValue)));
 
-            var entities = fetchedData.SelectMany(x => x.Value);
-            var entityToCache = entities.Select(e =>
-                new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(e)), e));
+                var entities = fetchedData.SelectMany(x => x.Value);
+                var entityToCache = entities.Select(e =>
+                    new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(e)), e));
 
-            await _cache.StringSetAsync(entityToCache, timeToLiveInSeconds, true, CancellationToken.None);
-            await _cache.SetsAddAsync(outerSetToCache, timeToLiveInSeconds, true, CancellationToken.None);
+                await _cache.StringSetAsync(entityToCache, timeToLiveInSeconds, true, CancellationToken.None);
+                await _cache.SetsAddAsync(outerSetToCache, timeToLiveInSeconds, true, CancellationToken.None);
+            }
+            catch (Exception)
+            {
+                // If caching fails, we still return the fetched data without caching it.
+            }
 
             var allData = fetchedData.UnionBy(alreadyCachedData, x => x.Key).ToList();
             return CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>.Success(allData);
