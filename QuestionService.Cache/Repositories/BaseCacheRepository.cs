@@ -65,22 +65,19 @@ public class BaseCacheRepository<TEntity, TEntityId>
         async Task<CollectionResult<TEntity>> GetFromInnerAndCacheAsync(IEnumerable<TEntityId> missingIds,
             IEnumerable<TEntity> alreadyCached)
         {
-            var alreadyCachedList = alreadyCached.ToList();
+            var alreadyCachedData = alreadyCached.ToList();
 
             var result = await fetch(missingIds, cancellationToken);
-
             if (!result.IsSuccess)
-                return alreadyCachedList.Count > 0
-                    ? CollectionResult<TEntity>.Success(alreadyCachedList)
+                return alreadyCachedData.Count > 0
+                    ? CollectionResult<TEntity>.Success(alreadyCachedData)
                     : result;
 
-            var allEntities = result.Data.UnionBy(alreadyCachedList, _entityIdSelector).ToList();
-
-            var keyValues = allEntities.Select(x =>
+            var keyValues = result.Data.Select(x =>
                 new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(x)), x));
-
             await _cache.StringSetAsync(keyValues, timeToLiveInSeconds, CancellationToken.None);
 
+            var allEntities = result.Data.UnionBy(alreadyCachedData, _entityIdSelector).ToList();
             return CollectionResult<TEntity>.Success(allEntities);
         }
     }
@@ -152,28 +149,29 @@ public class BaseCacheRepository<TEntity, TEntityId>
         async Task<CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>> GetFromInnerAndCacheAsync(
             IEnumerable<TOuterId> missingIds, IEnumerable<KeyValuePair<TOuterId, IEnumerable<TEntity>>> alreadyCached)
         {
-            var alreadyCachedList = alreadyCached.ToList();
-            var result = await fetch(missingIds, cancellationToken);
+            var alreadyCachedData = alreadyCached.ToList();
 
+            var result = await fetch(missingIds, cancellationToken);
             if (!result.IsSuccess)
-                return alreadyCachedList.Count > 0
-                    ? CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>.Success(alreadyCachedList)
+                return alreadyCachedData.Count > 0
+                    ? CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>.Success(alreadyCachedData)
                     : result;
 
-            var allData = result.Data.UnionBy(alreadyCachedList, x => x.Key).ToList();
+            var fetchedData = result.Data.ToList();
 
-            var outerSetToCache = allData.Select(kvp =>
+            var outerSetToCache = fetchedData.Select(kvp =>
                 new KeyValuePair<string, IEnumerable<string>>(
                     getOuterKey(kvp.Key),
                     kvp.Value.Select(_getEntityValue)));
 
-            var entities = allData.SelectMany(x => x.Value);
+            var entities = fetchedData.SelectMany(x => x.Value);
             var entityToCache = entities.Select(e =>
                 new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(e)), e));
 
             await _cache.StringSetAsync(entityToCache, timeToLiveInSeconds, CancellationToken.None);
             await _cache.SetsAddAsync(outerSetToCache, timeToLiveInSeconds, CancellationToken.None);
 
+            var allData = fetchedData.UnionBy(alreadyCachedData, x => x.Key).ToList();
             return CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>.Success(allData);
         }
     }
