@@ -17,6 +17,9 @@ public static class CacheKeyHelper
     private const string QuestionVotesKeyPattern = "question:{0}:votes";
     private const string UserVotesKeyPattern = "user:{0}:votes";
 
+    private const string ViewQuestionKeyPattern = "view:question:{0}";
+    private const string ViewQuestionsKey = "view:questions";
+
     public static string GetQuestionKey(long id) => string.Format(QuestionKeyPattern, id);
     public static string GetTagQuestionsKey(long tagId) => string.Format(TagQuestionsKeyPattern, tagId);
     public static string GetUserQuestionsKey(long userId) => string.Format(UserQuestionsKeyPattern, userId);
@@ -32,6 +35,9 @@ public static class CacheKeyHelper
     public static string GetQuestionVotesKey(long questionId) => string.Format(QuestionVotesKeyPattern, questionId);
     public static string GetUserVotesKey(long userId) => string.Format(UserVotesKeyPattern, userId);
 
+    public static string GetViewQuestionsKey() => ViewQuestionsKey;
+    public static string GetViewQuestionKey(long questionId) => string.Format(ViewQuestionKeyPattern, questionId);
+
 
     public static long GetIdFromKey(string key)
     {
@@ -40,5 +46,14 @@ public static class CacheKeyHelper
             throw new ArgumentException($"Invalid key format: {key}");
 
         return long.Parse(parts[1]);
+    }
+
+    public static long GetIdFromViewKey(string key)
+    {
+        var parts = key.Split(':');
+        if (parts.Length < 3)
+            throw new ArgumentException($"Invalid view key format: {key}");
+
+        return long.Parse(parts[2]);
     }
 }

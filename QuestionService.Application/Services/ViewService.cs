@@ -26,8 +26,6 @@ public class ViewService(
     IOptions<BusinessRules> businessRules)
     : IViewService, IViewDatabaseService
 {
-    private const string ViewKey = "view:question:";
-    private const string ViewsQuestionsKey = "view:questions";
     private const char ViewKeySeparator = ',';
     private readonly BusinessRules _businessRules = businessRules.Value;
 
@@ -37,7 +35,7 @@ public class ViewService(
         #region Removing invalid keys
 
         var allViewKeys =
-            (await cache.SetStringMembersAsync(ViewsQuestionsKey, cancellationToken)).ToArray();
+            (await cache.SetStringMembersAsync(CacheKeyHelper.GetViewQuestionsKey(), cancellationToken)).ToArray();
         var validViewKeys = allViewKeys.Where(IsValidKey).ToArray();
 
         #endregion
@@ -93,7 +91,7 @@ public class ViewService(
         await viewRepository.CreateRangeAsync(newUniqueViews, cancellationToken);
         await viewRepository.SaveChangesAsync(cancellationToken);
 
-        var keysToDelete = allViewKeys.Prepend(ViewsQuestionsKey);
+        var keysToDelete = allViewKeys.Prepend(CacheKeyHelper.GetViewQuestionsKey());
         await cache.KeysDeleteAsync(keysToDelete, false, cancellationToken);
 
         return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Length));
@@ -110,13 +108,13 @@ public class ViewService(
         // because that may increase the request processing time
         // And this request is called frequently
 
-        var key = ViewKey + dto.QuestionId;
+        var key = CacheKeyHelper.GetViewQuestionKey(dto.QuestionId);
         var value = GetViewValue(dto);
 
         var keyValueMap = new List<KeyValuePair<string, string>>
         {
             new(key, value),
-            new(ViewsQuestionsKey, key)
+            new(CacheKeyHelper.GetViewQuestionsKey(), key)
         };
 
         await cache.SetsAddAtomicallyAsync(keyValueMap, cancellationToken);
@@ -145,7 +143,15 @@ public class ViewService(
 
     private static bool IsValidKey(string key)
     {
-        return long.TryParse(key.Replace(ViewKey, string.Empty), out _);
+        try
+        {
+            CacheKeyHelper.GetIdFromViewKey(key);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     private static bool IsValidValue(string value)
@@ -156,12 +162,12 @@ public class ViewService(
 
     private static class ViewParsingHelpers
     {
-        public static long ParseQuestionIdFromKey(string rawKey)
+        public static long ParseQuestionIdFromKey(string key)
         {
-            if (!long.TryParse(rawKey.Replace(ViewKey, string.Empty), out var questionId))
+            if (!IsValidKey(key))
                 throw new FormatException(ErrorMessage.InvalidCacheDataFormat);
 
-            return questionId;
+            return CacheKeyHelper.GetIdFromViewKey(key);
         }
 
         public static View ParseViewFromValue(long questionId, string value)
