@@ -37,15 +37,15 @@ public class ViewService(
         #region Removing invalid keys
 
         var allViewKeys =
-            (await cache.SetStringMembersAsync(ViewsQuestionsKey, cancellationToken)).ToList();
-        var validViewKeys = allViewKeys.Where(IsValidKey).ToList();
+            (await cache.SetStringMembersAsync(ViewsQuestionsKey, cancellationToken)).ToArray();
+        var validViewKeys = allViewKeys.Where(IsValidKey).ToArray();
 
         #endregion
 
         #region Removing invalid values
 
         var allViewValues =
-            (await cache.SetsStringMembersAsync(validViewKeys, cancellationToken)).ToList();
+            (await cache.SetsStringMembersAsync(validViewKeys, cancellationToken)).ToArray();
         var validViewValues = allViewValues.Select(x =>
             new KeyValuePair<string, IEnumerable<string>>(x.Key, x.Value.Where(IsValidValue)));
 
@@ -56,9 +56,9 @@ public class ViewService(
 
         var parsedViews = spamFilteredViews
             .SelectManyFromGroupedValues(ViewParsingHelpers.ParseQuestionIdFromKey,
-                ViewParsingHelpers.ParseViewFromValue).ToList();
+                ViewParsingHelpers.ParseViewFromValue).ToArray();
 
-        if (parsedViews.Count == 0) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
+        if (parsedViews.Length == 0) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
 
         #region Filtering views to have real user and question ids and to be unique
 
@@ -86,7 +86,7 @@ public class ViewService(
             .Where(x => !existingViews.Contains(x)) // Checking that a view is unique, excluding all existing views
             .Where(x => existingQuestionIds.Contains(x.QuestionId)) // Checking question existence
             .Where(x => x.UserId == null || existingUserIds.Contains((long)x.UserId)) // Checking user existence
-            .ToList();
+            .ToArray();
 
         #endregion
 
@@ -96,7 +96,7 @@ public class ViewService(
         var keysToDelete = allViewKeys.Prepend(ViewsQuestionsKey);
         await cache.KeysDeleteAsync(keysToDelete, false, cancellationToken);
 
-        return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Count));
+        return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(newUniqueViews.Length));
     }
 
     public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,

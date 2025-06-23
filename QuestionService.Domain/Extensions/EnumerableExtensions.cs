@@ -22,7 +22,7 @@ public static class EnumerableExtensions
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        var keyValuePairs = source.ToList();
+        var keyValuePairs = source.ToArray();
 
         var valueCounts = keyValuePairs
             .SelectMany(x => x.Value)

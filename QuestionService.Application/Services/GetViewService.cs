@@ -24,9 +24,9 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
     public async Task<CollectionResult<View>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var views = await viewRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        var views = await viewRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
 
-        if (views.Count == 0)
+        if (views.Length == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<View>.Failure(ErrorMessage.ViewNotFound, (int)ErrorCodes.ViewNotFound),
@@ -41,15 +41,15 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
     {
         var views = await viewRepository.GetAll()
             .Where(x => x.UserId != null && userIds.Contains((long)x.UserId))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
         var groupedViews = views
             .GroupBy(x => (long)x.UserId!)
-            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x.ToList()))
-            .ToList();
+            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x.ToArray()))
+            .ToArray();
 
 
-        if (groupedViews.Count == 0)
+        if (groupedViews.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 
@@ -63,9 +63,9 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
             .Where(x => questionIds.Contains(x.Id))
             .Include(x => x.Views)
             .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Id, x.Views))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        if (groupedViews.Count == 0)
+        if (groupedViews.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 

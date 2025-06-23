@@ -18,7 +18,7 @@ public class UserProvider(UserService.UserServiceClient client, IMapper mapper) 
         }
         catch (RpcException e) when (e.Status.Detail == ErrorMessage.UserNotFound)
         {
-            return default;
+            return null;
         }
     }
 

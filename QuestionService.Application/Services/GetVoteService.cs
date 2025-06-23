@@ -19,14 +19,14 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
 
         var votes = voteRepository.GetAll();
 
-        // Since there's can be no votes it is not an exception to have no votes 
+        // Since there can be no votes, it is not an exception to have no votes 
         return Task.FromResult(QueryableResult<Vote>.Success(votes));
     }
 
     public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<VoteDto> dtos,
         CancellationToken cancellationToken = default)
     {
-        var keys = dtos.ToList();
+        var keys = dtos.ToArray();
 
         var predicate = PredicateBuilder.New<Vote>();
         predicate = keys.Aggregate(predicate,
@@ -36,10 +36,10 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
         var votes = await voteRepository.GetAll()
             .AsExpandable()
             .Where(predicate)
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        if (votes.Count == 0)
-            return keys.Count switch
+        if (votes.Length == 0)
+            return keys.Length switch
             {
                 <= 1 => CollectionResult<Vote>.Failure(ErrorMessage.VoteNotFound, (int)ErrorCodes.VoteNotFound),
                 > 1 => CollectionResult<Vote>.Failure(ErrorMessage.VotesNotFound, (int)ErrorCodes.VotesNotFound)
@@ -55,9 +55,9 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
             .Where(x => questionIds.Contains(x.Id))
             .Include(x => x.Votes)
             .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Id, x.Votes))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        if (groupedVotes.Count == 0)
+        if (groupedVotes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
                 (int)ErrorCodes.VotesNotFound);
 
@@ -69,14 +69,14 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
     {
         var votes = await voteRepository.GetAll()
             .Where(x => userIds.Contains(x.UserId))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
         var groupedVotes = votes
             .GroupBy(x => x.UserId)
-            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x.ToList()))
-            .ToList();
+            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x.ToArray()))
+            .ToArray();
 
-        if (groupedVotes.Count == 0)
+        if (groupedVotes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
                 (int)ErrorCodes.VotesNotFound);
 

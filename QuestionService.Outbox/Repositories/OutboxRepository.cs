@@ -18,7 +18,7 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
     {
         var unprocessedMessages =
             await outboxRepository.GetAll().Where(x => x.ProcessedAt == null).Take(batchSize)
-                .ToListAsync(cancellationToken);
+                .ToArrayAsync(cancellationToken);
         return unprocessedMessages;
     }
 

@@ -52,7 +52,7 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
             ? CommandFlags.FireAndForget
             : CommandFlags.None;
 
-        var keyValuePairs = keysWithValues.Where(x => x.Value.Any()).ToList();
+        var keyValuePairs = keysWithValues.Where(x => x.Value.Any()).ToArray();
         var setAddTasks = keyValuePairs.Select(x =>
         {
             cancellationToken.ThrowIfCancellationRequested();

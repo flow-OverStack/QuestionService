@@ -19,16 +19,17 @@ public class GetQuestionService(
 
         var questions = questionRepository.GetAll();
 
-        // Since there's can be no questions it is not exception to have no questions
+        // Since there can be no questions, it is not exception to have no questions
         return Task.FromResult(QueryableResult<Question>.Success(questions));
     }
 
     public async Task<CollectionResult<Question>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id))
+            .ToArrayAsync(cancellationToken);
 
-        if (questions.Count == 0)
+        if (questions.Length == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<Question>.Failure(ErrorMessage.QuestionNotFound,
@@ -47,9 +48,9 @@ public class GetQuestionService(
             .Where(x => tagIds.Contains(x.Id))
             .Include(x => x.Questions)
             .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Id, x.Questions))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        if (groupedQuestions.Count == 0)
+        if (groupedQuestions.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 
@@ -61,14 +62,14 @@ public class GetQuestionService(
     {
         var questions = await questionRepository.GetAll()
             .Where(x => userIds.Contains(x.UserId))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
         var groupedQuestions = questions
             .GroupBy(x => x.UserId)
-            .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x.ToList()))
-            .ToList();
+            .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x.ToArray()))
+            .ToArray();
 
-        if (groupedQuestions.Count == 0)
+        if (groupedQuestions.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 

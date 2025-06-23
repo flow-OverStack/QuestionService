@@ -43,16 +43,16 @@ public class BaseCacheRepository<TEntity, TEntityId>
         ArgumentNullException.ThrowIfNull(ids);
         ArgumentNullException.ThrowIfNull(fetch);
 
-        var idsList = ids.ToList();
+        var idsList = ids.ToArray();
 
         try
         {
             var keys = idsList.Select(_getEntityKey);
-            var cached = (await _cache.GetJsonParsedAsync<TEntity>(keys, cancellationToken)).ToList();
+            var cached = (await _cache.GetJsonParsedAsync<TEntity>(keys, cancellationToken)).ToArray();
 
-            var missingIds = idsList.Except(cached.Select(_entityIdSelector)).ToList();
+            var missingIds = idsList.Except(cached.Select(_entityIdSelector)).ToArray();
 
-            if (missingIds.Count > 0)
+            if (missingIds.Length > 0)
                 return await GetFromInnerAndCacheAsync(missingIds, cached);
 
             return CollectionResult<TEntity>.Success(cached);
@@ -65,11 +65,11 @@ public class BaseCacheRepository<TEntity, TEntityId>
         async Task<CollectionResult<TEntity>> GetFromInnerAndCacheAsync(IEnumerable<TEntityId> missingIds,
             IEnumerable<TEntity> alreadyCached)
         {
-            var alreadyCachedData = alreadyCached.ToList();
+            var alreadyCachedData = alreadyCached.ToArray();
 
             var result = await fetch(missingIds, cancellationToken);
             if (!result.IsSuccess)
-                return alreadyCachedData.Count > 0
+                return alreadyCachedData.Length > 0
                     ? CollectionResult<TEntity>.Success(alreadyCachedData)
                     : result;
 
@@ -84,7 +84,7 @@ public class BaseCacheRepository<TEntity, TEntityId>
                 // If caching fails, we still return the fetched data without caching it.
             }
 
-            var allEntities = result.Data.UnionBy(alreadyCachedData, _entityIdSelector).ToList();
+            var allEntities = result.Data.UnionBy(alreadyCachedData, _entityIdSelector).ToArray();
             return CollectionResult<TEntity>.Success(allEntities);
         }
     }
@@ -104,7 +104,7 @@ public class BaseCacheRepository<TEntity, TEntityId>
         ArgumentNullException.ThrowIfNull(parseOuterIdFromKey);
         ArgumentNullException.ThrowIfNull(fetch);
 
-        var idsList = outerIds.ToList();
+        var idsList = outerIds.ToArray();
 
         try
         {
@@ -116,10 +116,10 @@ public class BaseCacheRepository<TEntity, TEntityId>
                 .Select(x => new KeyValuePair<TOuterId, IEnumerable<TEntityId>>(
                     parseOuterIdFromKey(x.Key),
                     x.Value.Select(_parseEntityIdFromValue)))
-                .ToList();
+                .ToArray();
 
             var entityKeys = outerToEntityIds.SelectMany(x => x.Value.Select(_getEntityKey)).Distinct();
-            var allEntities = (await _cache.GetJsonParsedAsync<TEntity>(entityKeys, cancellationToken)).ToList();
+            var allEntities = (await _cache.GetJsonParsedAsync<TEntity>(entityKeys, cancellationToken)).ToArray();
 
             var grouped = outerToEntityIds.Select(kvp =>
                 new KeyValuePair<TOuterId, IEnumerable<TEntity>>(
@@ -127,7 +127,7 @@ public class BaseCacheRepository<TEntity, TEntityId>
                     kvp.Value
                         .Select(id => allEntities.FirstOrDefault(e =>
                             EqualityComparer<TEntityId>.Default.Equals(_entityIdSelector(e), id)))
-                        .Where(e => e != null)!)).ToList();
+                        .Where(e => e != null)!)).ToArray();
 
             var missingOuterIds = idsList.Except(outerToEntityIds.Select(x => x.Key)).ToList();
             var cached = new List<KeyValuePair<TOuterId, IEnumerable<TEntity>>>();
@@ -156,15 +156,15 @@ public class BaseCacheRepository<TEntity, TEntityId>
         async Task<CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>> GetFromInnerAndCacheAsync(
             IEnumerable<TOuterId> missingIds, IEnumerable<KeyValuePair<TOuterId, IEnumerable<TEntity>>> alreadyCached)
         {
-            var alreadyCachedData = alreadyCached.ToList();
+            var alreadyCachedData = alreadyCached.ToArray();
 
             var result = await fetch(missingIds, cancellationToken);
             if (!result.IsSuccess)
-                return alreadyCachedData.Count > 0
+                return alreadyCachedData.Length > 0
                     ? CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>.Success(alreadyCachedData)
                     : result;
 
-            var fetchedData = result.Data.ToList();
+            var fetchedData = result.Data.ToArray();
 
             try
             {
@@ -185,7 +185,7 @@ public class BaseCacheRepository<TEntity, TEntityId>
                 // If caching fails, we still return the fetched data without caching it.
             }
 
-            var allData = fetchedData.UnionBy(alreadyCachedData, x => x.Key).ToList();
+            var allData = fetchedData.UnionBy(alreadyCachedData, x => x.Key).ToArray();
             return CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>.Success(allData);
         }
     }

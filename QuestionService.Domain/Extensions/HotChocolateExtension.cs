@@ -20,7 +20,7 @@ public static class HotChocolateExtension
         if (item is not ObjectValueNode objectValueNode)
             throw new ArgumentException($"Item must be of type {nameof(ObjectValueNode)}.");
 
-        return objectValueNode.Fields.Select(ParseOrderFromField).ToList();
+        return objectValueNode.Fields.Select(ParseOrderFromField).ToArray();
     }
 
     private static OrderDto ParseOrderFromField(ObjectFieldNode field)

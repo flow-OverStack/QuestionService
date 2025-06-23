@@ -25,9 +25,9 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
     {
         var tags = await tagRepository.GetAll()
             .Where(x => ids.Contains(x.Id))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        if (tags.Count == 0)
+        if (tags.Length == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagNotFound, (int)ErrorCodes.TagNotFound),
@@ -44,9 +44,9 @@ public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Q
             .Where(x => questionIds.Contains(x.Id))
             .Include(x => x.Tags)
             .Select(x => new KeyValuePair<long, IEnumerable<Tag>>(x.Id, x.Tags))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        if (groupedTags.Count == 0)
+        if (groupedTags.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagsNotFound,
                 (int)ErrorCodes.TagsNotFound);
 
