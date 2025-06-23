@@ -12,7 +12,7 @@ public class ClaimsValidationMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.User.Identity is { IsAuthenticated: true }) // if authorization is required by controller
+        if (context.User.Identity is { IsAuthenticated: true }) // if controller requires authorization
         {
             if (RequiredClaimsExists(context))
             {
@@ -33,14 +33,21 @@ public class ClaimsValidationMiddleware(RequestDelegate next)
 
     private static bool RequiredClaimsExists(HttpContext context)
     {
-        var token = context.Request.Headers[AuthorizationHeaderName].ToString().Replace(SchemaName, string.Empty);
+        try
+        {
+            var token = context.Request.Headers[AuthorizationHeaderName].ToString().Replace(SchemaName, string.Empty);
 
-        var handler = new JwtSecurityTokenHandler();
-        var jsonToken = handler.ReadJwtToken(token);
-        var payload = jsonToken.Payload.SerializeToJson();
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(token);
+            var payload = jsonToken.Payload.SerializeToJson();
 
-        var claims = JsonConvert.DeserializeObject<RequiredClaims>(payload);
+            var claims = JsonConvert.DeserializeObject<RequiredClaims>(payload);
 
-        return claims != null && claims.IsValid();
+            return claims != null && claims.IsValid();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }

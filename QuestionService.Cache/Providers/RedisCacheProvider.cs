@@ -147,13 +147,19 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 
         foreach (var value in result)
         {
-            if (value.IsNull) continue;
+            try
+            {
+                if (value.IsNull) continue;
 
-            var jsonValue = JsonConvert.DeserializeObject<T>(value.ToString());
+                var jsonValue = JsonConvert.DeserializeObject<T>(value.ToString());
+                if (jsonValue == null) continue;
 
-            if (jsonValue == null) continue;
-
-            jsonResult.Add(jsonValue);
+                jsonResult.Add(jsonValue);
+            }
+            catch (Exception)
+            {
+                // If deserialization fails, we skip this value.
+            }
         }
 
         return jsonResult;
