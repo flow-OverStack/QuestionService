@@ -16,16 +16,18 @@ internal class GrpcTestUserService : UserService.UserServiceClient
     private static readonly IMapper Mapper =
         new MapperConfiguration(cfg => cfg.AddMaps(typeof(GrpcMapping))).CreateMapper();
 
-    public override GrpcUser GetUserById(GetUserByIdRequest request, CallOptions options) =>
+    public override GrpcUser GetUserWithRolesById(GetUserByIdRequest request, CallOptions options) =>
         GetUserById(request.UserId);
 
-    public override GrpcUser GetUserById(GetUserByIdRequest request, Metadata? headers = default,
+    public override GrpcUser GetUserWithRolesById(GetUserByIdRequest request, Metadata? headers = default,
         DateTime? deadline = null, CancellationToken cancellationToken = default) => GetUserById(request.UserId);
 
-    public override AsyncUnaryCall<GrpcUser> GetUserByIdAsync(GetUserByIdRequest request, CallOptions options) =>
+    public override AsyncUnaryCall<GrpcUser>
+        GetUserWithRolesByIdAsync(GetUserByIdRequest request, CallOptions options) =>
         ToAsyncUnaryCall(GetUserById(request.UserId));
 
-    public override AsyncUnaryCall<GrpcUser> GetUserByIdAsync(GetUserByIdRequest request, Metadata headers = null,
+    public override AsyncUnaryCall<GrpcUser> GetUserWithRolesByIdAsync(GetUserByIdRequest request,
+        Metadata headers = null,
         DateTime? deadline = null, CancellationToken cancellationToken = default) =>
         ToAsyncUnaryCall(GetUserById(request.UserId));
 

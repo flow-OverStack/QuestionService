@@ -12,7 +12,7 @@ public class UserProvider(UserService.UserServiceClient client, IMapper mapper) 
     {
         try
         {
-            var user = await client.GetUserByIdAsync(new GetUserByIdRequest { UserId = id },
+            var user = await client.GetUserWithRolesByIdAsync(new GetUserByIdRequest { UserId = id },
                 cancellationToken: cancellationToken);
             return mapper.Map<UserDto>(user);
         }
