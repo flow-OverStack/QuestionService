@@ -70,10 +70,10 @@ public interface ICacheProvider
     /// <summary>
     ///     Asynchronously deletes a key and its associated value from the cache.
     /// </summary>
-    /// <param name="key">The key to be removed from the cache.</param>
+    /// <param name="keys">The keys to be removed from the cache.</param>
     /// <param name="fireAndForget">If true, sends the command in fire-and-forget mode (no result or error reported).</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
     /// <returns>The number of keys that were removed from the cache.</returns>
-    Task<long> KeysDeleteAsync(IEnumerable<string> key, bool fireAndForget = false,
+    Task<long> KeysDeleteAsync(IEnumerable<string> keys, bool fireAndForget = false,
         CancellationToken cancellationToken = default);
 }

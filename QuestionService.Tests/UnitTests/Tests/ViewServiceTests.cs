@@ -46,8 +46,9 @@ public class ViewServiceTests
     {
         //Arrange
         var dto = new IncrementViewsDto(1, 1, "1.0.0.1", "someFingerprint");
-        var viewService = new ViewServiceFactory(RedisDatabaseConfiguration.GetFalseScriptRedisDatabaseConfiguration())
-            .GetService();
+        var viewService =
+            new ViewServiceFactory(RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration())
+                .GetService();
 
         //Act
         var action = async () => await viewService.IncrementViewsAsync(dto);

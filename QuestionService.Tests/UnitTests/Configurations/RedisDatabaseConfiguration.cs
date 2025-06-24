@@ -40,7 +40,7 @@ internal static class RedisDatabaseConfiguration
         return mockDatabase.Object;
     }
 
-    public static IDatabase GetFalseScriptRedisDatabaseConfiguration()
+    public static IDatabase GetFalseResponseRedisDatabaseConfiguration()
     {
         var mockDatabase = new Mock<IDatabase>();
 

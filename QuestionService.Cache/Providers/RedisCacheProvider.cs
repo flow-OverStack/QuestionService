@@ -165,7 +165,7 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         return jsonResult;
     }
 
-    public async Task<long> KeysDeleteAsync(IEnumerable<string> key, bool fireAndForget = false,
+    public async Task<long> KeysDeleteAsync(IEnumerable<string> keys, bool fireAndForget = false,
         CancellationToken cancellationToken = default)
     {
         var commandFlags = fireAndForget
@@ -174,6 +174,6 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return await redisDatabase.KeyDeleteAsync(key.Select(x => (RedisKey)x).ToArray(), commandFlags);
+        return await redisDatabase.KeyDeleteAsync(keys.Select(x => (RedisKey)x).ToArray(), commandFlags);
     }
 }

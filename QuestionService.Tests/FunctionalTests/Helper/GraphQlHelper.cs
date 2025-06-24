@@ -317,4 +317,30 @@ internal static class GraphQlHelper
             .Replace("$TAGID", tagId.ToString())
             .Replace("$VIEWID", viewId.ToString());
     }
+
+    public static string RequestQuestionByIdQuery(long questionId)
+    {
+        return """
+            {
+              question(id: $QUESTIONID) {
+                id
+                title
+                body
+                userId
+                createdAt
+                lastModifiedAt
+                tags {
+                  id
+                  name
+                  description
+                  questions {
+                    id
+                    title
+                  }
+                }
+              }  
+            }
+            """
+            .Replace("$QUESTIONID", questionId.ToString());
+    }
 }

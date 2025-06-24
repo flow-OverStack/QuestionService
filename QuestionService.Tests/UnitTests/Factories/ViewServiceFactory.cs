@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Services;
+using QuestionService.Cache.Providers;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
@@ -19,18 +20,20 @@ internal class ViewServiceFactory
 
     public readonly BusinessRules BusinessRules = BusinessRulesConfiguration.GetBusinessRules();
 
+    public readonly ICacheProvider CacheProvider =
+        new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration());
+
     public readonly IBaseRepository<Question> QuestionRepository =
         MockRepositoriesGetters.GetMockQuestionRepository().Object;
 
-    public readonly IDatabase RedisDatabase = RedisDatabaseConfiguration.GetRedisDatabaseConfiguration();
     public readonly IEntityProvider<UserDto> UserProvider = MockEntityProvidersGetters.GetMockUserProvider().Object;
     public readonly IBaseRepository<View> ViewRepository = MockRepositoriesGetters.GetMockViewRepository().Object;
 
-    public ViewServiceFactory(IDatabase? redisDatabase = null)
+    public ViewServiceFactory(IDatabase? redisCacheProvider = null)
     {
-        if (redisDatabase != null) RedisDatabase = redisDatabase;
+        if (redisCacheProvider != null) CacheProvider = new RedisCacheProvider(redisCacheProvider);
 
-        var service = new ViewService(RedisDatabase, QuestionRepository, ViewRepository, UserProvider,
+        var service = new ViewService(CacheProvider, QuestionRepository, ViewRepository, UserProvider,
             new OptionsWrapper<BusinessRules>(BusinessRules));
 
         _viewService = service;

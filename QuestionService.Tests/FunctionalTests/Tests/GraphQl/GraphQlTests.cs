@@ -51,7 +51,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllByIdsAndNames_ShouldBe_Success()
+    public async Task GetAllByIds_ShouldBe_Success()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(2, 2, 1, 1, 1) };
@@ -71,7 +71,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllByIdsAndName_ShouldBe_Null()
+    public async Task GetAllByIds_ShouldBe_Null()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(0, 0, 0, 0, 0) };

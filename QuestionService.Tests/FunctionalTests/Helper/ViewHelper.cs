@@ -1,11 +1,11 @@
+using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Tests.Configurations;
-using StackExchange.Redis;
 
 namespace QuestionService.Tests.FunctionalTests.Helper;
 
 public static class ViewHelper
 {
-    public static async Task InsertViews(this IDatabase redisDatabase)
+    public static async Task InsertViews(this ICacheProvider redisDatabase)
     {
         var views = ViewConfiguration.GetViews();
 
@@ -24,7 +24,7 @@ public static class ViewHelper
         await redisDatabase.SetsAddAtomicallyAsync(keyValueMap);
     }
 
-    public static async Task InsertInvalidValuesViews(this IDatabase redisDatabase)
+    public static async Task InsertInvalidValuesViews(this ICacheProvider redisDatabase)
     {
         var views = ViewConfiguration.GetInvalidValuesViews();
 

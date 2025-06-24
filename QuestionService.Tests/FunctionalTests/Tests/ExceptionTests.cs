@@ -8,6 +8,7 @@ using QuestionService.Domain.Dtos.Request;
 using QuestionService.Domain.Resources;
 using QuestionService.Domain.Results;
 using QuestionService.Tests.FunctionalTests.Base.Exception;
+using QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Xunit;
 
@@ -99,5 +100,26 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.False(result!.IsSuccess);
         Assert.StartsWith(ErrorMessage.InternalServerError, result.ErrorMessage);
         Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetQuestionById_ShouldBe_NoException()
+    {
+        //Arrange
+        var requestBody = new { query = GraphQlHelper.RequestQuestionByIdQuery(2) };
+
+        //Act
+        // 1st request fetches data from DB
+        await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        // 2nd request fetches data from cache
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlGetAllByIdAndNameResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result!.Data.Question);
+        Assert.NotNull(result.Data.Question.Tags);
     }
 }
