@@ -152,9 +152,9 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
                 if (value.IsNull) continue;
 
                 var jsonValue = JsonConvert.DeserializeObject<T>(value.ToString());
-                if (jsonValue == null) continue;
+                if (Equals(jsonValue, default(T))) continue;
 
-                jsonResult.Add(jsonValue);
+                jsonResult.Add(jsonValue!);
             }
             catch (Exception)
             {
