@@ -6,8 +6,6 @@ namespace QuestionService.Tests.UnitTests.Configurations;
 
 internal static class RedisDatabaseConfiguration
 {
-    private const string KeyNotSupportedMessage = "Key is not supported in tests.";
-
     public static IDatabase GetRedisDatabaseConfiguration()
     {
         var mockDatabase = new Mock<IDatabase>();
@@ -31,7 +29,7 @@ internal static class RedisDatabaseConfiguration
                 if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
-                throw new NotSupportedException(KeyNotSupportedMessage);
+                return [];
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -70,7 +68,7 @@ internal static class RedisDatabaseConfiguration
                 if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
-                throw new NotSupportedException(KeyNotSupportedMessage);
+                return [];
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -91,7 +89,7 @@ internal static class RedisDatabaseConfiguration
                 if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
-                throw new NotSupportedException(KeyNotSupportedMessage);
+                return [];
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -112,7 +110,7 @@ internal static class RedisDatabaseConfiguration
                 if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
-                throw new NotSupportedException(KeyNotSupportedMessage);
+                return [];
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -133,7 +131,7 @@ internal static class RedisDatabaseConfiguration
                 if (key == "view:questions") return views.Keys;
                 if (key.ToString().StartsWith("view:question:")) return views.Values;
 
-                throw new NotSupportedException(KeyNotSupportedMessage);
+                return [];
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))

@@ -1,5 +1,5 @@
+using QuestionService.Cache.Providers;
 using QuestionService.Tests.UnitTests.Configurations;
-using QuestionService.Tests.UnitTests.Factories;
 using StackExchange.Redis;
 using Xunit;
 
@@ -12,8 +12,8 @@ public class RedisCacheProviderTests
     public async Task SetsAdd_ShouldBe_Exception()
     {
         //Arrange
-        var cache = new RedisCacheProviderFactory(
-            RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration()).GetService();
+        var cache = new RedisCacheProvider(
+            RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration());
         var keysWithValues = new KeyValuePair<string, IEnumerable<string>>[]
         {
             new("key1", ["value11", "value12"]),
@@ -33,8 +33,8 @@ public class RedisCacheProviderTests
     public async Task StringSet_ShouldBe_Exception()
     {
         //Arrange
-        var cache = new RedisCacheProviderFactory(
-            RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration()).GetService();
+        var cache = new RedisCacheProvider(
+            RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration());
         var keysWithValues = new KeyValuePair<string, object>[]
         {
             new("key1", "value1"),

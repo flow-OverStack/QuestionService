@@ -12,7 +12,7 @@ namespace QuestionService.Tests.FunctionalTests.Tests;
 
 public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    // Only functional tests are provided for cache services.
+    // Only functional tests are provided for cache services' success scenarios.
     // This is because cache data mirrors the database, and manually copying test DB data into multiple cache keys/values is impractical and confusing.
     // In functional tests, data is automatically copied from the DB to the cache as needed, following all key/value rules.
 

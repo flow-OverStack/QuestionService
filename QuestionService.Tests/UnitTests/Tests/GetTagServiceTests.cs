@@ -39,11 +39,11 @@ public class GetTagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByNames_ShouldBe_TagNotFound()
+    public async Task GetByIds_ShouldBe_TagNotFound()
     {
         //Arrange
         var tagIds = new List<long> { 0 };
-        var getTagService = new GetTagServiceFactory().GetService();
+        var getTagService = new CacheGetTagServiceFactory().GetService();
 
         //Act
         var result = await getTagService.GetByIdsAsync(tagIds);
@@ -56,11 +56,11 @@ public class GetTagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByNames_ShouldBe_TagsNotFound()
+    public async Task GetByIds_ShouldBe_TagsNotFound()
     {
         //Arrange
         var tagIds = new List<long> { 0, 0 };
-        var getTagService = new GetTagServiceFactory().GetService();
+        var getTagService = new CacheGetTagServiceFactory().GetService();
 
         //Act
         var result = await getTagService.GetByIdsAsync(tagIds);
@@ -93,7 +93,7 @@ public class GetTagServiceTests
     {
         //Arrange
         var questionIds = new List<long> { 0 };
-        var getTagService = new GetTagServiceFactory().GetService();
+        var getTagService = new CacheGetTagServiceFactory().GetService();
 
         //Act
         var result = await getTagService.GetQuestionsTagsAsync(questionIds);

@@ -50,9 +50,9 @@ public class GetVoteServiceTests
         //Arrange
         var dtos = new List<VoteDto>
         {
-            new(0, 0),
+            new(0, 0)
         };
-        var getVoteService = new GetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceFactory().GetService();
 
         //Act
         var result = await getVoteService.GetByDtosAsync(dtos);
@@ -71,9 +71,9 @@ public class GetVoteServiceTests
         var dtos = new List<VoteDto>
         {
             new(0, 0),
-            new(0, 0),
+            new(0, 0)
         };
-        var getVoteService = new GetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceFactory().GetService();
 
         //Act
         var result = await getVoteService.GetByDtosAsync(dtos);
@@ -106,7 +106,7 @@ public class GetVoteServiceTests
     {
         //Arrange
         var questionIds = new List<long> { 0 };
-        var getVoteService = new GetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceFactory().GetService();
 
         //Act
         var result = await getVoteService.GetQuestionsVotesAsync(questionIds);
@@ -139,7 +139,7 @@ public class GetVoteServiceTests
     {
         //Arrange
         var userIds = new List<long> { 0 };
-        var getVoteService = new GetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceFactory().GetService();
 
         //Act
         var result = await getVoteService.GetUsersVotesAsync(userIds);
