@@ -1,10 +1,12 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Cache.Repositories;
 using QuestionService.Domain.Entities;
+using QuestionService.Domain.Enums;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Resources;
 using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
 
@@ -33,35 +35,63 @@ public class CacheGetViewService : IGetViewService
     public Task<QueryableResult<View>> GetAllAsync(CancellationToken cancellationToken = default) =>
         _inner.GetAllAsync(cancellationToken);
 
-    public Task<CollectionResult<View>> GetByIdsAsync(IEnumerable<long> ids,
-        CancellationToken cancellationToken = default) =>
-        _cacheRepository.GetByIdsOrFetchAndCacheAsync(
-            ids,
-            _inner.GetByIdsAsync,
+    public async Task<CollectionResult<View>> GetByIdsAsync(IEnumerable<long> ids,
+        CancellationToken cancellationToken = default)
+    {
+        var idsArray = ids.ToArray();
+        var views = (await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
+            idsArray,
+            async (idsToFetch, ct) => (await _inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
 
-    public Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(
+        if (views.Length == 0)
+            return idsArray.Length switch
+            {
+                <= 1 => CollectionResult<View>.Failure(ErrorMessage.ViewNotFound, (int)ErrorCodes.ViewNotFound),
+                > 1 => CollectionResult<View>.Failure(ErrorMessage.ViewsNotFound, (int)ErrorCodes.ViewsNotFound)
+            };
+
+        return CollectionResult<View>.Success(views);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(
         IEnumerable<long> userIds,
-        CancellationToken cancellationToken = default) =>
-        _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var groupedViews = (await _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             userIds,
             CacheKeyHelper.GetUserViewsKey,
             CacheKeyHelper.GetIdFromKey,
-            _inner.GetUsersViewsAsync,
+            async (idsToFetch, ct) => (await _inner.GetUsersViewsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
 
-    public Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
-        IEnumerable<long> questionIds, CancellationToken cancellationToken = default) =>
-        _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        if (groupedViews.Length == 0)
+            return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
+                (int)ErrorCodes.ViewsNotFound);
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
+        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
+    {
+        var groupedViews = (await _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             questionIds,
             CacheKeyHelper.GetQuestionViewsKey,
             CacheKeyHelper.GetIdFromKey,
-            _inner.GetQuestionsViewsAsync,
+            async (idsToFetch, ct) => (await _inner.GetQuestionsViewsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
+
+        if (groupedViews.Length == 0)
+            return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
+                (int)ErrorCodes.ViewsNotFound);
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews);
+    }
 }
