@@ -12,7 +12,7 @@ using QuestionService.Tests.UnitTests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class CacheGetVoteServiceFactory
+internal class CacheGetVoteServiceFactory
 {
     private readonly IGetVoteService _cacheGetVoteService;
 

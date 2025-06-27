@@ -11,7 +11,7 @@ using QuestionService.Tests.UnitTests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class CacheGetQuestionServiceFactory
+internal class CacheGetQuestionServiceFactory
 {
     private readonly IGetQuestionService _cacheGetQuestionService;
 

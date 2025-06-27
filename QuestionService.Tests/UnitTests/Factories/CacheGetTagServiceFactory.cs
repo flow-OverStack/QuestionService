@@ -11,7 +11,7 @@ using QuestionService.Tests.UnitTests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class CacheGetTagServiceFactory
+internal class CacheGetTagServiceFactory
 {
     private readonly IGetTagService _cacheGetTagService;
 

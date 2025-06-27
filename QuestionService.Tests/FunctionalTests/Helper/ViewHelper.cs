@@ -3,7 +3,7 @@ using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.FunctionalTests.Helper;
 
-public static class ViewHelper
+internal static class ViewHelper
 {
     public static async Task InsertViews(this ICacheProvider redisDatabase)
     {

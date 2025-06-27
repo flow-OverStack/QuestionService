@@ -11,7 +11,7 @@ using MapperConfiguration = QuestionService.Tests.UnitTests.Configurations.Mappe
 
 namespace QuestionService.Tests.UnitTests.Factories;
 
-public class TagServiceFactory
+internal class TagServiceFactory
 {
     private readonly ITagService _tagService;
 
