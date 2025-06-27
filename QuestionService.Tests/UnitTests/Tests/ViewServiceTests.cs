@@ -101,6 +101,7 @@ public class ViewServiceTests
         var result = await viewService.SyncViewsToDatabaseAsync();
 
         //Assert
+        Assert.True(result.IsSuccess);
         Assert.Equal(0, result.Data.SyncedViewsCount);
     }
 
@@ -116,6 +117,7 @@ public class ViewServiceTests
         var result = await viewService.SyncViewsToDatabaseAsync();
 
         //Assert
+        Assert.True(result.IsSuccess);
         Assert.Equal(0, result.Data.SyncedViewsCount);
     }
 
