@@ -29,9 +29,9 @@ internal class ViewServiceFactory
     public readonly IEntityProvider<UserDto> UserProvider = MockEntityProvidersGetters.GetMockUserProvider().Object;
     public readonly IBaseRepository<View> ViewRepository = MockRepositoriesGetters.GetMockViewRepository().Object;
 
-    public ViewServiceFactory(IDatabase? redisCacheProvider = null)
+    public ViewServiceFactory(IDatabase? redisDatabase = null)
     {
-        if (redisCacheProvider != null) CacheProvider = new RedisCacheProvider(redisCacheProvider);
+        if (redisDatabase != null) CacheProvider = new RedisCacheProvider(redisDatabase);
 
         var service = new ViewService(CacheProvider, QuestionRepository, ViewRepository, UserProvider,
             new OptionsWrapper<BusinessRules>(BusinessRules));
