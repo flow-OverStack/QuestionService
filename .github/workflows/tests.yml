@@ -37,8 +37,26 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
-      - name: Run Unit Tests (detailed)
-        run: dotnet test --no-restore --filter "Category=Unit" --verbosity detailed
+      - name: Install coverlet.console
+        run: dotnet tool install --global coverlet.console
+
+      - name: Build project
+        run: dotnet build --no-incremental
+
+      - name: Run unit tests
+        run: |
+          mkdir -p coverage
+          coverlet ./QuestionService.Tests/bin/Debug/net9.0/QuestionService.Tests.dll \
+            --target "dotnet" \
+            --targetargs "test --no-build --filter Category=Unit" \
+            -f opencover \
+            -o coverage/coverage-unit.xml
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: coverage/coverage-unit.xml
   
   functional-tests:
     name: Run Functional Tests
@@ -64,5 +82,29 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
-      - name: Run Functional Tests (detailed)
-        run: dotnet test --no-restore --filter "Category=Functional" --verbosity detailed
+      - name: Install coverlet.console
+        run: dotnet tool install --global coverlet.console
+
+      - name: Build project
+        run: dotnet build --no-incremental
+
+      - name: Run functional tests with Coverlet and generate OpenCover report
+        run: |
+          mkdir -p coverage
+          coverlet ./QuestionService.Tests/bin/Debug/net9.0/QuestionService.Tests.dll \
+            --target "dotnet" \
+            --targetargs "test --no-build --filter Category=Functional" \
+            -f opencover \
+            -o coverage/coverage-functional.xml
+
+      - name: Upload functional coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-functional
+          path: coverage/coverage-functional.xml
+  
+  trigger-sonarqube:
+    name: Trigger SonarQube Analysis
+    needs: [ unit-tests, functional-tests ]
+    uses: ./.github/workflows/sonarqube.yml
+    secrets: inherit
