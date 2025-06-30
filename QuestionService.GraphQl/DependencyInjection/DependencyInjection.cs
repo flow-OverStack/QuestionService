@@ -44,7 +44,7 @@ public static class DependencyInjection
             .AddDataLoader<GroupUserQuestionDataLoader>()
             .AddDataLoader<GroupUserViewDataLoader>()
             .AddDataLoader<GroupUserVoteDataLoader>()
-            .AddApolloFederation()
+            .AddApolloFederation(FederationVersion.Federation23)
             .ModifyPagingOptions(opt =>
             {
                 using var provider = services.BuildServiceProvider();
