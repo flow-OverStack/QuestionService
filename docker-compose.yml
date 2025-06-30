@@ -28,6 +28,7 @@
       RedisSettings__Host: redis
       RedisSettings__Port: 6379
       RedisSettings__Password: ${REDIS_PASSWORD}
+      RedisSettings__TimeToLiveInSeconds: 300
   
   postgres-db:
     image: postgres:latest

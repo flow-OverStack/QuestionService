@@ -5,7 +5,7 @@ using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Resources;
 using QuestionService.GraphQl.DataLoaders;
-using QuestionService.GraphQl.ExtensionTypes;
+using QuestionService.GraphQl.Types.Extension;
 using Tag = QuestionService.Domain.Entities.Tag;
 
 namespace QuestionService.GraphQl.Types;

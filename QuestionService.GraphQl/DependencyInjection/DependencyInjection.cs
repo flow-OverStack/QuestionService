@@ -6,9 +6,9 @@ using Microsoft.Extensions.Options;
 using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ErrorFilters;
-using QuestionService.GraphQl.ExtensionTypes;
-using QuestionService.GraphQl.ExtensionTypes.Sharable;
 using QuestionService.GraphQl.Types;
+using QuestionService.GraphQl.Types.Extension;
+using QuestionService.GraphQl.Types.Sharable;
 
 namespace QuestionService.GraphQl.DependencyInjection;
 

@@ -1,7 +1,7 @@
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.GraphQl.DataLoaders;
-using QuestionService.GraphQl.ExtensionTypes;
+using QuestionService.GraphQl.Types.Extension;
 
 namespace QuestionService.GraphQl.Types;
 

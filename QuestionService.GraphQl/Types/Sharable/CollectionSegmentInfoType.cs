@@ -1,7 +1,7 @@
 using HotChocolate.ApolloFederation.Types;
 using HotChocolate.Types.Pagination;
 
-namespace QuestionService.GraphQl.ExtensionTypes.Sharable;
+namespace QuestionService.GraphQl.Types.Sharable;
 
 public class CollectionSegmentInfoType : ObjectTypeExtension<CollectionSegmentInfo>
 {

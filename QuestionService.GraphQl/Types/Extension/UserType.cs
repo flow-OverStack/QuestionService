@@ -3,9 +3,8 @@ using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Extensions;
 using QuestionService.GraphQl.DataLoaders;
-using QuestionService.GraphQl.Types;
 
-namespace QuestionService.GraphQl.ExtensionTypes;
+namespace QuestionService.GraphQl.Types.Extension;
 
 public class UserType : ObjectType<UserDto>
 {
