@@ -1,20 +1,11 @@
 name: Qodana
 on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-      - master
-      - "feature/*"
-      - "QuestionService-add-*"
+  workflow_call:
 
 jobs:
   qodana:
+    name: Qodana Code Quality Analysis
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
     steps:
       - uses: actions/checkout@v3
         with:

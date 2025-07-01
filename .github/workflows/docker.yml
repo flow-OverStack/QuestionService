@@ -1,16 +1,7 @@
 name: Docker Pipeline
 
 on:
-  push:
-    branches:
-      - master
-      - "feature/*"
-      - "QuestionService-add-*"
-  pull_request:
-    branches:
-      - master
-      - "feature/*"
-      - "QuestionService-add-*"
+  workflow_call:
 
 jobs:
   build:
