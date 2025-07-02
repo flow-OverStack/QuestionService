@@ -15,7 +15,7 @@ COPY ["QuestionService.DAL/QuestionService.DAL.csproj", "QuestionService.DAL/"]
 COPY ["QuestionService.Outbox/QuestionService.Outbox.csproj", "QuestionService.Outbox/"]
 COPY ["QuestionService.GraphQl/QuestionService.GraphQl.csproj", "QuestionService.GraphQl/"]
 COPY ["QuestionService.Grpc/QuestionService.Grpc.csproj", "QuestionService.Grpc/"]
-COPY ["QuestionService.ReputationProducer/QuestionService.ReputationProducer.csproj", "QuestionService.ReputationProducer/"]
+COPY ["QuestionService.Messaging/QuestionService.Messaging.csproj", "QuestionService.Messaging/"]
 COPY ["QuestionService.Cache/QuestionService.Cache.csproj", "QuestionService.Cache/"]
 RUN dotnet restore "QuestionService.Api/QuestionService.Api.csproj"
 COPY . .
