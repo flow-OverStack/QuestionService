@@ -46,7 +46,7 @@
         <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj"/>
         <ProjectReference Include="..\QuestionService.GraphQl\QuestionService.GraphQl.csproj"/>
         <ProjectReference Include="..\QuestionService.Grpc\QuestionService.Grpc.csproj"/>
-        <ProjectReference Include="..\QuestionService.ReputationProducer\QuestionService.ReputationProducer.csproj"/>
+        <ProjectReference Include="..\QuestionService.Messaging\QuestionService.Messaging.csproj"/>
         <ProjectReference Include="..\QuestionService.Cache\QuestionService.Cache.csproj"/>
     </ItemGroup>
 

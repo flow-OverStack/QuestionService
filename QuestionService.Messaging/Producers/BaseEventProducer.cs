@@ -3,7 +3,7 @@ using QuestionService.Domain.Events;
 using QuestionService.Domain.Interfaces.Producer;
 using QuestionService.Outbox.Interfaces.Service;
 
-namespace QuestionService.ReputationProducer.Producers;
+namespace QuestionService.Messaging.Producers;
 
 public class BaseEventProducer(IOutboxService outboxService) : IBaseEventProducer
 {

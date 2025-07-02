@@ -31,7 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{09F07A13-8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Tests", "QuestionService.Tests\QuestionService.Tests.csproj", "{818DBAD1-6DF8-46EF-AE61-362515A6E629}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.ReputationProducer", "QuestionService.ReputationProducer\QuestionService.ReputationProducer.csproj", "{5C4DB8E5-26A6-48D6-96ED-6372EB0DB536}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Messaging", "QuestionService.Messaging\QuestionService.Messaging.csproj", "{5C4DB8E5-26A6-48D6-96ED-6372EB0DB536}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Outbox", "QuestionService.Outbox\QuestionService.Outbox.csproj", "{159B1B5F-6F16-47ED-BFAD-32253C5A2D37}"
 EndProject

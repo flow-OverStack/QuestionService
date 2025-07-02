@@ -9,8 +9,8 @@ using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DependencyInjection;
 using QuestionService.Grpc.DependencyInjection;
+using QuestionService.Messaging.DependencyInjection;
 using QuestionService.Outbox.DependencyInjection;
-using QuestionService.ReputationProducer.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -4,9 +4,9 @@ using Microsoft.Extensions.Options;
 using QuestionService.Domain.Events;
 using QuestionService.Domain.Interfaces.Producer;
 using QuestionService.Domain.Settings;
-using QuestionService.ReputationProducer.Producers;
+using QuestionService.Messaging.Producers;
 
-namespace QuestionService.ReputationProducer.DependencyInjection;
+namespace QuestionService.Messaging.DependencyInjection;
 
 public static class DependencyInjection
 {
