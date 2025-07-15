@@ -77,7 +77,7 @@ internal static class MockEntityProvidersGetters
         }.AsQueryable();
     }
 
-    #region Get entity dtos methods
+    // Get entity dtos methods
 
     private static RoleDto GetRoleUser()
     {
@@ -105,6 +105,4 @@ internal static class MockEntityProvidersGetters
             Name = "Moderator"
         };
     }
-
-    #endregion
 }

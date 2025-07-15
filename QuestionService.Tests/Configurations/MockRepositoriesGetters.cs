@@ -58,7 +58,7 @@ internal static class MockRepositoriesGetters
     {
         var mockRepository = new Mock<IBaseRepository<Tag>>();
 
-        #region Adding questions to tags
+        // Adding questions to tags
 
         var tags = GetTags().ToList();
         tags.ForEach(x => x.Questions = []);
@@ -73,7 +73,6 @@ internal static class MockRepositoriesGetters
             tag.Questions.Add(question);
         }
 
-        #endregion
 
         var tagsDbSet = tags.BuildMockDbSet();
 
@@ -251,7 +250,7 @@ internal static class MockRepositoriesGetters
         }.AsQueryable();
     }
 
-    #region Get entities methods
+    // Get entities methods
 
     private static Tag GetTagDotNet()
     {
@@ -302,6 +301,4 @@ internal static class MockRepositoriesGetters
             ReputationChange = -1
         };
     }
-
-    #endregion
 }

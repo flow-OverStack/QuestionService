@@ -32,22 +32,18 @@ public class ViewService(
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
         CancellationToken cancellationToken = default)
     {
-        #region Removing invalid keys
+        // Removing invalid keys
 
         var allViewKeys =
             (await cache.SetStringMembersAsync(CacheKeyHelper.GetViewQuestionsKey(), cancellationToken)).ToArray();
         var validViewKeys = allViewKeys.Where(IsValidKey).ToArray();
 
-        #endregion
-
-        #region Removing invalid values
+        // Removing invalid values
 
         var allViewValues =
             (await cache.SetsStringMembersAsync(validViewKeys, cancellationToken)).ToArray();
         var validViewValues = allViewValues.Select(x =>
             new KeyValuePair<string, IEnumerable<string>>(x.Key, x.Value.Where(IsValidValue)));
-
-        #endregion
 
         var spamFilteredViews = validViewValues.FilterByMaxValueOccurrences(ViewParsingHelpers.GetKeyFromValue,
             _businessRules.UserViewSpamThreshold);
@@ -58,7 +54,7 @@ public class ViewService(
 
         if (parsedViews.Length == 0) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
 
-        #region Filtering views to have real user and question ids and to be unique
+        // Filtering views to have real user and question ids and to be unique
 
         var predicate = PredicateBuilder.New<View>();
         predicate = parsedViews.Aggregate(predicate,
@@ -85,8 +81,6 @@ public class ViewService(
             .Where(x => existingQuestionIds.Contains(x.QuestionId)) // Checking question existence
             .Where(x => x.UserId == null || existingUserIds.Contains((long)x.UserId)) // Checking user existence
             .ToArray();
-
-        #endregion
 
         await viewRepository.CreateRangeAsync(newUniqueViews, cancellationToken);
         await viewRepository.SaveChangesAsync(cancellationToken);
