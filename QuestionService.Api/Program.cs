@@ -58,11 +58,8 @@ app.MapHealthChecks("health", new HealthCheckOptions { ResponseWriter = UIRespon
 
 app.UseMiddleware<ClaimsValidationMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+if (app.Environment.IsDevelopment()) app.UseSwaggerUI();
+app.UseSwagger();
 
 app.MapControllers();
 app.UseGraphQl();
