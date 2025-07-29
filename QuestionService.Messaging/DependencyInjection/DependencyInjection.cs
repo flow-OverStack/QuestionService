@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -29,11 +30,12 @@ public static class DependencyInjection
 
             configurator.AddRider(rider =>
             {
-                // Scope is not created because IOptions<KafkaSettings> is singleton
+                // Scope is not created because IOptions<KafkaSettings> is a singleton
                 using var provider = services.BuildServiceProvider();
                 var kafkaMainTopic = provider.GetRequiredService<IOptions<KafkaSettings>>().Value.MainEventsTopic;
 
-                rider.AddProducer<BaseEvent>(kafkaMainTopic);
+                rider.AddProducer<BaseEvent>(kafkaMainTopic,
+                    new ProducerConfig { Acks = Acks.All, EnableIdempotence = false });
 
                 rider.UsingKafka((context, factoryConfigurator) =>
                 {
