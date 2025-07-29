@@ -4,6 +4,8 @@ using Asp.Versioning;
 using Confluent.Kafka;
 using Hangfire;
 using Hangfire.PostgreSql;
+using MassTransit.Logging;
+using MassTransit.Monitoring;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -227,6 +229,7 @@ public static class Startup
             .WithMetrics(metrics =>
             {
                 metrics.AddAspNetCoreInstrumentation()
+                    .AddMeter(InstrumentationOptions.MeterName)
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation();
 
@@ -235,6 +238,7 @@ public static class Startup
             .WithTracing(traces =>
             {
                 traces.AddAspNetCoreInstrumentation()
+                    .AddSource(DiagnosticHeaders.DefaultListenerName)
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation();
 
