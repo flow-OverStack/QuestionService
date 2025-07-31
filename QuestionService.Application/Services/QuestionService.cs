@@ -43,24 +43,22 @@ public class QuestionService(
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
         Question question;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
-            {
-                question = mapper.Map<Question>(dto);
-                question.UserId = initiatorId;
-                question.Tags = tags;
+            question = mapper.Map<Question>(dto);
+            question.UserId = initiatorId;
+            question.Tags = tags;
 
-                await unitOfWork.Questions.CreateAsync(question, cancellationToken);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.Questions.CreateAsync(question, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
-                throw;
-            }
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            throw;
         }
 
         var questionDto = mapper.Map<QuestionDto>(question);
@@ -93,23 +91,21 @@ public class QuestionService(
         if (tags.Count != dto.TagNames.Count())
             return BaseResult<QuestionDto>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound);
 
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
-            {
-                mapper.Map(dto, question);
-                question.Tags = tags;
+            mapper.Map(dto, question);
+            question.Tags = tags;
 
-                unitOfWork.Questions.Update(question);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            unitOfWork.Questions.Update(question);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
-                throw;
-            }
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            throw;
         }
 
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
@@ -159,42 +155,40 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
+            if (vote == null)
             {
-                if (vote == null)
+                vote = new Vote
                 {
-                    vote = new Vote
-                    {
-                        QuestionId = question.Id,
-                        UserId = initiator.Id,
-                        ReputationChange = _businessRules.UpvoteReputationChange
-                    };
+                    QuestionId = question.Id,
+                    UserId = initiator.Id,
+                    ReputationChange = _businessRules.UpvoteReputationChange
+                };
 
-                    await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
-                }
-                else
-                {
-                    if (vote.ReputationChange >= _businessRules.UpvoteReputationChange)
-                        return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
-                            (int)ErrorCodes.VoteAlreadyGiven);
-
-                    vote.ReputationChange = _businessRules.UpvoteReputationChange;
-                    unitOfWork.Votes.Update(vote);
-                }
-
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-
-                await producer.ProduceAsync(initiator.Id, BaseEventType.QuestionUpvote, cancellationToken);
-
-                await transaction.CommitAsync(cancellationToken);
+                await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
             }
-            catch (Exception)
+            else
             {
-                await transaction.RollbackAsync(CancellationToken.None);
-                throw;
+                if (vote.ReputationChange >= _businessRules.UpvoteReputationChange)
+                    return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
+                        (int)ErrorCodes.VoteAlreadyGiven);
+
+                vote.ReputationChange = _businessRules.UpvoteReputationChange;
+                unitOfWork.Votes.Update(vote);
             }
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await producer.ProduceAsync(initiator.Id, BaseEventType.QuestionUpvote, cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            throw;
         }
 
         var dto = mapper.Map<VoteQuestionDto>(question);
@@ -223,42 +217,40 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
+            if (vote == null)
             {
-                if (vote == null)
+                vote = new Vote
                 {
-                    vote = new Vote
-                    {
-                        QuestionId = question.Id,
-                        UserId = initiator.Id,
-                        ReputationChange = _businessRules.UpvoteReputationChange
-                    };
+                    QuestionId = question.Id,
+                    UserId = initiator.Id,
+                    ReputationChange = _businessRules.UpvoteReputationChange
+                };
 
-                    await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
-                }
-                else
-                {
-                    if (vote.ReputationChange <= _businessRules.DownvoteReputationChange)
-                        return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
-                            (int)ErrorCodes.VoteAlreadyGiven);
-
-                    vote.ReputationChange = _businessRules.DownvoteReputationChange;
-                    unitOfWork.Votes.Update(vote);
-                }
-
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-
-                await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote, cancellationToken);
-
-                await transaction.CommitAsync(cancellationToken);
+                await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
             }
-            catch (Exception)
+            else
             {
-                await transaction.RollbackAsync(CancellationToken.None);
-                throw;
+                if (vote.ReputationChange <= _businessRules.DownvoteReputationChange)
+                    return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
+                        (int)ErrorCodes.VoteAlreadyGiven);
+
+                vote.ReputationChange = _businessRules.DownvoteReputationChange;
+                unitOfWork.Votes.Update(vote);
             }
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote, cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            throw;
         }
 
         var dto = mapper.Map<VoteQuestionDto>(question);
