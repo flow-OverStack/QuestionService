@@ -2,9 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Interfaces.Provider;
-using QuestionService.Domain.Settings;
 using QuestionService.Grpc.Mappings;
 using QuestionService.Grpc.Providers;
+using QuestionService.Grpc.Settings;
 
 namespace QuestionService.Grpc.DependencyInjection;
 

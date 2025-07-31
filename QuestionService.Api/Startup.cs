@@ -16,8 +16,10 @@ using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using QuestionService.Api.Settings;
 using QuestionService.DAL;
 using QuestionService.Domain.Settings;
+using QuestionService.Messaging.Settings;
 using Serilog;
 using Path = System.IO.Path;
 

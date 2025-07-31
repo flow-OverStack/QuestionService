@@ -1,6 +1,4 @@
-using HotChocolate;
-
-namespace QuestionService.Domain.Helpers;
+namespace QuestionService.GraphQl.Helpers;
 
 public static class GraphQlExceptionHelper
 {

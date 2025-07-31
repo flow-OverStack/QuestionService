@@ -1,8 +1,8 @@
 using AutoMapper;
 using Grpc.Core;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Interfaces.Provider;
-using QuestionService.Domain.Resources;
 
 namespace QuestionService.Grpc.Providers;
 

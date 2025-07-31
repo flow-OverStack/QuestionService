@@ -4,12 +4,12 @@ using HotChocolate.Language;
 using HotChocolate.Resolvers;
 using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Dtos.Request.Page;
-using QuestionService.Domain.Extensions;
-using QuestionService.Domain.Helpers;
+using QuestionService.Application.Resources;
+using QuestionService.Domain.Dtos.Page;
 using QuestionService.Domain.Interfaces.Validation;
-using QuestionService.Domain.Resources;
 using QuestionService.Domain.Settings;
+using QuestionService.GraphQl.Extensions;
+using QuestionService.GraphQl.Helpers;
 
 namespace QuestionService.GraphQl.Middlewares;
 
@@ -64,6 +64,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
     }
 }
 
+[AttributeUsage(AttributeTargets.Method)]
 public class UseCursorPagingValidationMiddlewareAttribute : ObjectFieldDescriptorAttribute
 {
     public UseCursorPagingValidationMiddlewareAttribute([CallerLineNumber] int order = 0)

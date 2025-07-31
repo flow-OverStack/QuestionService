@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Events;
 using QuestionService.Domain.Interfaces.Producer;
-using QuestionService.Domain.Settings;
 using QuestionService.Messaging.Producers;
+using QuestionService.Messaging.Settings;
 
 namespace QuestionService.Messaging.DependencyInjection;
 

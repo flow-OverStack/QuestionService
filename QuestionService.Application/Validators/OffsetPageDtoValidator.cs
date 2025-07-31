@@ -1,6 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Dtos.Request.Page;
+using QuestionService.Domain.Dtos.Page;
 using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Domain.Settings;
 

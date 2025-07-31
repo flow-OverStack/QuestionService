@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 using HotChocolate.Resolvers;
 using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Dtos.Request.Page;
-using QuestionService.Domain.Helpers;
+using QuestionService.Application.Resources;
+using QuestionService.Domain.Dtos.Page;
 using QuestionService.Domain.Interfaces.Validation;
-using QuestionService.Domain.Resources;
 using QuestionService.Domain.Settings;
+using QuestionService.GraphQl.Helpers;
 
 namespace QuestionService.GraphQl.Middlewares;
 
@@ -34,6 +34,7 @@ public class OffsetPagingValidationMiddleware(FieldDelegate next)
     }
 }
 
+[AttributeUsage(AttributeTargets.Method)]
 public class UseOffsetPagingValidationMiddlewareAttribute : ObjectFieldDescriptorAttribute
 {
     public UseOffsetPagingValidationMiddlewareAttribute([CallerLineNumber] int order = 0)

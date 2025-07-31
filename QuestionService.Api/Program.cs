@@ -2,6 +2,7 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using QuestionService.Api;
 using QuestionService.Api.Middlewares;
+using QuestionService.Api.Settings;
 using QuestionService.Application.DependencyInjection;
 using QuestionService.BackgroundJobs.DependencyInjection;
 using QuestionService.Cache.DependencyInjection;
@@ -9,7 +10,9 @@ using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DependencyInjection;
 using QuestionService.Grpc.DependencyInjection;
+using QuestionService.Grpc.Settings;
 using QuestionService.Messaging.DependencyInjection;
+using QuestionService.Messaging.Settings;
 using QuestionService.Outbox.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +21,7 @@ builder.Services.Configure<KeycloakSettings>(builder.Configuration.GetSection(na
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection(nameof(RedisSettings)));
 builder.Services.Configure<BusinessRules>(builder.Configuration.GetSection(nameof(BusinessRules)));
+builder.Services.Configure<EntityRules>(builder.Configuration.GetSection(nameof(EntityRules)));
 builder.Services.Configure<GrpcHosts>(builder.Configuration.GetSection(nameof(GrpcHosts)));
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);

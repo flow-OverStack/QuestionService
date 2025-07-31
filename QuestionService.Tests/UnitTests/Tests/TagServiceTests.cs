@@ -1,5 +1,5 @@
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Tag;
-using QuestionService.Domain.Resources;
 using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 

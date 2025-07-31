@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace QuestionService.Domain.Resources {
+namespace QuestionService.Application.Resources {
     using System;
     
     
@@ -38,7 +38,7 @@ namespace QuestionService.Domain.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("QuestionService.Domain.Resources.ErrorMessage", typeof(ErrorMessage).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("QuestionService.Application.Resources.ErrorMessage", typeof(ErrorMessage).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

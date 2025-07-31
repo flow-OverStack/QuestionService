@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Mime;
-using QuestionService.Domain.Resources;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Results;
 using ILogger = Serilog.ILogger;
 

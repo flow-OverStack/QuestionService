@@ -12,9 +12,6 @@ internal static class BusinessRulesConfiguration
         MinReputationToDownvote = 125,
         DownvoteReputationChange = -1,
         UpvoteReputationChange = 1,
-        TagMaxLength = 35,
-        TagDescriptionMaxLength = 400,
         UserViewSpamThreshold = 30,
-        UserFingerprintLength = 64
     };
 }

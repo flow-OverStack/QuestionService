@@ -1,5 +1,5 @@
 using AutoMapper;
-using Google.Protobuf.WellKnownTypes;
+using ProtoTimestamp = Google.Protobuf.WellKnownTypes.Timestamp;
 
 namespace QuestionService.Grpc.Mappings;
 
@@ -7,10 +7,10 @@ public class GrpcMapping : Profile
 {
     public GrpcMapping()
     {
-        CreateMap<DateTime, Timestamp>()
+        CreateMap<DateTime, ProtoTimestamp>()
             .ConvertUsing(x =>
-                Timestamp.FromDateTime(DateTime.SpecifyKind(x, DateTimeKind.Utc)));
+                ProtoTimestamp.FromDateTime(DateTime.SpecifyKind(x, DateTimeKind.Utc)));
 
-        CreateMap<Timestamp, DateTime>().ConvertUsing(x => x.ToDateTime());
+        CreateMap<ProtoTimestamp, DateTime>().ConvertUsing(x => x.ToDateTime());
     }
 }

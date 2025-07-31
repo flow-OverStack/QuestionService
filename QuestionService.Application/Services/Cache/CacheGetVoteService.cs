@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Options;
+using QuestionService.Application.Enum;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Enums;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
-using QuestionService.Domain.Resources;
 using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
 

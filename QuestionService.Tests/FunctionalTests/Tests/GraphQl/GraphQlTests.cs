@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
-using QuestionService.Domain.Resources;
+using QuestionService.Application.Resources;
 using QuestionService.Tests.FunctionalTests.Base;
 using QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
 using QuestionService.Tests.FunctionalTests.Helper;

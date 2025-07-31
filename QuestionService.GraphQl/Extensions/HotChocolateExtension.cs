@@ -1,8 +1,8 @@
 using HotChocolate.Language;
-using QuestionService.Domain.Dtos.Request.Page;
+using QuestionService.Domain.Dtos.Page;
 using QuestionService.Domain.Enums;
 
-namespace QuestionService.Domain.Extensions;
+namespace QuestionService.GraphQl.Extensions;
 
 /// <summary> Extension methods for mapping <c>HotChocolate</c> GraphQL AST nodes to domain models.</summary>
 /// <remarks>

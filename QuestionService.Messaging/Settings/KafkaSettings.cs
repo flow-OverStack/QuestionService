@@ -1,4 +1,4 @@
-namespace QuestionService.Domain.Settings;
+namespace QuestionService.Messaging.Settings;
 
 public class KafkaSettings
 {

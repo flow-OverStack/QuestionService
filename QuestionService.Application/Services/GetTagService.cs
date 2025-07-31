@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using QuestionService.Application.Enum;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
-using QuestionService.Domain.Resources;
 using QuestionService.Domain.Results;
 
 namespace QuestionService.Application.Services;

@@ -2,17 +2,17 @@ using System.Net;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using QuestionService.Application.Enum;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Comparers;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.View;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Enums;
 using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
-using QuestionService.Domain.Resources;
 using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
 
@@ -23,11 +23,13 @@ public class ViewService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<View> viewRepository,
     IEntityProvider<UserDto> userProvider,
-    IOptions<BusinessRules> businessRules)
+    IOptions<BusinessRules> businessRules,
+    IOptions<EntityRules> entityRules)
     : IViewService, IViewDatabaseService
 {
     private const char ViewKeySeparator = ',';
     private readonly BusinessRules _businessRules = businessRules.Value;
+    private readonly EntityRules _entityRules = entityRules.Value;
 
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
         CancellationToken cancellationToken = default)
@@ -131,7 +133,7 @@ public class ViewService(
     private bool IsValidData(IncrementViewsDto dto)
     {
         return !StringHelper.AnyNullOrWhiteSpace(dto.UserIp, dto.UserFingerprint)
-               && dto.UserFingerprint.HasMaxLength(_businessRules.UserFingerprintLength)
+               && dto.UserFingerprint.HasMaxLength(_entityRules.UserFingerprintLength)
                && IPAddress.TryParse(dto.UserIp, out _);
     }
 

@@ -1,5 +1,5 @@
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Resources;
+using QuestionService.Application.Resources;
+using QuestionService.GraphQl.Helpers;
 
 namespace QuestionService.GraphQl.ErrorFilters;
 

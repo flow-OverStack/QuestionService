@@ -1,5 +1,5 @@
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.View;
-using QuestionService.Domain.Resources;
 using QuestionService.Tests.UnitTests.Configurations;
 using QuestionService.Tests.UnitTests.Factories;
 using StackExchange.Redis;

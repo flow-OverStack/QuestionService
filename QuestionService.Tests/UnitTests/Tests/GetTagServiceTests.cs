@@ -1,4 +1,4 @@
-using QuestionService.Domain.Resources;
+using QuestionService.Application.Resources;
 using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 

@@ -14,7 +14,21 @@
         <PackageReference Include="AutoMapper" Version="14.0.0"/>
         <PackageReference Include="FluentValidation" Version="12.0.0"/>
         <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="9.0.6"/>
-        <PackageReference Include="StackExchange.Redis" Version="2.8.41"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\ErrorMessage.en.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ErrorMessage.en.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\ErrorMessage.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>ErrorMessage.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\ErrorMessage.ru-by.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ErrorMessage.ru-by.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
 
 </Project>

@@ -1,22 +1,22 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using QuestionService.Application.Enum;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Tag;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Enums;
 using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
-using QuestionService.Domain.Resources;
 using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services;
 
-public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOptions<BusinessRules> businessRules)
+public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOptions<EntityRules> entityRules)
     : ITagService
 {
-    private readonly BusinessRules _businessRules = businessRules.Value;
+    private readonly EntityRules _entityRules = entityRules.Value;
 
     public async Task<BaseResult<TagDto>> CreateTagAsync(CreateTagDto dto,
         CancellationToken cancellationToken = default)
@@ -68,13 +68,13 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
 
     private bool IsValidData(CreateTagDto dto)
     {
-        return dto.Name.HasMaxLength(_businessRules.TagMaxLength) &&
-               dto.Description.HasMaxLength(_businessRules.TagDescriptionMaxLength);
+        return dto.Name.HasMaxLength(_entityRules.TagMaxLength) &&
+               dto.Description.HasMaxLength(_entityRules.TagDescriptionMaxLength);
     }
 
     private bool IsValidData(TagDto dto)
     {
-        return dto.Name.HasMaxLength(_businessRules.TagMaxLength) &&
-               dto.Description.HasMaxLength(_businessRules.TagDescriptionMaxLength);
+        return dto.Name.HasMaxLength(_entityRules.TagMaxLength) &&
+               dto.Description.HasMaxLength(_entityRules.TagDescriptionMaxLength);
     }
 }

@@ -23,6 +23,8 @@ internal class ViewServiceFactory
     public readonly ICacheProvider CacheProvider =
         new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration());
 
+    public readonly EntityRules EntityRules = EntityRulesConfiguration.GetEntityRules();
+
     public readonly IBaseRepository<Question> QuestionRepository =
         MockRepositoriesGetters.GetMockQuestionRepository().Object;
 
@@ -34,7 +36,7 @@ internal class ViewServiceFactory
         if (redisDatabase != null) CacheProvider = new RedisCacheProvider(redisDatabase);
 
         var service = new ViewService(CacheProvider, QuestionRepository, ViewRepository, UserProvider,
-            Options.Create(BusinessRules));
+            Options.Create(BusinessRules), Options.Create(EntityRules));
 
         _viewService = service;
         _viewDatabaseService = service;

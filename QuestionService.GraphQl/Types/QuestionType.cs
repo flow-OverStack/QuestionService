@@ -1,10 +1,10 @@
 using HotChocolate.ApolloFederation.Types;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Extensions;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Resources;
 using QuestionService.GraphQl.DataLoaders;
+using QuestionService.GraphQl.Helpers;
 using QuestionService.GraphQl.Types.Extension;
 using Tag = QuestionService.Domain.Entities.Tag;
 

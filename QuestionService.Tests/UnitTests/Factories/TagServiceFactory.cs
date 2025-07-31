@@ -15,14 +15,14 @@ internal class TagServiceFactory
 {
     private readonly ITagService _tagService;
 
-    public readonly BusinessRules BusinessRules = BusinessRulesConfiguration.GetBusinessRules();
+    public readonly EntityRules EntityRules = EntityRulesConfiguration.GetEntityRules();
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
     public readonly IBaseRepository<Tag> TagRepository = MockRepositoriesGetters.GetMockTagRepository().Object;
 
 
     public TagServiceFactory()
     {
-        _tagService = new TagService(TagRepository, Mapper, Options.Create(BusinessRules));
+        _tagService = new TagService(TagRepository, Mapper, Options.Create(EntityRules));
     }
 
     public ITagService GetService()

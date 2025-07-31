@@ -1,4 +1,4 @@
-namespace QuestionService.Domain.Settings;
+namespace QuestionService.Api.Settings;
 
 public class KeycloakSettings
 {

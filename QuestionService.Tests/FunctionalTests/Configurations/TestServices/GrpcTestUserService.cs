@@ -1,8 +1,8 @@
 using AutoMapper;
 using Grpc.Core;
+using QuestionService.Application.Enum;
+using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.ExternalEntity;
-using QuestionService.Domain.Enums;
-using QuestionService.Domain.Resources;
 using QuestionService.Grpc;
 using QuestionService.Grpc.Mappings;
 using QuestionService.Tests.Configurations;

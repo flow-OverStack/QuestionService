@@ -2,8 +2,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuestionService.Api.Controllers.Base;
+using QuestionService.Api.Dtos;
 using QuestionService.Domain.Dtos.Question;
-using QuestionService.Domain.Dtos.Request;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Results;
 

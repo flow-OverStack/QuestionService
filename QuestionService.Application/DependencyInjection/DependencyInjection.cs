@@ -3,7 +3,7 @@ using QuestionService.Application.Mappings;
 using QuestionService.Application.Services;
 using QuestionService.Application.Services.Cache;
 using QuestionService.Application.Validators;
-using QuestionService.Domain.Dtos.Request.Page;
+using QuestionService.Domain.Dtos.Page;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Interfaces.Validation;
 

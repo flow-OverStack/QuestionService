@@ -12,10 +12,10 @@ namespace QuestionService.DAL;
 public sealed class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options,
     ILogger logger,
-    IOptions<BusinessRules> businessRules)
+    IOptions<EntityRules> entityRules)
     : DbContext(options)
 {
-    private readonly BusinessRules _businessRules = businessRules.Value;
+    private readonly EntityRules _entityRules = entityRules.Value;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -33,15 +33,15 @@ public sealed class ApplicationDbContext(
     private void ApplyTagRules(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Tag>()
-            .Property(x => x.Name).IsRequired().HasMaxLength(_businessRules.TagMaxLength);
+            .Property(x => x.Name).IsRequired().HasMaxLength(_entityRules.TagMaxLength);
 
         modelBuilder.Entity<Tag>()
-            .Property(x => x.Description).IsRequired().HasMaxLength(_businessRules.TagDescriptionMaxLength);
+            .Property(x => x.Description).IsRequired().HasMaxLength(_entityRules.TagDescriptionMaxLength);
     }
 
     private void ApplyViewRules(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<View>()
-            .Property(x => x.UserFingerprint).HasMaxLength(_businessRules.UserFingerprintLength).IsRequired(false);
+            .Property(x => x.UserFingerprint).HasMaxLength(_entityRules.UserFingerprintLength).IsRequired(false);
     }
 }
