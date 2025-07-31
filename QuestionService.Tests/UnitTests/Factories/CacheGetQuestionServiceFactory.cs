@@ -26,7 +26,7 @@ internal class CacheGetQuestionServiceFactory
     public CacheGetQuestionServiceFactory()
     {
         _cacheGetQuestionService = new CacheGetQuestionService(QuestionCacheRepository, InnerGetQuestionService,
-            new OptionsWrapper<RedisSettings>(RedisSettings));
+            Options.Create(RedisSettings));
     }
 
     public IGetQuestionService GetService()

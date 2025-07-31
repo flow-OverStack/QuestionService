@@ -27,7 +27,7 @@ internal class CacheGetVoteServiceFactory
     public CacheGetVoteServiceFactory()
     {
         _cacheGetVoteService = new CacheGetVoteService(VoteCacheRepository, InnerGetVoteService,
-            new OptionsWrapper<RedisSettings>(RedisSettings));
+            Options.Create(RedisSettings));
     }
 
     public IGetVoteService GetService()

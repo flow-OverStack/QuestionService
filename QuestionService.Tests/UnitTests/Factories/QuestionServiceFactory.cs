@@ -30,7 +30,7 @@ internal class QuestionServiceFactory
     public QuestionServiceFactory()
     {
         _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, UserProvider,
-            new OptionsWrapper<BusinessRules>(BusinessRules), Mapper, EventProducer);
+            Options.Create(BusinessRules), Mapper, EventProducer);
     }
 
     public IQuestionService GetService()

@@ -26,7 +26,7 @@ internal class CacheGetTagServiceFactory
     public CacheGetTagServiceFactory()
     {
         _cacheGetTagService = new CacheGetTagService(TagCacheRepository, InnerGetTagService,
-            new OptionsWrapper<RedisSettings>(RedisSettings));
+            Options.Create(RedisSettings));
     }
 
     public IGetTagService GetService()

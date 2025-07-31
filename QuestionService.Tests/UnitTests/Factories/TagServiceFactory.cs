@@ -22,7 +22,7 @@ internal class TagServiceFactory
 
     public TagServiceFactory()
     {
-        _tagService = new TagService(TagRepository, Mapper, new OptionsWrapper<BusinessRules>(BusinessRules));
+        _tagService = new TagService(TagRepository, Mapper, Options.Create(BusinessRules));
     }
 
     public ITagService GetService()

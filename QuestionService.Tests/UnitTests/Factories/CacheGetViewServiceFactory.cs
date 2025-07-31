@@ -26,7 +26,7 @@ internal class CacheGetViewServiceFactory
     public CacheGetViewServiceFactory()
     {
         _cacheGetViewService = new CacheGetViewService(ViewCacheRepository, InnerGetViewService,
-            new OptionsWrapper<RedisSettings>(RedisSettings));
+            Options.Create(RedisSettings));
     }
 
     public IGetViewService GetService()

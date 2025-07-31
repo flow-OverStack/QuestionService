@@ -34,7 +34,7 @@ internal class ViewServiceFactory
         if (redisDatabase != null) CacheProvider = new RedisCacheProvider(redisDatabase);
 
         var service = new ViewService(CacheProvider, QuestionRepository, ViewRepository, UserProvider,
-            new OptionsWrapper<BusinessRules>(BusinessRules));
+            Options.Create(BusinessRules));
 
         _viewService = service;
         _viewDatabaseService = service;
