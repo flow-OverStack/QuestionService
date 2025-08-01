@@ -43,6 +43,27 @@ public static class DependencyInjection
                     factoryConfigurator.Host(kafkaHost);
                 });
             });
+
+            configurator.AddConfigureEndpointsCallback((context, _, cfg) =>
+            {
+                cfg.UseMessageRetry(r => r.Intervals(
+                    TimeSpan.FromSeconds(5),
+                    TimeSpan.FromSeconds(10),
+                    TimeSpan.FromSeconds(15),
+                    TimeSpan.FromSeconds(30)
+                ));
+
+                cfg.UseDelayedRedelivery(r => r.Intervals(
+                    TimeSpan.FromMinutes(1),
+                    TimeSpan.FromMinutes(5),
+                    TimeSpan.FromMinutes(10),
+                    TimeSpan.FromHours(1),
+                    TimeSpan.FromHours(12),
+                    TimeSpan.FromHours(24)
+                ));
+
+                cfg.UseInMemoryOutbox(context);
+            });
         });
     }
 
