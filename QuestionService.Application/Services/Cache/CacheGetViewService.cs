@@ -1,22 +1,14 @@
-using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Results;
-using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services.Cache;
 
-public class CacheGetViewService(
-    IBaseCacheRepository<View, long> cacheRepository,
-    GetViewService inner,
-    IOptions<RedisSettings> redisSettings) : IGetViewService
+public class CacheGetViewService(IViewCacheRepository cacheRepository, GetViewService inner) : IGetViewService
 {
-    private readonly RedisSettings _redisSettings = redisSettings.Value;
-
     public Task<QueryableResult<View>> GetAllAsync(CancellationToken cancellationToken = default) =>
         inner.GetAllAsync(cancellationToken);
 
@@ -24,12 +16,7 @@ public class CacheGetViewService(
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var views = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(
-            idsArray,
-            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var views = (await cacheRepository.GetByIdsAsync(idsArray, cancellationToken)).ToArray();
 
         if (views.Length == 0)
             return idsArray.Length switch
@@ -45,14 +32,7 @@ public class CacheGetViewService(
         IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
-        var groupedViews = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
-            userIds,
-            CacheKeyHelper.GetUserViewsKey,
-            CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await inner.GetUsersViewsAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var groupedViews = (await cacheRepository.GetUsersViewsAsync(userIds, cancellationToken)).ToArray();
 
         if (groupedViews.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
@@ -64,14 +44,7 @@ public class CacheGetViewService(
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
         IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
-        var groupedViews = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
-            questionIds,
-            CacheKeyHelper.GetQuestionViewsKey,
-            CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await inner.GetQuestionsViewsAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var groupedViews = (await cacheRepository.GetQuestionsViewsAsync(questionIds, cancellationToken)).ToArray();
 
         if (groupedViews.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,

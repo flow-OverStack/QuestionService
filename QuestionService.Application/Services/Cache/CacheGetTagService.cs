@@ -1,22 +1,14 @@
-using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Results;
-using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services.Cache;
 
-public class CacheGetTagService(
-    IBaseCacheRepository<Tag, long> cacheRepository,
-    GetTagService inner,
-    IOptions<RedisSettings> redisSettings) : IGetTagService
+public class CacheGetTagService(ITagCacheRepository cacheRepository, GetTagService inner) : IGetTagService
 {
-    private readonly RedisSettings _redisSettings = redisSettings.Value;
-
     public Task<QueryableResult<Tag>> GetAllAsync(CancellationToken cancellationToken = default) =>
         inner.GetAllAsync(cancellationToken);
 
@@ -24,12 +16,7 @@ public class CacheGetTagService(
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var tags = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(
-            idsArray,
-            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var tags = (await cacheRepository.GetByIdsAsync(idsArray, cancellationToken)).ToArray();
 
         if (tags.Length == 0)
             return idsArray.Length switch
@@ -44,14 +31,7 @@ public class CacheGetTagService(
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTagsAsync(
         IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
-        var groupedTags = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
-            questionIds,
-            CacheKeyHelper.GetQuestionTagsKey,
-            CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await inner.GetQuestionsTagsAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var groupedTags = (await cacheRepository.GetQuestionsTagsAsync(questionIds, cancellationToken)).ToArray();
 
         if (groupedTags.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>.Failure(ErrorMessage.TagsNotFound,

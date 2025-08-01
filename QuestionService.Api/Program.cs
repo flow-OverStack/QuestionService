@@ -6,6 +6,7 @@ using QuestionService.Api.Settings;
 using QuestionService.Application.DependencyInjection;
 using QuestionService.BackgroundJobs.DependencyInjection;
 using QuestionService.Cache.DependencyInjection;
+using QuestionService.Cache.Settings;
 using QuestionService.DAL.DependencyInjection;
 using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DependencyInjection;

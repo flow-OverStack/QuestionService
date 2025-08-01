@@ -1,4 +1,4 @@
-namespace QuestionService.Domain.Helpers;
+namespace QuestionService.Cache.Helpers;
 
 public static class CacheKeyHelper
 {

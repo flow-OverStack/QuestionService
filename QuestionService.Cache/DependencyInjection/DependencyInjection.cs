@@ -2,11 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Cache.Providers;
 using QuestionService.Cache.Repositories;
-using QuestionService.Domain.Dtos.Vote;
-using QuestionService.Domain.Entities;
+using QuestionService.Cache.Settings;
 using QuestionService.Domain.Interfaces.Provider;
-using QuestionService.Domain.Interfaces.Repository;
-using QuestionService.Domain.Settings;
+using QuestionService.Domain.Interfaces.Repository.Cache;
 using StackExchange.Redis;
 
 namespace QuestionService.Cache.DependencyInjection;
@@ -44,9 +42,11 @@ public static class DependencyInjection
 
     private static void InitRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IBaseCacheRepository<Question, long>, QuestionCacheRepository>();
-        services.AddScoped<IBaseCacheRepository<Tag, long>, TagCacheRepository>();
-        services.AddScoped<IBaseCacheRepository<View, long>, ViewCacheRepository>();
-        services.AddScoped<IBaseCacheRepository<Vote, VoteDto>, VoteCacheRepository>();
+        services.AddScoped<IQuestionCacheRepository, QuestionCacheRepository>();
+        services.AddScoped<ITagCacheRepository, TagCacheRepository>();
+        services.AddScoped<IViewCacheRepository, ViewCacheRepository>();
+        services.AddScoped<IVoteCacheRepository, VoteCacheRepository>();
+
+        services.AddScoped<IViewCacheSyncRepository, ViewCacheSyncRepository>();
     }
 }

@@ -3,37 +3,29 @@ namespace QuestionService.Domain.Extensions;
 public static class EnumerableExtensions
 {
     /// <summary>
-    ///     Filters a sequence of key-value pairs where each value is a collection,
-    ///     removing elements from each collection if their transformed representation
-    ///     appears more than <paramref name="maxOccurrences"/> times across all collections.
+    ///     Filters a sequence of values, removing elements if their transformed representation
+    ///     appears more than the <paramref name="maxOccurrences"/> number of times.
     /// </summary>
-    /// <typeparam name="TKey">The type of the keys in the source sequence.</typeparam>
-    /// <typeparam name="TValue">The type of the values in the inner collections.</typeparam>
-    /// <param name="source">The input key-value collection where each value is a sequence.</param>
+    /// <typeparam name="TValue">The type of the values in the sequence.</typeparam>
+    /// <typeparam name="TCompare">The type of the comparison key produced by the valueSelector.</typeparam>
+    /// <param name="source">The input sequence of values.</param>
     /// <param name="valueSelector">A function that projects each element into a comparison key.</param>
-    /// <param name="maxOccurrences">The maximum allowed number of occurrences of a value across all sequences.</param>
-    /// <returns>A new sequence of key-value pairs with filtered value sequences.</returns>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="source"/> is <c>null</c>.
-    /// </exception>
-    public static IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> FilterByMaxValueOccurrences<TKey, TValue>(
-        this IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> source, Func<TValue, TValue> valueSelector,
-        int maxOccurrences) where TValue : notnull where TKey : notnull
+    /// <param name="maxOccurrences">The maximum allowed number of occurrences of a value.</param>
+    /// <returns>A new sequence with filtered values.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="source"/> is <c>null</c>.</exception>
+    public static IEnumerable<TValue> FilterByMaxValueOccurrences<TValue, TCompare>(this IEnumerable<TValue> source,
+        Func<TValue, TCompare> valueSelector, int maxOccurrences) where TValue : notnull where TCompare : notnull
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        var keyValuePairs = source.ToArray();
+        var values = source.ToArray();
 
-        var valueCounts = keyValuePairs
-            .SelectMany(x => x.Value)
+        var valueCounts = values
             .Select(valueSelector)
             .GroupBy(x => x)
             .ToDictionary(x => x.Key, x => x.Count());
 
-        return keyValuePairs.ToDictionary(
-            x => x.Key,
-            x => x.Value.Where(value => valueCounts[valueSelector(value)] <= maxOccurrences)
-        );
+        return values.Where(value => valueCounts[valueSelector(value)] <= maxOccurrences);
     }
 
     /// <summary>

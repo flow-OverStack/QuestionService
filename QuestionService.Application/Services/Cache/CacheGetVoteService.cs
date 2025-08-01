@@ -1,23 +1,15 @@
-using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Helpers;
-using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Results;
-using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services.Cache;
 
-public class CacheGetVoteService(
-    IBaseCacheRepository<Vote, VoteDto> cacheRepository,
-    GetVoteService inner,
-    IOptions<RedisSettings> redisSettings) : IGetVoteService
+public class CacheGetVoteService(IVoteCacheRepository cacheRepository, GetVoteService inner) : IGetVoteService
 {
-    private readonly RedisSettings _redisSettings = redisSettings.Value;
-
     public Task<QueryableResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default) =>
         inner.GetAllAsync(cancellationToken);
 
@@ -25,12 +17,7 @@ public class CacheGetVoteService(
         CancellationToken cancellationToken = default)
     {
         var dtosArray = dtos.ToArray();
-        var votes = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(
-            dtosArray,
-            async (dtosToFetch, ct) => (await inner.GetByDtosAsync(dtosToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var votes = (await cacheRepository.GetByDtosAsync(dtosArray, cancellationToken)).ToArray();
 
         if (votes.Length == 0)
             return dtosArray.Length switch
@@ -45,14 +32,7 @@ public class CacheGetVoteService(
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
         IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
-        var groupedVotes = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
-            questionIds,
-            CacheKeyHelper.GetQuestionVotesKey,
-            CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await inner.GetQuestionsVotesAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var groupedVotes = (await cacheRepository.GetQuestionsVotesAsync(questionIds, cancellationToken)).ToArray();
 
         if (groupedVotes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
@@ -65,14 +45,7 @@ public class CacheGetVoteService(
         IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
-        var groupedVotes = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
-            userIds,
-            CacheKeyHelper.GetUserVotesKey,
-            CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await inner.GetUsersVotesAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
-            cancellationToken
-        )).ToArray();
+        var groupedVotes = (await cacheRepository.GetUsersVotesAsync(userIds, cancellationToken)).ToArray();
 
         if (groupedVotes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,

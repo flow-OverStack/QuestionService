@@ -1,4 +1,4 @@
-namespace QuestionService.Domain.Settings;
+namespace QuestionService.Cache.Settings;
 
 public class RedisSettings
 {

@@ -3,10 +3,9 @@ using QuestionService.Application.Services;
 using QuestionService.Application.Services.Cache;
 using QuestionService.Cache.Providers;
 using QuestionService.Cache.Repositories;
-using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Cache.Settings;
+using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
-using QuestionService.Domain.Settings;
 using QuestionService.Tests.UnitTests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
@@ -18,15 +17,17 @@ internal class CacheGetQuestionServiceFactory
     public readonly GetQuestionService InnerGetQuestionService =
         (GetQuestionService)new GetQuestionServiceFactory().GetService();
 
-    public readonly IBaseCacheRepository<Question, long> QuestionCacheRepository =
-        new QuestionCacheRepository(new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()));
+    public readonly IQuestionCacheRepository QuestionCacheRepository =
+        new QuestionCacheRepository(
+            new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
+            (GetQuestionService)new GetQuestionServiceFactory().GetService());
 
     public readonly RedisSettings RedisSettings = RedisSettingsConfiguration.GetRedisSettingsConfiguration();
 
     public CacheGetQuestionServiceFactory()
     {
-        _cacheGetQuestionService = new CacheGetQuestionService(QuestionCacheRepository, InnerGetQuestionService,
-            Options.Create(RedisSettings));
+        _cacheGetQuestionService = new CacheGetQuestionService(QuestionCacheRepository, InnerGetQuestionService);
     }
 
     public IGetQuestionService GetService()

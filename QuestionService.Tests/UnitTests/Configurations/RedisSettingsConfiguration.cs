@@ -1,4 +1,4 @@
-using QuestionService.Domain.Settings;
+using QuestionService.Cache.Settings;
 
 namespace QuestionService.Tests.UnitTests.Configurations;
 

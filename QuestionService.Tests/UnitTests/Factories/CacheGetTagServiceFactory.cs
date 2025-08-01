@@ -3,10 +3,8 @@ using QuestionService.Application.Services;
 using QuestionService.Application.Services.Cache;
 using QuestionService.Cache.Providers;
 using QuestionService.Cache.Repositories;
-using QuestionService.Domain.Entities;
-using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
-using QuestionService.Domain.Settings;
 using QuestionService.Tests.UnitTests.Configurations;
 
 namespace QuestionService.Tests.UnitTests.Factories;
@@ -18,15 +16,15 @@ internal class CacheGetTagServiceFactory
     public readonly GetTagService InnerGetTagService =
         (GetTagService)new GetTagServiceFactory().GetService();
 
-    public readonly RedisSettings RedisSettings = RedisSettingsConfiguration.GetRedisSettingsConfiguration();
-
-    public readonly IBaseCacheRepository<Tag, long> TagCacheRepository =
-        new TagCacheRepository(new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()));
+    public readonly ITagCacheRepository TagCacheRepository =
+        new TagCacheRepository(
+            new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
+            (GetTagService)new GetTagServiceFactory().GetService());
 
     public CacheGetTagServiceFactory()
     {
-        _cacheGetTagService = new CacheGetTagService(TagCacheRepository, InnerGetTagService,
-            Options.Create(RedisSettings));
+        _cacheGetTagService = new CacheGetTagService(TagCacheRepository, InnerGetTagService);
     }
 
     public IGetTagService GetService()
