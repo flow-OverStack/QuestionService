@@ -12,7 +12,7 @@ QuestionService is a microservice in the Flow OverStack platform responsible for
 * **.NET 9 & C#** — Core framework and language
 * **ASP.NET Core** — HTTP API.
 * **Entity Framework Core with PostgreSQL** — Data access (Repository & Unit of Work patterns) to PostgreSQL database
-* **Clean Architecture** — Layered separation (Domain, Application, Infrastructure)
+* **Clean Architecture** — Layered separation (Domain, Application, Infrastructure, Presentation)
 * **Outbox Pattern** — ensures reliable message delivery to the message queue 
 * **Decorator Pattern** — allows behavior to be added to individual objects dynamically without affecting others. In this project, it is used to implement caching.
 * **Hangfire** — Hosted services for background jobs
