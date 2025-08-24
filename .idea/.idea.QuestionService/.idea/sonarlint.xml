@@ -3,6 +3,6 @@
   <component name="SonarLintProjectSettings">
     <option name="bindingEnabled" value="true" />
     <option name="projectKey" value="flow-OverStack_QuestionService" />
-    <option name="serverId" value="flow-OverStack" />
+    <option name="serverId" value="Flow OverStack" />
   </component>
 </project>
