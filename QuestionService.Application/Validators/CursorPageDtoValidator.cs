@@ -1,9 +1,9 @@
 using FluentValidation;
 using Microsoft.Extensions.Options;
+using QuestionService.Application.Settings;
 using QuestionService.Domain.Dtos.Page;
 using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Interfaces.Validation;
-using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Validators;
 

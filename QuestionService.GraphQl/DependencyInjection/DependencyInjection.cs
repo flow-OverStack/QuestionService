@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Settings;
+using QuestionService.Application.Settings;
 using QuestionService.GraphQl.DataLoaders;
 using QuestionService.GraphQl.ErrorFilters;
 using QuestionService.GraphQl.Types;

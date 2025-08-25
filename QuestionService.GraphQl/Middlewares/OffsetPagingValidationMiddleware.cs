@@ -4,9 +4,9 @@ using HotChocolate.Resolvers;
 using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Resources;
+using QuestionService.Application.Settings;
 using QuestionService.Domain.Dtos.Page;
 using QuestionService.Domain.Interfaces.Validation;
-using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.Helpers;
 
 namespace QuestionService.GraphQl.Middlewares;

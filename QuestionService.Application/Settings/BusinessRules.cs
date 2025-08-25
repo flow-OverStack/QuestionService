@@ -1,4 +1,4 @@
-namespace QuestionService.Domain.Settings;
+namespace QuestionService.Application.Settings;
 
 public class BusinessRules
 {

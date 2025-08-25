@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Services;
+using QuestionService.Application.Settings;
 using QuestionService.Cache.Providers;
 using QuestionService.Cache.Repositories;
 using QuestionService.Domain.Dtos.ExternalEntity;

@@ -4,6 +4,7 @@ using QuestionService.Api;
 using QuestionService.Api.Middlewares;
 using QuestionService.Api.Settings;
 using QuestionService.Application.DependencyInjection;
+using QuestionService.Application.Settings;
 using QuestionService.BackgroundJobs.DependencyInjection;
 using QuestionService.Cache.DependencyInjection;
 using QuestionService.Cache.Settings;

@@ -1,4 +1,4 @@
-using QuestionService.Domain.Settings;
+using QuestionService.Application.Settings;
 
 namespace QuestionService.Tests.UnitTests.Configurations;
 
