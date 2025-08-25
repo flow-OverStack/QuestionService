@@ -33,7 +33,10 @@ public class GrpcStatusMappingHandler : DelegatingHandler
         HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var response = await base.SendAsync(request, cancellationToken);
-        var grpcStatusStr = response.Headers.GetValues(GrpcStatusHeaderName).FirstOrDefault();
+        var grpcStatusStr = response.Headers.TryGetValues(GrpcStatusHeaderName, out var values)
+            ? values.FirstOrDefault()
+            : null;
+
 
         if (!Enum.TryParse<StatusCode>(grpcStatusStr, out var grpcStatus)) return response;
 
