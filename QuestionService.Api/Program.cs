@@ -28,6 +28,7 @@ builder.Services.Configure<GrpcHosts>(builder.Configuration.GetSection(nameof(Gr
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
+builder.Services.AddLocalization(options => options.ResourcesPath = nameof(QuestionService.Application.Resources));
 
 builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddEndpointsApiExplorer();
@@ -51,11 +52,13 @@ builder.Services.AddCors(builder.Configuration, builder.Environment);
 var app = builder.Build();
 
 app.UseStatusCodePages();
-
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<WarningHandlingMiddleware>();
 
 app.UseRouting();
+app.MapControllers();
+app.UseLocalization();
+app.UseGraphQl();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfire();
@@ -69,9 +72,6 @@ app.UseMiddleware<ClaimsValidationMiddleware>();
 
 if (app.Environment.IsDevelopment()) app.UseSwaggerUI();
 app.UseSwagger();
-
-app.MapControllers();
-app.UseGraphQl();
 
 await builder.Services.MigrateDatabaseAsync();
 
