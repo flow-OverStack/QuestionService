@@ -13,7 +13,7 @@ public class TagDataLoader(
     protected override async Task<IReadOnlyDictionary<long, Tag>> LoadBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var tagService = scope.ServiceProvider.GetRequiredService<IGetTagService>();
 
         var result = await tagService.GetByIdsAsync(keys, cancellationToken);

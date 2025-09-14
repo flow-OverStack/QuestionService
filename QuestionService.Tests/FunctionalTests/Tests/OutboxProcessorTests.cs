@@ -19,7 +19,7 @@ public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) 
         //Arrange
         const long userId = 1;
 
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var outboxRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<OutboxMessage>>();
 
         await outboxRepository.CreateAsync(new OutboxMessage

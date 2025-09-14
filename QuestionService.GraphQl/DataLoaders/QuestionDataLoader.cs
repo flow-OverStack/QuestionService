@@ -13,7 +13,7 @@ public class QuestionDataLoader(
     protected override async Task<IReadOnlyDictionary<long, Question>> LoadBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
 
         var result = await questionService.GetByIdsAsync(keys, cancellationToken);

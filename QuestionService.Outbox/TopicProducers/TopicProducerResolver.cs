@@ -7,7 +7,7 @@ public class TopicProducerResolver(IServiceScopeFactory scopeFactory) : ITopicPr
 {
     public ITopicProducer GetProducerForType(Type messageType)
     {
-        using var scope = scopeFactory.CreateScope();
+        using var scope = scopeFactory.CreateAsyncScope();
         var producers = scope.ServiceProvider.GetRequiredService<IEnumerable<ITopicProducer>>();
 
         return producers.FirstOrDefault(x => x.CanProduce(messageType)) ??

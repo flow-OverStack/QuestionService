@@ -18,7 +18,8 @@ public class OutboxBackgroundService(ILogger logger, IServiceScopeFactory scopeF
             logger.Information("{ServiceName} is running.", nameof(OutboxBackgroundService));
             while (!stoppingToken.IsCancellationRequested)
             {
-                var processor = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IOutboxProcessor>();
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var processor = scope.ServiceProvider.GetRequiredService<IOutboxProcessor>();
                 var processed = await processor.ProcessOutboxMessagesAsync(BatchSize, stoppingToken);
 
                 if (processed > 0)

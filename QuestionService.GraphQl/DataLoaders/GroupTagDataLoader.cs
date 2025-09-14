@@ -19,7 +19,7 @@ public class GroupTagDataLoader(
     protected override async Task<ILookup<long, Tag>> LoadGroupedBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var tagService = scope.ServiceProvider.GetRequiredService<IGetTagService>();
 
         var result = await tagService.GetQuestionsTagsAsync(keys, cancellationToken);

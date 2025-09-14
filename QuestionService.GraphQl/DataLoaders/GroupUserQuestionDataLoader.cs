@@ -16,7 +16,7 @@ public class GroupUserQuestionDataLoader(
     protected override async Task<ILookup<long, Question>> LoadGroupedBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var questionService = scope.ServiceProvider.GetRequiredService<IGetQuestionService>();
 
         var result = await questionService.GetUsersQuestionsAsync(keys, cancellationToken);

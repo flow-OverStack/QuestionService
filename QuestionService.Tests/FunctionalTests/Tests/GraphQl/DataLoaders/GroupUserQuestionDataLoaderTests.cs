@@ -13,7 +13,7 @@ public class GroupUserQuestionDataLoaderTests(FunctionalTestWebAppFactory factor
     public async Task Load_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupUserQuestionDataLoader>();
         const long userId = 1;
 
@@ -29,7 +29,7 @@ public class GroupUserQuestionDataLoaderTests(FunctionalTestWebAppFactory factor
     public async Task Load_ShouldBe_NoQuestions()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupUserQuestionDataLoader>();
         const long userId = 0;
 

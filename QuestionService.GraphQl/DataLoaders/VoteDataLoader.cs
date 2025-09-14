@@ -14,7 +14,7 @@ public class VoteDataLoader(
     protected override async Task<IReadOnlyDictionary<VoteDto, Vote>> LoadBatchAsync(IReadOnlyList<VoteDto> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var voteService = scope.ServiceProvider.GetRequiredService<IGetVoteService>();
 
         var result = await voteService.GetByDtosAsync(keys, cancellationToken);

@@ -19,7 +19,7 @@ public class GroupVoteDataLoader(
     protected override async Task<ILookup<long, Vote>> LoadGroupedBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var voteService = scope.ServiceProvider.GetRequiredService<IGetVoteService>();
 
         var result = await voteService.GetQuestionsVotesAsync(keys, cancellationToken);

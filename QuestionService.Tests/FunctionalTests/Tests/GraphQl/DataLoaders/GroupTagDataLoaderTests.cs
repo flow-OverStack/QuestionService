@@ -13,7 +13,7 @@ public class GroupTagDataLoaderTests(FunctionalTestWebAppFactory factory) : Base
     public async Task Load_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupTagDataLoader>();
         const long questionId = 1;
 
@@ -29,7 +29,7 @@ public class GroupTagDataLoaderTests(FunctionalTestWebAppFactory factory) : Base
     public async Task Load_ShouldBe_NoTags()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupTagDataLoader>();
         const long questionId = 0;
 

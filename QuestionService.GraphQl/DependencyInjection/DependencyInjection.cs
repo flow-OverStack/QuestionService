@@ -48,7 +48,7 @@ public static class DependencyInjection
             .ModifyPagingOptions(opt =>
             {
                 using var provider = services.BuildServiceProvider();
-                using var scope = provider.CreateScope();
+                using var scope = provider.CreateAsyncScope();
                 var defaultSize = scope.ServiceProvider.GetRequiredService<IOptions<BusinessRules>>().Value
                     .DefaultPageSize;
 

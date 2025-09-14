@@ -12,7 +12,7 @@ public class ViewDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunc
     public async Task Load_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<ViewDataLoader>();
         const long viewId = 1;
 
@@ -28,7 +28,7 @@ public class ViewDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunc
     public async Task Load_ShouldBe_Null()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<ViewDataLoader>();
         const long viewId = 0;
 

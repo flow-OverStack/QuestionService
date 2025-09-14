@@ -36,7 +36,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
     private async Task DeleteTagsAsync()
     {
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         await dbContext.Set<Tag>().ExecuteDeleteAsync();

@@ -13,7 +13,7 @@ public class GroupViewDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task Load_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupViewDataLoader>();
         const long questionId = 1;
 
@@ -29,7 +29,7 @@ public class GroupViewDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task Load_ShouldBe_NoViews()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupViewDataLoader>();
         const long questionId = 0;
 

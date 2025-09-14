@@ -13,7 +13,7 @@ public class VoteDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunc
     public async Task Load_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<VoteDataLoader>();
         var dto = new VoteDto(2, 1);
 
@@ -29,7 +29,7 @@ public class VoteDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunc
     public async Task Load_ShouldBe_Null()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<VoteDataLoader>();
         var dto = new VoteDto(0, 0);
 

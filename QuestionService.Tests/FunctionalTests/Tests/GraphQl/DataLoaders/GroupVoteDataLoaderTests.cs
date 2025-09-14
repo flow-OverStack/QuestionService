@@ -13,7 +13,7 @@ public class GroupVoteDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task Load_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupVoteDataLoader>();
         const long questionId = 2;
 
@@ -29,7 +29,7 @@ public class GroupVoteDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task Load_ShouldBe_NoVotes()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupVoteDataLoader>();
         const long questionId = 0;
 

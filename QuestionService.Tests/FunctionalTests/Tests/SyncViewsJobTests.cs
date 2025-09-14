@@ -17,7 +17,7 @@ public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : BaseFuncti
     public async Task RunReputationResetJob_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var cache = scope.ServiceProvider.GetRequiredService<ICacheProvider>();
         var syncViewsJob = ActivatorUtilities.CreateInstance<SyncViewsJob>(scope.ServiceProvider);
         var viewRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<View>>();
@@ -37,7 +37,7 @@ public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : BaseFuncti
     public async Task RunReputationResetJob_ShouldBe_NoSyncedViews()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var cache = scope.ServiceProvider.GetRequiredService<ICacheProvider>();
         var syncViewsJob = ActivatorUtilities.CreateInstance<SyncViewsJob>(scope.ServiceProvider);
         var viewRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<View>>();

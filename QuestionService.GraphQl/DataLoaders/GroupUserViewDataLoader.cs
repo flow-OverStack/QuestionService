@@ -19,7 +19,7 @@ public class GroupUserViewDataLoader(
     protected override async Task<ILookup<long, View>> LoadGroupedBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var viewService = scope.ServiceProvider.GetRequiredService<IGetViewService>();
 
         var result = await viewService.GetUsersViewsAsync(keys, cancellationToken);

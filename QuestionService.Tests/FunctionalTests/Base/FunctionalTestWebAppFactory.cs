@@ -69,12 +69,12 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
+            services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
             var connectionString = _questionServicePostgreSql.GetConnectionString();
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
             using var serviceProvider = services.BuildServiceProvider();
-            using var scope = serviceProvider.CreateScope();
+            using var scope = serviceProvider.CreateAsyncScope();
             scope.PrepPopulation();
 
             _wireMockServer = _wireMockServer.StartIdentityServer();
