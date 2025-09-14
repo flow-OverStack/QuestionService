@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Newtonsoft.Json;
 
@@ -8,7 +9,7 @@ internal class RequiredClaims
     [JsonProperty(ClaimTypes.NameIdentifier)]
     public long? UserId { get; set; }
 
-    [JsonProperty(ClaimTypes.Name)] public string? Username { get; set; }
+    [JsonProperty(JwtRegisteredClaimNames.PreferredUsername)] public string? Username { get; set; }
 
     [JsonProperty(ClaimTypes.Role)] public string[]? Roles { get; set; }
 

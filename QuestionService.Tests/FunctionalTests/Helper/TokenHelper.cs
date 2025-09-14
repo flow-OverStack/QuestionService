@@ -69,7 +69,7 @@ internal static class TokenHelper
         var claims = new Dictionary<string, object>
         {
             { ClaimTypes.Role, roles.Select(x => x.Name).ToList() },
-            { ClaimTypes.Name, username },
+            { JwtRegisteredClaimNames.PreferredUsername, username },
             { ClaimTypes.NameIdentifier, userId },
         };
 
