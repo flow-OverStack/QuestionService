@@ -41,7 +41,7 @@ public class ViewServiceTests : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task IncrementViews_ShouldBe_UnprocessableContent_When_IpIsNull()
+    public async Task IncrementViews_ShouldBe_UnprocessableEntity_When_IpIsNull()
     {
         //Arrange
         const long questionId = 1;
@@ -52,13 +52,13 @@ public class ViewServiceTests : BaseFunctionalTest
         var body = await response.Content.ReadAsStringAsync();
 
         //Assert
-        Assert.Equal(HttpStatusCode.UnprocessableContent, response.StatusCode);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         Assert.Equal("IP Address is not provided", body);
     }
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task IncrementViews_ShouldBe_UnprocessableContent_When_FingerprintIsNull()
+    public async Task IncrementViews_ShouldBe_UnprocessableEntity_When_FingerprintIsNull()
     {
         //Arrange
         const long questionId = 1;
@@ -69,7 +69,7 @@ public class ViewServiceTests : BaseFunctionalTest
         var body = await response.Content.ReadAsStringAsync();
 
         //Assert
-        Assert.Equal(HttpStatusCode.UnprocessableContent, response.StatusCode);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         Assert.Equal("Fingerprint is not provided", body);
     }
 
