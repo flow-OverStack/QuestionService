@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuestionService.Api.Controllers.Base;
@@ -39,7 +40,7 @@ public class TagController(ITagService tagService) : BaseController
     {
         var result = await tagService.CreateTagAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return HandleBaseResult(result, HttpStatusCode.Created);
     }
 
     /// <summary>

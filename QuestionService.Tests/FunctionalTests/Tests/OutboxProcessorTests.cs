@@ -14,7 +14,7 @@ public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) 
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ProcessOutboxMessages_ShouldBe_NoException()
+    public async Task ProcessOutboxMessages_ShouldBe_Ok()
     {
         //Arrange
         const long userId = 1;
@@ -28,7 +28,7 @@ public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) 
             Content = JsonConvert.SerializeObject(new BaseEvent
             {
                 EventId = Guid.NewGuid(),
-                EventType = BaseEventType.QuestionUpvote.ToString(),
+                EventType = nameof(BaseEventType.QuestionUpvote),
                 UserId = userId
             }),
             Type = typeof(BaseEvent).FullName ?? nameof(BaseEvent)

@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
 
         var result = await questionService.AskQuestionAsync(userId, dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return HandleBaseResult(result, HttpStatusCode.Created);
     }
 
     /// <summary>

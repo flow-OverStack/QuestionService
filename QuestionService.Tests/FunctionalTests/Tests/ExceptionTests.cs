@@ -27,7 +27,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AskQuestion_ShouldBe_Exception()
+    public async Task AskQuestion_ShouldBe_InternalServerError()
     {
         //Arrange
         var dto = new AskQuestionDto("NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
@@ -46,7 +46,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_Exception()
+    public async Task EditQuestion_ShouldBe_InternalServerErrorn()
     {
         //Arrange
         const long questionId = 1;
@@ -66,7 +66,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DownvoteQuestion_ShouldBe_Exception()
+    public async Task DownvoteQuestion_ShouldBe_InternalServerError()
     {
         //Arrange
         const long questionId = 1;
@@ -85,7 +85,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpvoteQuestion_ShouldBe_Exception()
+    public async Task UpvoteQuestion_ShouldBe_InternalServerError()
     {
         //Arrange
         const long questionId = 1;
@@ -104,7 +104,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetQuestionById_ShouldBe_NoException()
+    public async Task GetQuestionById_ShouldBe_Ok()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestQuestionByIdQuery(2) };

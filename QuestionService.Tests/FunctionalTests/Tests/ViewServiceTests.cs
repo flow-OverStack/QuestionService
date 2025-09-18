@@ -22,7 +22,7 @@ public class ViewServiceTests : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task IncrementViews_ShouldBe_Success()
+    public async Task IncrementViews_ShouldBe_NoContent()
     {
         //Arrange
         const long questionId = 1;
@@ -35,7 +35,7 @@ public class ViewServiceTests : BaseFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.True(result!.IsSuccess);
     }
 

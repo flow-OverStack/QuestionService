@@ -27,7 +27,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AskQuestion_ShouldBe_Success()
+    public async Task AskQuestion_ShouldBe_Created()
     {
         //Arrange
         var dto = new AskQuestionDto("NewQuestion", "NewQuestionNewQuestionNewQuestion", [".NET"]);
@@ -38,14 +38,14 @@ public class QuestionServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
     }
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AskQuestion_ShouldBe_BadRequest()
+    public async Task AskQuestion_ShouldBe_NotFound()
     {
         //Arrange
         var token = TokenHelper.GetRsaTokenWithRoleClaims("WrongUser", 0, [
@@ -65,7 +65,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -73,7 +73,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_Success()
+    public async Task EditQuestion_ShouldBe_Ok()
     {
         //Arrange
         const long questionId = 1;
@@ -92,7 +92,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_BadRequest()
+    public async Task EditQuestion_ShouldBe_NotFound()
     {
         //Arrange
         const long questionId = 0;
@@ -104,7 +104,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -112,7 +112,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteQuestion_ShouldBe_Success()
+    public async Task DeleteQuestion_ShouldBe_Ok()
     {
         //Arrange
         const long questionId = 1;
@@ -130,7 +130,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteQuestion_ShouldBe_BadRequest()
+    public async Task DeleteQuestion_ShouldBe_NotFound()
     {
         //Arrange
         const long questionId = 0;
@@ -141,7 +141,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -149,7 +149,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DownvoteQuestion_ShouldBe_Success()
+    public async Task DownvoteQuestion_ShouldBe_Ok()
     {
         //Arrange
         const long questionId = 1;
@@ -167,7 +167,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DownvoteQuestion_ShouldBe_BadRequest()
+    public async Task DownvoteQuestion_ShouldBe_NotFound()
     {
         //Arrange
         const long questionId = 0;
@@ -178,7 +178,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -186,7 +186,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpvoteQuestion_ShouldBe_Success()
+    public async Task UpvoteQuestion_ShouldBe_Ok()
     {
         //Arrange
         const long questionId = 1;
@@ -204,7 +204,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpvoteQuestion_ShouldBe_BadRequest()
+    public async Task UpvoteQuestion_ShouldBe_NotFound()
     {
         //Arrange
         const long questionId = 0;
@@ -215,7 +215,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
         Assert.Null(result.Data);

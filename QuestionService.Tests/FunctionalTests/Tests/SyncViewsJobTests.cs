@@ -10,11 +10,11 @@ using Xunit;
 
 namespace QuestionService.Tests.FunctionalTests.Tests;
 
-public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
+public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunReputationResetJob_ShouldBe_Success()
+    public async Task RunReputationResetJob_ShouldBe_Ok()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

@@ -14,7 +14,7 @@ public class OutboxBackgroundServiceTests(FunctionalTestWebAppFactory factory) :
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ExecuteBackgroundJob_ShouldBe_Success()
+    public async Task ExecuteBackgroundJob_ShouldBe_Ok()
     {
         //Arrange
         const long userId = 1;

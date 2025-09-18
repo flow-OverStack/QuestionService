@@ -26,7 +26,7 @@ public class TagServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task CreateTag_ShouldBe_Success()
+    public async Task CreateTag_ShouldBe_Created()
     {
         //Arrange
         var dto = new CreateTagDto("NewTag", "NewTagDescription");
@@ -37,7 +37,7 @@ public class TagServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<TagDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
     }
@@ -63,7 +63,7 @@ public class TagServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateTag_ShouldBe_Success()
+    public async Task UpdateTag_ShouldBe_Ok()
     {
         //Arrange
         var dto = new TagDto(1, "NewTag", "NewTagDescription");
@@ -81,7 +81,7 @@ public class TagServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateTag_ShouldBe_BadRequest()
+    public async Task UpdateTag_ShouldBe_NotFound()
     {
         //Arrange
         var dto = new TagDto(0, "NewTag", "NewTagDescription");
@@ -92,7 +92,7 @@ public class TagServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<TagDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.TagNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -100,7 +100,7 @@ public class TagServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteTag_ShouldBe_Success()
+    public async Task DeleteTag_ShouldBe_Ok()
     {
         //Arrange
         const long tagId = 3;
@@ -118,7 +118,7 @@ public class TagServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteTag_ShouldBe_BadRequest()
+    public async Task DeleteTag_ShouldBe_NotFound()
     {
         //Arrange
         const long tagId = 0;
@@ -129,7 +129,7 @@ public class TagServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<TagDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.TagNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
