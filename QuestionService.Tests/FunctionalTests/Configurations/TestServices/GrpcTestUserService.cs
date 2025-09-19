@@ -76,8 +76,8 @@ internal class GrpcTestUserService : UserService.UserServiceClient
             return userIds.Count() switch
             {
                 <= 1 => throw new RpcException(new Status(StatusCode.InvalidArgument, ErrorMessage.UserNotFound),
-                    new Metadata { { "ErrorCode", ErrorCodes.UserNotFound.ToString() } }),
-                >= 1 => throw new RpcException(new Status(StatusCode.InvalidArgument, ErrorMessage.UsersNotFound),
+                    new Metadata { { "ErrorCode", nameof(ErrorCodes.UserNotFound) } }),
+                > 1 => throw new RpcException(new Status(StatusCode.InvalidArgument, ErrorMessage.UsersNotFound),
                     new Metadata
                     {
                         { "ErrorCode", "24" }
