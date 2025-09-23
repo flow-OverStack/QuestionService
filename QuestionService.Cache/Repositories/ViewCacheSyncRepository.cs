@@ -68,7 +68,7 @@ public class ViewCacheSyncRepository(ICacheProvider cache) : IViewCacheSyncRepos
     {
         try
         {
-            CacheKeyHelper.GetIdFromViewKey(key);
+            CacheKeyHelper.GetIdFromKey(key);
             return true;
         }
         catch (Exception)
@@ -90,7 +90,7 @@ public class ViewCacheSyncRepository(ICacheProvider cache) : IViewCacheSyncRepos
             if (!IsValidKey(key))
                 throw new FormatException(ErrorMessage.InvalidCacheDataFormat);
 
-            return CacheKeyHelper.GetIdFromViewKey(key);
+            return CacheKeyHelper.GetIdFromKey(key);
         }
 
         public static View ParseViewFromValue(long questionId, string value)

@@ -42,18 +42,12 @@ public static class CacheKeyHelper
     public static long GetIdFromKey(string key)
     {
         var parts = key.Split(':');
-        if (parts.Length < 2)
-            throw new ArgumentException($"Invalid key format: {key}");
 
-        return long.Parse(parts[1]);
-    }
-
-    public static long GetIdFromViewKey(string key)
-    {
-        var parts = key.Split(':');
-        if (parts.Length < 3)
-            throw new ArgumentException($"Invalid view key format: {key}");
-
-        return long.Parse(parts[2]);
+        return parts.Length switch
+        {
+            2 => long.Parse(parts[1]),
+            3 => long.Parse(parts[2]),
+            _ => throw new ArgumentException($"Invalid key format: {key}")
+        };
     }
 }
