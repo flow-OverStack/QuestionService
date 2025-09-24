@@ -42,16 +42,13 @@ internal static class RedisDatabaseConfiguration
     {
         var mockDatabase = new Mock<IDatabase>();
 
-        var falseRedisResult = RedisResult.Create(0, ResultType.Integer);
-
         mockDatabase
-            .Setup(x => x.ScriptEvaluateAsync(
-                It.IsAny<string>(),
-                It.IsAny<RedisKey[]>(),
-                It.IsAny<RedisValue[]>(),
-                CommandFlags.None
+            .Setup(x => x.KeyExpireAsync(
+                It.IsAny<RedisKey>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CommandFlags>()
             ))
-            .ReturnsAsync(falseRedisResult);
+            .ReturnsAsync(false);
 
         return mockDatabase.Object;
     }

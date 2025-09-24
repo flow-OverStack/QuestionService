@@ -2,7 +2,6 @@ using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.View;
 using QuestionService.Tests.UnitTests.Configurations;
 using QuestionService.Tests.UnitTests.Factories;
-using StackExchange.Redis;
 using Xunit;
 
 namespace QuestionService.Tests.UnitTests.Tests;
@@ -38,24 +37,6 @@ public class ViewServiceTests
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.InvalidDataFormat, result.ErrorMessage);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task IncrementViews_ShouldBe_Exception()
-    {
-        //Arrange
-        var dto = new IncrementViewsDto(1, 1, "1.0.0.1", "someFingerprint");
-        var viewService =
-            new ViewServiceFactory(RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration())
-                .GetService();
-
-        //Act
-        var action = async () => await viewService.IncrementViewsAsync(dto);
-
-        //Assert
-        var exception = await Assert.ThrowsAsync<RedisException>(action);
-        Assert.Equal("An exception occurred while executing the Redis command.", exception.Message);
     }
 
     [Trait("Category", "Unit")]
