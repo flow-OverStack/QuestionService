@@ -35,7 +35,7 @@ public class ViewCacheSyncRepository(ICacheProvider cache) : IViewCacheSyncRepos
     {
         var allViewKeys = await cache.SetStringMembersAsync(CacheKeyHelper.GetViewQuestionsKey(), cancellationToken);
         var keysToDelete = allViewKeys.Prepend(CacheKeyHelper.GetViewQuestionsKey());
-        await cache.KeysDeleteAsync(keysToDelete, false, cancellationToken);
+        await cache.KeysDeleteAsync(keysToDelete, cancellationToken: cancellationToken);
     }
 
     public Task AddViewAsync(IncrementViewsDto dto, CancellationToken cancellationToken = default)
