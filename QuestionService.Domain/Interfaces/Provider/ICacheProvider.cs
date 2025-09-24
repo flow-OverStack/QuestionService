@@ -3,26 +3,17 @@ namespace QuestionService.Domain.Interfaces.Provider;
 public interface ICacheProvider
 {
     /// <summary>
-    ///     Atomically adds a collection of key-value pairs to the sets of the cache.
-    ///     Each key is associated with a set, and the corresponding value is added to the set.
-    /// </summary>
-    /// <param name="keyValueMap">A collection of key-value pairs where keys are set names and values are items to be added to the sets.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
-    Task SetsAddAtomicallyAsync(IEnumerable<KeyValuePair<string, string>> keyValueMap,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
     ///     Adds multiple sets to the cache, where each key represents a set and its corresponding value
     ///     contains the members to be added to that set. Optionally sets a time-to-live for the keys.
     /// </summary>
     /// <param name="keysWithValues">A collection of key-value pairs where each key identifies a set and the value is a collection of members to add.</param>
-    /// <param name="timeToLiveInSeconds">The time-to-live (in seconds) for the keys being added. If set to zero or negative, no expiration is applied.</param>
+    /// <param name="timeToLiveInSeconds">The optional time-to-live (in seconds) for the keys being added. If set to zero or negative, no expiration is applied.</param>
     /// <param name="fireAndForget">If true, sends the command in fire-and-forget mode (no result or error reported).</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
     /// <returns>The total number of members added to the sets.</returns>
     Task<long> SetsAddAsync(
         IEnumerable<KeyValuePair<string, IEnumerable<string>>> keysWithValues,
-        int timeToLiveInSeconds,
+        int? timeToLiveInSeconds = null,
         bool fireAndForget = false,
         CancellationToken cancellationToken = default);
 
@@ -48,12 +39,12 @@ public interface ICacheProvider
     /// </summary>
     /// <typeparam name="TValue">The type of the values to be stored. Values are serialized to JSON.</typeparam>
     /// <param name="keysWithValues">A collection of key-value pairs to store in the cache.</param>
-    /// <param name="timeToLiveInSeconds">The time-to-live (TTL) for each key-value pair in seconds.</param>
+    /// <param name="timeToLiveInSeconds">The optional time-to-live (TTL) for each key-value pair in seconds.</param>
     /// <param name="fireAndForget">If true, sends the command in fire-and-forget mode (no result or error reported).</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    Task StringSetAsync<TValue>(IEnumerable<KeyValuePair<string, TValue>> keysWithValues, int timeToLiveInSeconds,
-        bool fireAndForget = false, CancellationToken cancellationToken = default);
+    Task StringSetAsync<TValue>(IEnumerable<KeyValuePair<string, TValue>> keysWithValues,
+        int? timeToLiveInSeconds = null, bool fireAndForget = false, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Retrieves and deserializes a collection of JSON strings from the cache into objects of type T.

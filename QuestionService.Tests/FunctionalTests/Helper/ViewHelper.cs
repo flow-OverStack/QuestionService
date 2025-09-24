@@ -5,41 +5,29 @@ namespace QuestionService.Tests.FunctionalTests.Helper;
 
 internal static class ViewHelper
 {
-    public static async Task InsertViews(this ICacheProvider redisDatabase)
+    public static Task InsertViews(this ICacheProvider redisDatabase)
     {
         var views = ViewConfiguration.GetViews();
 
-        var keyValueMap = new List<KeyValuePair<string, string>>();
-        foreach (var key in views.Keys)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(key);
-            keyValueMap.Add(new KeyValuePair<string, string>("view:questions", key!));
-            foreach (var value in views.Values)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(value);
-                keyValueMap.Add(new KeyValuePair<string, string>(key!, value!));
-            }
-        }
+        var keyValueMap = views.Keys.Select(x =>
+                new KeyValuePair<string, IEnumerable<string>>(x.ToString(), views.Values.Select(y => y.ToString())))
+            .ToList();
+        keyValueMap.Add(
+            new KeyValuePair<string, IEnumerable<string>>("view:questions", views.Keys.Select(x => x.ToString())));
 
-        await redisDatabase.SetsAddAtomicallyAsync(keyValueMap);
+        return redisDatabase.SetsAddAsync(keyValueMap);
     }
 
-    public static async Task InsertInvalidValuesViews(this ICacheProvider redisDatabase)
+    public static Task InsertInvalidValuesViews(this ICacheProvider redisDatabase)
     {
         var views = ViewConfiguration.GetInvalidValuesViews();
 
-        var keyValueMap = new List<KeyValuePair<string, string>>();
-        foreach (var key in views.Keys)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(key);
-            keyValueMap.Add(new KeyValuePair<string, string>("view:questions", key!));
-            foreach (var value in views.Values)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(value);
-                keyValueMap.Add(new KeyValuePair<string, string>(key!, value!));
-            }
-        }
+        var keyValueMap = views.Keys.Select(x =>
+                new KeyValuePair<string, IEnumerable<string>>(x.ToString(), views.Values.Select(y => y.ToString())))
+            .ToList();
+        keyValueMap.Add(
+            new KeyValuePair<string, IEnumerable<string>>("view:questions", views.Keys.Select(x => x.ToString())));
 
-        await redisDatabase.SetsAddAtomicallyAsync(keyValueMap);
+        return redisDatabase.SetsAddAsync(keyValueMap);
     }
 }

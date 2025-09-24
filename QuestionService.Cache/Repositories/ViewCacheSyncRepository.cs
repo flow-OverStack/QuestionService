@@ -43,13 +43,13 @@ public class ViewCacheSyncRepository(ICacheProvider cache) : IViewCacheSyncRepos
         var key = CacheKeyHelper.GetViewQuestionKey(dto.QuestionId);
         var value = GetViewValue(dto);
 
-        var keyValueMap = new List<KeyValuePair<string, string>>
+        var keyValueMap = new List<KeyValuePair<string, IEnumerable<string>>>
         {
-            new(key, value),
-            new(CacheKeyHelper.GetViewQuestionsKey(), key)
+            new(key, [value]),
+            new(CacheKeyHelper.GetViewQuestionsKey(), [key])
         };
 
-        return cache.SetsAddAtomicallyAsync(keyValueMap, cancellationToken);
+        return cache.SetsAddAsync(keyValueMap, cancellationToken: cancellationToken);
     }
 
     private static string GetViewValue(IncrementViewsDto dto)

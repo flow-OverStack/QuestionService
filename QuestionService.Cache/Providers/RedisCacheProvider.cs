@@ -8,43 +8,8 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 {
     private const string RedisErrorMessage = "An exception occurred while executing the Redis command.";
 
-    private const string AddToSetsScript = """
-                                           for i = 1, #KEYS do
-                                               redis.call('SADD', KEYS[i], ARGV[i])
-                                           end
-                                           return true
-                                           """;
-
-    public async Task SetsAddAtomicallyAsync(IEnumerable<KeyValuePair<string, string>> keyValueMap,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(keyValueMap);
-
-        var keys = new List<RedisKey>();
-        var values = new List<RedisValue>();
-
-        foreach (var kvp in keyValueMap)
-        {
-            ArgumentNullException.ThrowIfNull(kvp);
-            ArgumentException.ThrowIfNullOrWhiteSpace(kvp.Key);
-            ArgumentException.ThrowIfNullOrWhiteSpace(kvp.Value);
-
-            keys.Add(kvp.Key);
-            values.Add(kvp.Value);
-        }
-
-        if (keys.Count == 0 || values.Count == 0) return;
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var result = await redisDatabase.ScriptEvaluateAsync(AddToSetsScript, keys.ToArray(), values.ToArray());
-
-        if (result.IsNull || !(bool)result)
-            throw new RedisException(RedisErrorMessage);
-    }
-
     public async Task<long> SetsAddAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> keysWithValues,
-        int timeToLiveInSeconds, bool fireAndForget = false, CancellationToken cancellationToken = default)
+        int? timeToLiveInSeconds = null, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(keysWithValues);
 
@@ -61,8 +26,10 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         });
         var keyExpiresTasks = keyValuePairs.Select(x =>
         {
+            if (timeToLiveInSeconds == null) return Task.FromResult(true);
+
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.KeyExpireAsync(x.Key, TimeSpan.FromSeconds(timeToLiveInSeconds), commandFlags);
+            return redisDatabase.KeyExpireAsync(x.Key, TimeSpan.FromSeconds((int)timeToLiveInSeconds), commandFlags);
         });
 
         var setAddResult = await Task.WhenAll(setAddTasks);
@@ -105,7 +72,7 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
     }
 
     public async Task StringSetAsync<TValue>(IEnumerable<KeyValuePair<string, TValue>> keysWithValues,
-        int timeToLiveInSeconds, bool fireAndForget = false, CancellationToken cancellationToken = default)
+        int? timeToLiveInSeconds = null, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(keysWithValues);
 
@@ -121,8 +88,10 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 
         var tasks = redisKeyWithValues.Select(x =>
         {
+            if (timeToLiveInSeconds == null) return Task.FromResult(true);
+
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.StringSetAsync(x.Key, x.Value, TimeSpan.FromSeconds(timeToLiveInSeconds),
+            return redisDatabase.StringSetAsync(x.Key, x.Value, TimeSpan.FromSeconds((int)timeToLiveInSeconds),
                 flags: commandFlags);
         });
 
