@@ -60,10 +60,13 @@ public static class Startup
             var keycloakSettings =
                 services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
 
-            options.MapInboundClaims = false; // For userId because sub mapped into the same ClaimsType
             options.RequireHttpsMetadata = false;
             options.MetadataAddress = keycloakSettings.MetadataAddress;
             options.Audience = keycloakSettings.Audience;
+
+            // Maintains original OAuth2 claims for reliable microservice communication.
+            options.MapInboundClaims = false;
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
