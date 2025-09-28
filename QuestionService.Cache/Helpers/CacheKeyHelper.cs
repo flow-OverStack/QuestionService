@@ -43,11 +43,15 @@ public static class CacheKeyHelper
     {
         var parts = key.Split(':');
 
+        var ex = new ArgumentException($"Invalid key format: {key}");
         return parts.Length switch
         {
             2 => long.Parse(parts[1]),
-            3 => long.Parse(parts[2]),
-            _ => throw new ArgumentException($"Invalid key format: {key}")
+            3 => TryParseLong(parts[1]) ??
+                 TryParseLong(parts[2]) ?? throw ex,
+            _ => throw ex
         };
     }
+
+    private static long? TryParseLong(string str) => long.TryParse(str, out var result) ? result : null;
 }

@@ -78,8 +78,8 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 
         var redisKeyWithValues = keysWithValues.DistinctBy(x => x.Key).Select(x =>
         {
-            var jsonValue = JsonConvert.SerializeObject(x.Value);
-            return new KeyValuePair<RedisKey, RedisValue>(x.Key, new RedisValue(jsonValue));
+            var value = x.Value as string ?? JsonConvert.SerializeObject(x.Value);
+            return new KeyValuePair<RedisKey, RedisValue>(x.Key, new RedisValue(value));
         });
 
         var commandFlags = fireAndForget
@@ -88,10 +88,9 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 
         var tasks = redisKeyWithValues.Select(x =>
         {
-            if (timeToLiveInSeconds == null) return Task.FromResult(true);
-
             cancellationToken.ThrowIfCancellationRequested();
-            return redisDatabase.StringSetAsync(x.Key, x.Value, TimeSpan.FromSeconds((int)timeToLiveInSeconds),
+            return redisDatabase.StringSetAsync(x.Key, x.Value,
+                timeToLiveInSeconds != null ? TimeSpan.FromSeconds((int)timeToLiveInSeconds) : null,
                 flags: commandFlags);
         });
 
