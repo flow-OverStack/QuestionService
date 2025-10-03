@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Mime;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Results;
@@ -31,13 +30,13 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
 
         var (message, statusCode) = exception switch
         {
-            _ => ($"{ErrorMessage.InternalServerError}: {exception.Message}", (int)HttpStatusCode.InternalServerError)
+            _ => ($"{ErrorMessage.InternalServerError}: {exception.Message}", StatusCodes.Status500InternalServerError)
         };
         var response = BaseResult.Failure(message, statusCode);
 
 
         httpContext.Response.ContentType = MediaTypeNames.Application.Json;
-        httpContext.Response.StatusCode = response.ErrorCode ?? (int)HttpStatusCode.InternalServerError;
+        httpContext.Response.StatusCode = response.ErrorCode ?? StatusCodes.Status500InternalServerError;
         await httpContext.Response.WriteAsJsonAsync(response);
     }
 }
