@@ -1,4 +1,5 @@
 using Moq;
+using QuestionService.Cache.Helpers;
 using QuestionService.Tests.Configurations;
 using StackExchange.Redis;
 
@@ -10,26 +11,12 @@ internal static class RedisDatabaseConfiguration
     {
         var mockDatabase = new Mock<IDatabase>();
 
-        var trueRedisResult = RedisResult.Create(1, ResultType.Integer);
-
-        mockDatabase
-            .Setup(x => x.ScriptEvaluateAsync(
-                It.IsAny<string>(),
-                It.IsAny<RedisKey[]>(),
-                It.IsAny<RedisValue[]>(),
-                It.IsAny<CommandFlags>()
-            ))
-            .ReturnsAsync(trueRedisResult);
-
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
             {
                 var views = ViewConfiguration.GetViews();
 
-                if (key == "view:questions") return views.Keys;
-                if (key.ToString().StartsWith("view:question:")) return views.Values;
-
-                return [];
+                return GetValuesByKey(key, views);
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -62,10 +49,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetEmptyValuesViews();
 
-                if (key == "view:questions") return views.Keys;
-                if (key.ToString().StartsWith("view:question:")) return views.Values;
-
-                return [];
+                return GetValuesByKey(key, views);
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -83,10 +67,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetInvalidValuesViews();
 
-                if (key == "view:questions") return views.Keys;
-                if (key.ToString().StartsWith("view:question:")) return views.Values;
-
-                return [];
+                return GetValuesByKey(key, views);
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -104,10 +85,7 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetInvalidKeysViews();
 
-                if (key == "view:questions") return views.Keys;
-                if (key.ToString().StartsWith("view:question:")) return views.Values;
-
-                return [];
+                return GetValuesByKey(key, views);
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
@@ -125,15 +103,21 @@ internal static class RedisDatabaseConfiguration
             {
                 var views = ViewConfiguration.GetSpamViews();
 
-                if (key == "view:questions") return views.Keys;
-                if (key.ToString().StartsWith("view:question:")) return views.Values;
-
-                return [];
+                return GetValuesByKey(key, views);
             });
         mockDatabase
             .Setup(x => x.SetRemoveAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync(true);
 
         return mockDatabase.Object;
+    }
+
+    private static RedisValue[] GetValuesByKey(RedisKey key, (RedisValue[] Keys, RedisValue[] Values) views)
+    {
+        if (key == CacheKeyHelper.GetViewQuestionsKey()) return views.Keys;
+        if (key.ToString().StartsWith(CacheKeyHelper.GetViewQuestionKey(0)[..^1]))
+            return views.Values;
+
+        return [];
     }
 }
