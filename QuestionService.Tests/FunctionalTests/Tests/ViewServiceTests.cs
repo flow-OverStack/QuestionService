@@ -32,11 +32,10 @@ public class ViewServiceTests : BaseFunctionalTest
         //Act
         var response = await HttpClient.PostAsync($"api/v1.0/View/{questionId}", null);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        Assert.True(result!.IsSuccess);
+        Assert.True(string.IsNullOrEmpty(body));
     }
 
     [Trait("Category", "Functional")]

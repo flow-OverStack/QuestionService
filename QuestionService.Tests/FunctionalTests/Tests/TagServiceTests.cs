@@ -18,6 +18,7 @@ public class TagServiceTests : SequentialFunctionalTest
     public TagServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
     {
         var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", 1, [
+            new RoleDto { Name = "User" },
             new RoleDto { Name = "Moderator" }
         ]);
 

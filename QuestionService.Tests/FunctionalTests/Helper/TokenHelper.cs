@@ -66,38 +66,32 @@ internal static class TokenHelper
 
     public static string GetRsaTokenWithRoleClaims(string username, long userId, IEnumerable<RoleDto> roles)
     {
-        var claims = new Dictionary<string, object>
-        {
-            { ClaimTypes.Role, roles.Select(x => x.Name).ToList() },
-            { JwtRegisteredClaimNames.PreferredUsername, username },
-            { ClaimTypes.NameIdentifier, userId },
-        };
+        Claim[] claims =
+        [
+            ..roles.Select(x => new Claim(ClaimTypes.Role, x.Name)).ToArray(),
+            new(JwtRegisteredClaimNames.PreferredUsername, username),
+            new(ClaimTypes.NameIdentifier, userId.ToString())
+        ];
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Expires = DateTime.UtcNow.AddMinutes(15),
-            SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
-            Audience = Audience,
-            Issuer = Issuer
-        };
-
-        var jwt = new JwtSecurityToken(
-            issuer: tokenDescriptor.Issuer,
-            audience: tokenDescriptor.Audience,
-            claims: null,
-            expires: tokenDescriptor.Expires,
-            signingCredentials: tokenDescriptor.SigningCredentials
-        );
-
-        foreach (var claim in claims)
-        {
-            jwt.Payload[claim.Key] = claim.Value;
-        }
-
-        var tokenString = tokenHandler.WriteToken(jwt);
+        var tokenString = claims.GetRsaTokenFromClaims();
 
         return tokenString;
+    }
+
+    private static string GetRsaTokenFromClaims(this IEnumerable<Claim> claims)
+    {
+        var header = new JwtHeader(new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256));
+        var payload = new JwtPayload(
+            Issuer,
+            Audience,
+            claims,
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddMinutes(15)
+        );
+
+        var token = new JwtSecurityToken(header, payload);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private static string Base64UrlEncode(byte[] input)
