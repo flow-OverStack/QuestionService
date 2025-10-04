@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using QuestionService.DAL.Repositories;
+using QuestionService.Domain.Interfaces.Database;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Outbox.Interfaces.TopicProducer;
@@ -14,9 +14,9 @@ namespace QuestionService.Tests.FunctionalTests.Base.Exception;
 
 public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
-    private static IMock<IDbContextTransaction> GetExceptionMockTransaction(IDbContextTransaction originalTransaction)
+    private static IMock<ITransaction> GetExceptionMockTransaction(ITransaction originalTransaction)
     {
-        var mockTransaction = new Mock<IDbContextTransaction>();
+        var mockTransaction = new Mock<ITransaction>();
 
         mockTransaction.Setup(x => x.RollbackAsync(It.IsAny<CancellationToken>()))
             .Returns(originalTransaction.RollbackAsync);

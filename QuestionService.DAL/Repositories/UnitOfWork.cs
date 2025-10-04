@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore.Storage;
 using QuestionService.Domain.Entities;
+using QuestionService.Domain.Interfaces.Database;
 using QuestionService.Domain.Interfaces.Repository;
 
 namespace QuestionService.DAL.Repositories;
@@ -14,9 +14,10 @@ public class UnitOfWork(
 
     public IBaseRepository<Vote> Votes { get; set; } = votes;
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    public async Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        return await context.Database.BeginTransactionAsync(cancellationToken);
+        var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        return new DbContextTransaction(transaction);
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.Storage;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Database;
 
@@ -10,5 +9,5 @@ public interface IUnitOfWork : IStateSaveChanges
 
     IBaseRepository<Vote> Votes { get; set; }
 
-    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }
