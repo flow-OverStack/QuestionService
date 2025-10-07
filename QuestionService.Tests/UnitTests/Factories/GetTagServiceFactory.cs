@@ -16,10 +16,8 @@ internal class GetTagServiceFactory
     public readonly IBaseRepository<Tag> TagRepository = MockRepositoriesGetters.GetMockTagRepository().Object;
 
 
-    public GetTagServiceFactory(IBaseRepository<Tag>? tagRepository = null)
+    public GetTagServiceFactory()
     {
-        if (tagRepository != null) TagRepository = tagRepository;
-
         _getTagService = new GetTagService(TagRepository, QuestionRepository);
     }
 

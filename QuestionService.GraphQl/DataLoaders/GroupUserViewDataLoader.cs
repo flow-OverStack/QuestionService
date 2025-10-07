@@ -25,9 +25,7 @@ public class GroupUserViewDataLoader(
         var result = await viewService.GetUsersViewsAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
-            return Enumerable.Empty<KeyValuePair<long, IEnumerable<View>>>()
-                .SelectMany(x => x.Value.Select(y => new { x.Key, View = y }))
-                .ToLookup(x => x.Key, x => x.View);
+            return Enumerable.Empty<IGrouping<long, View>>().ToLookup(_ => 0L, _ => default(View)!); // Empty lookup
 
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, View = y }))

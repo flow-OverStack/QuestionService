@@ -10,6 +10,7 @@ using Xunit;
 
 namespace QuestionService.Tests.FunctionalTests.Tests;
 
+[Collection(nameof(OutboxBackgroundServiceTests))]
 public class OutboxBackgroundServiceTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
@@ -28,7 +29,7 @@ public class OutboxBackgroundServiceTests(FunctionalTestWebAppFactory factory) :
             Content = JsonConvert.SerializeObject(new BaseEvent
             {
                 EventId = Guid.NewGuid(),
-                EventType = BaseEventType.QuestionUpvote.ToString(),
+                EventType = nameof(BaseEventType.QuestionUpvote),
                 UserId = userId
             }),
             Type = typeof(BaseEvent).FullName ?? nameof(BaseEvent)

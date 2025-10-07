@@ -18,7 +18,7 @@ public class OutboxBackgroundServiceTests
         await outboxService.ExecuteAsync();
 
         //Assert
-        // If any exception is thrown, test will fail
+        // If any exception is thrown, the test will fail
         Assert.True(true);
     }
 }

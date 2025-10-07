@@ -25,9 +25,7 @@ public class GroupTagDataLoader(
         var result = await tagService.GetQuestionsTagsAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
-            return Enumerable.Empty<KeyValuePair<long, IEnumerable<Tag>>>()
-                .SelectMany(x => x.Value.Select(y => new { x.Key, Tag = y }))
-                .ToLookup(x => x.Key, x => x.Tag);
+            return Enumerable.Empty<IGrouping<long, Tag>>().ToLookup(_ => 0L, _ => default(Tag)!); // Empty lookup
 
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, Tag = y }))

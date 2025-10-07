@@ -25,10 +25,7 @@ public class GroupUserVoteDataLoader(
         var result = await questionService.GetUsersVotesAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
-            return Enumerable.Empty<KeyValuePair<long, IEnumerable<Vote>>>()
-                .SelectMany(x => x.Value.Select(y => new { x.Key, Vote = y }))
-                .ToLookup(x => x.Key, x => x.Vote);
-
+            return Enumerable.Empty<IGrouping<long, Vote>>().ToLookup(_ => 0L, _ => default(Vote)!); // Empty lookup
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, Vote = y }))
             .ToLookup(x => x.Key, x => x.Vote);

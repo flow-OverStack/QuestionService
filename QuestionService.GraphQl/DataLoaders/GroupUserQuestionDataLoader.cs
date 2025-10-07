@@ -22,9 +22,8 @@ public class GroupUserQuestionDataLoader(
         var result = await questionService.GetUsersQuestionsAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
-            return Enumerable.Empty<KeyValuePair<long, IEnumerable<Question>>>()
-                .SelectMany(x => x.Value.Select(y => new { x.Key, Question = y }))
-                .ToLookup(x => x.Key, x => x.Question);
+            return Enumerable.Empty<IGrouping<long, Question>>()
+                .ToLookup(_ => 0L, _ => default(Question)!); // Empty lookup
 
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, Question = y }))

@@ -10,6 +10,7 @@ using Xunit;
 
 namespace QuestionService.Tests.FunctionalTests.Tests;
 
+[Collection(nameof(SyncViewsJobTests))]
 public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
