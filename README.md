@@ -7,19 +7,34 @@
 
 QuestionService is a microservice in the Flow OverStack platform responsible for managing questions, including creation, editing, retrieval, and moderation. It handles question-related business logic, such as tags, views and votes.
 
+## 🚀 Quick Start a ready-made API
+1. Intall [Docker Desktop](https://www.docker.com/)
+2. [Quick Start](https://github.com/flow-OverStack/UserService?tab=readme-ov-file#-quick-start-a-ready-made-api) the User Service.
+3. Copy [docker-compose.yml](https://github.com/flow-OverStack/QuestionService/blob/master/docker-compose.yml) file into one directory
+4. Copy (and reconfigure if needed) [logstash.conf](https://github.com/flow-OverStack/QuestionService/blob/master/logstash.conf) file in the same directory
+5. Create and configure `.env` file in the same directory:
+   ```env
+   QUESTION_DB_PASSWORD=my_password
+   ...
+   ```
+6. Start the service
+    ```bash
+   docker-compose -p questionservice -f docker-compose.yml up -d
+   ```
+
 ## Technologies and Patterns Used
 
 * **.NET 9 & C#** — Core framework and language
 * **ASP.NET Core** — HTTP API.
 * **Entity Framework Core with PostgreSQL** — Data access (Repository & Unit of Work patterns) to PostgreSQL database
+* **Kafka** — Message queue that listens to main events
+* **gRPC** — High-performance RPC interface
+* **Redis** — Caching layer
+* **Hot Chocolate** — GraphQL endpoint with built-in support for pagination, filtering, and sorting
 * **Clean Architecture** — Layered separation (Domain, Application, Infrastructure, Presentation)
 * **Outbox Pattern** — ensures reliable message delivery to the message queue 
 * **Decorator Pattern** — allows behavior to be added to individual objects dynamically without affecting others. In this project, it is used to implement caching.
 * **Hangfire** — Hosted services for background jobs
-* **Redis** — Caching layer
-* **Kafka** — Message queue that listens to main events
-* **Hot Chocolate** — GraphQL endpoint with built-in support for pagination, filtering, and sorting
-* **gRPC** — High-performance RPC interface
 * **Observability** — Traces, logs, and metrics collected via OpenTelemetry and Logstash, exported to Aspire dashboard, Jaeger, ElasticSearch, and Prometheus
 * **Monitoring & Visualization** — Dashboards in Grafana, Kibana and Aspire
 * **Health Checks** — Status endpoints to monitor service availability and dependencies
@@ -40,13 +55,12 @@ This service follows the principles of Clean Architecture. The solution is split
 
 Full system design on Miro: [Application Structure Board](https://miro.com/app/board/uXjVLx6YYx4=/?share_link_id=993967197754)
 
-## Getting Started
+## Getting Started for developers
 
 ### Prerequisites
 
 * [.NET 9 SDK](https://dotnet.microsoft.com/download)
-* [Docker Desktop](https://docs.docker.com/desktop)
-* Running service dependencies
+* [Docker Desktop](https://www.docker.com/)
 
 ### Installation
 
@@ -63,12 +77,7 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
     }
    }
    ```
-4. Start the [UserService](https://github.com/flow-OverStack/UserService/tree/master?tab=readme-ov-file#installation) first, as QuestionService depends on it
-5. Start supporting services:
-
-   ```bash
-    docker-compose -p questionservice -f docker-compose.yml up -d
-   ```
+4. Start the [UserService](https://github.com/flow-OverStack/UserService/tree/master?tab=readme-ov-file#getting-started-for-developers) first, as QuestionService depends on it and common services (such as Kafka, Keycloak, etc.)
 6. Run the API:
 
    ```bash
