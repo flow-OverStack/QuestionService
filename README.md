@@ -14,8 +14,8 @@ QuestionService is a microservice in the Flow OverStack platform responsible for
 4. Copy (and reconfigure if needed) [logstash.conf](https://github.com/flow-OverStack/QuestionService/blob/master/logstash.conf) file in the same directory
 5. Create and configure `.env` file in the same directory:
    ```env
-   QUESTION_DB_PASSWORD=my_password
-   ...
+   QUESTION_DB_PASSWORD=db_password
+   REDIS_PASSWORD=redis_password
    ```
 6. Start the service
     ```bash
@@ -65,7 +65,7 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
 ### Installation
 
 1. Clone the repo
-2. Configure `appsettings.json` and `.NET User Secrets` in `QuestionService.Api` with your database and Redis.
+2. Configure `appsettings.json` in `.NET User Secrets` in `QuestionService.Api` with your database and Redis.
    Example: 
    ```json
     {
@@ -77,8 +77,9 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
     }
    }
    ```
-4. Start the [UserService](https://github.com/flow-OverStack/UserService/tree/master?tab=readme-ov-file#getting-started-for-developers) first, as QuestionService depends on it and common services (such as Kafka, Keycloak, etc.)
-6. Run the API:
+3. Start the [UserService](https://github.com/flow-OverStack/UserService/tree/master?tab=readme-ov-file#getting-started-for-developers) first, as QuestionService depends on it and common services (such as Kafka, Keycloak, etc.)
+4. Start dependencies (you can use [Quick Start](#-quick-start-a-ready-made-api) or run your own services)
+5. Run the API:
 
    ```bash
    cd QuestionService.Api
