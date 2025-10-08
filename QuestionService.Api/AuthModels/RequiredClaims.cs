@@ -31,7 +31,7 @@ internal class RequiredClaims
             if (reader.TokenType == JsonToken.StartArray) return serializer.Deserialize<T[]>(reader);
 
             var item = serializer.Deserialize<T>(reader);
-            return item != null ? new[] { item } : Array.Empty<T>();
+            return !Equals(item, default(T)) ? new[] { item } : Array.Empty<T>();
         }
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
