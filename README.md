@@ -65,16 +65,16 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
 ### Installation
 
 1. Clone the repo
-2. Configure `appsettings.json` in `.NET User Secrets` in `QuestionService.Api` with your database and Redis.
-   Example: 
+2. Reconfigure if needed `appsettings.json` and `.NET User Secrets` in `QuestionService.Api` with your database and Redis.
+   `.NET User Secrets` example: 
    ```json
-    {
-    "ConnectionStrings": {
-      "PostgresSQL": "Server=localhost;Port=5435; Database=question-service-db; User Id=<YOUR-USER-ID>; Password=<YOUR-PASSWORD>"
-    },
-    "RedisSettings": {
-      "Password": "<YOUR-PASSWORD>"
-    }
+   {
+       "ConnectionStrings": {
+           "PostgresSQL": "Server=localhost;Port=5435; Database=question-service-db; User Id=<YOUR-USER-ID>; Password=<YOUR-PASSWORD>"
+       },
+       "RedisSettings": {
+           "Password": "<YOUR-PASSWORD>"
+       }
    }
    ```
 3. Start the [UserService](https://github.com/flow-OverStack/UserService/tree/master?tab=readme-ov-file#getting-started-for-developers) first, as QuestionService depends on it and common services (such as Kafka, Keycloak, etc.)
@@ -85,6 +85,7 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
    cd QuestionService.Api
    dotnet run
    ```
+   or use your IDE.
 ## API Documentation
 
 The following endpoints are available by default:
