@@ -21,6 +21,7 @@ QuestionService is a microservice in the Flow OverStack platform responsible for
     ```bash
    docker-compose -p questionservice -f docker-compose.yml up -d
    ```
+7. Explore endpoints at `/swagger/v1/swagger.json` endpoint.
 
 ## Technologies and Patterns Used
 
@@ -92,7 +93,7 @@ The following endpoints are available by default:
 
 | REST API & Swagger | GraphQL Endpoint | 
 | ------------------ | ---------------- | 
-| https://localhost:7067/swagger |	https://localhost:7067/graphql | 
+| https://localhost:7067/swagger/v1/swagger.json |	https://localhost:7067/graphql | 
 
 ## Testing
 
