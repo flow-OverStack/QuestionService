@@ -2,8 +2,8 @@ using Confluent.Kafka;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Events;
 using QuestionService.Domain.Interfaces.Producer;
+using QuestionService.Messaging.Events;
 using QuestionService.Messaging.Producers;
 using QuestionService.Messaging.Settings;
 

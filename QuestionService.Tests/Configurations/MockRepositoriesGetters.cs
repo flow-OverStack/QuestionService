@@ -1,6 +1,7 @@
 using MockQueryable.Moq;
 using Moq;
 using QuestionService.Domain.Entities;
+using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Database;
 using QuestionService.Domain.Interfaces.Repository;
 using View = QuestionService.Domain.Entities.View;
@@ -50,6 +51,20 @@ internal static class MockRepositoriesGetters
             .ReturnsAsync((Vote vote, CancellationToken _) => vote);
         mockRepository.Setup(x => x.Remove(It.IsAny<Vote>())).Returns((Vote vote) => vote);
         mockRepository.Setup(x => x.Update(It.IsAny<Vote>())).Returns((Vote vote) => vote);
+
+        return mockRepository;
+    }
+
+    public static IMock<IBaseRepository<VoteType>> GetMockVoteTypeRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<VoteType>>();
+        var voteTypes = GetVoteTypes().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(voteTypes.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<VoteType>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((VoteType voteType, CancellationToken _) => voteType);
+        mockRepository.Setup(x => x.Remove(It.IsAny<VoteType>())).Returns((VoteType voteType) => voteType);
+        mockRepository.Setup(x => x.Update(It.IsAny<VoteType>())).Returns((VoteType voteType) => voteType);
 
         return mockRepository;
     }
@@ -161,6 +176,23 @@ internal static class MockRepositoriesGetters
         {
             GetUpvote(1, 2), GetUpvote(2, 2), GetDownvote(4, 2),
             GetUpvote(2, 3), GetDownvote(1, 3), GetDownvote(4, 3)
+        }.AsQueryable();
+    }
+
+    public static IQueryable<VoteType> GetVoteTypes()
+    {
+        return new[]
+        {
+            new VoteType
+            {
+                Id = 1,
+                Name = nameof(VoteTypes.Upvote)
+            },
+            new VoteType
+            {
+                Id = 2,
+                Name = nameof(VoteTypes.Downvote)
+            }
         }.AsQueryable();
     }
 
@@ -288,7 +320,7 @@ internal static class MockRepositoriesGetters
         {
             UserId = userId,
             QuestionId = questionId,
-            ReputationChange = 1
+            VoteType = new VoteType { Id = 1, Name = nameof(VoteTypes.Upvote) }
         };
     }
 
@@ -298,7 +330,7 @@ internal static class MockRepositoriesGetters
         {
             UserId = userId,
             QuestionId = questionId,
-            ReputationChange = -1
+            VoteType = new VoteType { Id = 2, Name = nameof(VoteTypes.Downvote) }
         };
     }
 }

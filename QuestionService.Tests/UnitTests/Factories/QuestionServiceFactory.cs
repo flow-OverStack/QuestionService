@@ -24,13 +24,17 @@ internal class QuestionServiceFactory
 
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
     public readonly IBaseRepository<Tag> TagRepository = MockRepositoriesGetters.GetMockTagRepository().Object;
+
     public readonly IUnitOfWork UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork().Object;
     public readonly IEntityProvider<UserDto> UserProvider = MockEntityProvidersGetters.GetMockUserProvider().Object;
 
+    public readonly IBaseRepository<VoteType> VoteTypeRepository =
+        MockRepositoriesGetters.GetMockVoteTypeRepository().Object;
+
     public QuestionServiceFactory()
     {
-        _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, UserProvider,
-            Options.Create(BusinessRules), Mapper, EventProducer);
+        _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, VoteTypeRepository,
+            UserProvider, Options.Create(BusinessRules), Mapper, EventProducer);
     }
 
     public IQuestionService GetService()

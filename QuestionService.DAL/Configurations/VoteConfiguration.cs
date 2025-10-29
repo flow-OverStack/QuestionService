@@ -10,7 +10,6 @@ public class VoteConfiguration : IEntityTypeConfiguration<Vote>
     {
         builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.QuestionId).IsRequired();
-        builder.Property(x => x.ReputationChange).IsRequired();
 
         builder.HasKey(x => new { x.QuestionId, x.UserId });
     }

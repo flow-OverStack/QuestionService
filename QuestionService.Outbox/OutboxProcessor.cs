@@ -1,5 +1,5 @@
+using System.Reflection;
 using Newtonsoft.Json;
-using QuestionService.Domain.Helpers;
 using QuestionService.Outbox.Interfaces.Repository;
 using QuestionService.Outbox.Interfaces.Service;
 using QuestionService.Outbox.Interfaces.TopicProducer;
@@ -32,8 +32,8 @@ public class OutboxProcessor(
     {
         try
         {
-            var type = DomainAssemblyHelper.GetDomainAssembly().GetType(message.Type) ?? // FullName
-                       DomainAssemblyHelper.GetDomainAssembly().GetTypes()
+            var type = Assembly.GetExecutingAssembly().GetType(message.Type) ?? // FullName
+                       Assembly.GetExecutingAssembly().GetTypes()
                            .First(x => x.Name == message.Type); // Name
             var content = JsonConvert.DeserializeObject(message.Content, type)!;
 

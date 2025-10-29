@@ -238,5 +238,14 @@ namespace QuestionService.Application.Resources {
                 return ResourceManager.GetString("VotesNotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vote type not found.
+        /// </summary>
+        public static string VoteTypeNotFound {
+            get {
+                return ResourceManager.GetString("VoteTypeNotFound", resourceCulture);
+            }
+        }
     }
 }

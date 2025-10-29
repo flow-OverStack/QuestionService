@@ -78,4 +78,7 @@
     <data name="InvalidPagination" xml:space="preserve">
         <value>Параметры пагинации невалидны</value>
     </data>
+    <data name="VoteTypeNotFound" xml:space="preserve">
+        <value>Тип голоса не найден</value>
+    </data>
 </root>

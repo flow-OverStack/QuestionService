@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
+using QuestionService.Application.Mappings;
 using QuestionService.Application.Resources;
 using QuestionService.Application.Settings;
 using QuestionService.Domain.Dtos.ExternalEntity;
@@ -20,6 +21,7 @@ namespace QuestionService.Application.Services;
 public class QuestionService(
     IUnitOfWork unitOfWork,
     IBaseRepository<Tag> tagRepository,
+    IBaseRepository<VoteType> voteTypeRepository,
     IEntityProvider<UserDto> userProvider,
     IOptions<BusinessRules> businessRules,
     IMapper mapper,
@@ -145,6 +147,7 @@ public class QuestionService(
 
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Votes)
+            .ThenInclude(x => x.VoteType)
             .FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
 
         if (question == null)
@@ -156,33 +159,42 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
+        var voteType = await voteTypeRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Name == nameof(VoteTypes.Upvote), cancellationToken);
+        if (voteType == null)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteTypeNotFound, (int)ErrorCodes.VoteTypeNotFound);
+
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
+            BaseEventType? previousVoteType = null;
             if (vote == null)
             {
                 vote = new Vote
                 {
                     QuestionId = question.Id,
                     UserId = initiator.Id,
-                    ReputationChange = _businessRules.UpvoteReputationChange
+                    VoteType = voteType
                 };
 
                 await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
             }
             else
             {
-                if (vote.ReputationChange >= _businessRules.UpvoteReputationChange)
+                if (vote.VoteType == voteType)
                     return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
                         (int)ErrorCodes.VoteAlreadyGiven);
 
-                vote.ReputationChange = _businessRules.UpvoteReputationChange;
+                previousVoteType = VoteEventMapper.Map(vote.VoteType.Name);
+
+                vote.VoteType = voteType;
                 unitOfWork.Votes.Update(vote);
             }
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(initiator.Id, BaseEventType.QuestionUpvote, cancellationToken);
+            await producer.ProduceAsync(question.UserId, BaseEventType.QuestionUpvote, previousVoteType,
+                cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }
@@ -207,6 +219,7 @@ public class QuestionService(
 
         var question = await unitOfWork.Questions.GetAll()
             .Include(x => x.Votes)
+            .ThenInclude(x => x.VoteType)
             .FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
 
         if (question == null)
@@ -218,33 +231,42 @@ public class QuestionService(
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
+        var voteType = await voteTypeRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Name == nameof(VoteTypes.Downvote), cancellationToken);
+        if (voteType == null)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteTypeNotFound, (int)ErrorCodes.VoteTypeNotFound);
+
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
+            BaseEventType? previousVoteType = null;
             if (vote == null)
             {
                 vote = new Vote
                 {
                     QuestionId = question.Id,
                     UserId = initiator.Id,
-                    ReputationChange = _businessRules.UpvoteReputationChange
+                    VoteType = voteType
                 };
 
                 await unitOfWork.Votes.CreateAsync(vote, cancellationToken);
             }
             else
             {
-                if (vote.ReputationChange <= _businessRules.DownvoteReputationChange)
+                if (vote.VoteType == voteType)
                     return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
                         (int)ErrorCodes.VoteAlreadyGiven);
 
-                vote.ReputationChange = _businessRules.DownvoteReputationChange;
+                previousVoteType = VoteEventMapper.Map(vote.VoteType.Name);
+
+                vote.VoteType = voteType;
                 unitOfWork.Votes.Update(vote);
             }
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote, cancellationToken);
+            await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote, previousVoteType,
+                cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }

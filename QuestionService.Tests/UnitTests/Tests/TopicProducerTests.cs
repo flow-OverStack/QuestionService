@@ -1,4 +1,4 @@
-using QuestionService.Domain.Events;
+using QuestionService.Messaging.Events;
 using QuestionService.Outbox.TopicProducers;
 using Xunit;
 

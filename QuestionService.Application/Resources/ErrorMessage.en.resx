@@ -78,4 +78,7 @@
     <data name="InvalidPagination" xml:space="preserve">
         <value>Pagination parametrs are invalid</value>
     </data>
+    <data name="VoteTypeNotFound" xml:space="preserve">
+        <value>Vote type not found</value>
+    </data>
 </root>

@@ -12,7 +12,7 @@ public class VoteType : ObjectType<Vote>
         descriptor.Description("The vote type.");
         descriptor.Field(x => x.UserId).Description("The ID of the user that voted.");
         descriptor.Field(x => x.QuestionId).Description("The ID of the question that was voted.");
-        descriptor.Field(x => x.ReputationChange).Description("The reputation change of the vote.");
+        descriptor.Field(x => x.VoteType).Description("The reputation change of the vote.");
         descriptor.Field(x => x.Question).Description("The question that was voted.");
 
         descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!, default!));
