@@ -17,7 +17,7 @@ internal class GetVoteServiceFactory
 
     public GetVoteServiceFactory()
     {
-        _getVoteService = new GetVoteService(VoteRepository, QuestionRepository);
+        _getVoteService = new GetVoteService(VoteRepository);
     }
 
     public IGetVoteService GetService()

@@ -24,6 +24,11 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.CreatedAt).Description("Question creation time.");
         descriptor.Field(x => x.LastModifiedAt).Description("Question last modification time.");
 
+        descriptor.Field("reputation")
+            .Type<NonNullType<IntType>>()
+            .Description("The reputation of the question.")
+            .ResolveWith<Resolvers>(x => x.CalculateReputationAsync(default!, default!, default!, default!));
+
         descriptor.Field(x => x.Tags).ResolveWith<Resolvers>(x => x.GetTagsAsync(default!, default!, default!));
         descriptor.Field(x => x.Votes).ResolveWith<Resolvers>(x => x.GetVotesAsync(default!, default!, default!));
         descriptor.Field(x => x.Views).ResolveWith<Resolvers>(x => x.GetViewsAsync(default!, default!, default!));
@@ -80,6 +85,17 @@ public class QuestionType : ObjectType<Question>
         {
             cancellationToken.ThrowIfCancellationRequested();
             return new UserDto { Id = question.UserId };
+        }
+
+        public async Task<int> CalculateReputationAsync([Parent] Question question, GroupVoteDataLoader voteLoader,
+            VoteTypeDataLoader voteTypeLoader, CancellationToken cancellationToken)
+        {
+            var votes = await voteLoader.LoadRequiredAsync(question.Id, cancellationToken);
+            var voteTypes =
+                await voteTypeLoader.LoadRequiredAsync(votes.Select(x => x.VoteTypeId).ToArray(), cancellationToken);
+
+            var sum = voteTypes.Sum(x => x.ReputationChange);
+            return sum;
         }
     }
 }

@@ -10,8 +10,6 @@ internal static class BusinessRulesConfiguration
         BodyMinLength = 30,
         MinReputationToUpvote = 15,
         MinReputationToDownvote = 125,
-        DownvoteReputationChange = -1,
-        UpvoteReputationChange = 1,
         UserViewSpamThreshold = 30,
     };
 }

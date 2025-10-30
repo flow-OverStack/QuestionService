@@ -10,8 +10,7 @@ using QuestionService.Domain.Results;
 
 namespace QuestionService.Application.Services;
 
-public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepository<Question> questionRepository)
-    : IGetVoteService
+public class GetVoteService(IBaseRepository<Vote> voteRepository) : IGetVoteService
 {
     public Task<QueryableResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -51,54 +50,52 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
         IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
-        var groupedVotes = await questionRepository.GetAll()
-            .Where(x => questionIds.Contains(x.Id))
-            .Include(x => x.Votes)
-            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Id, x.Votes))
-            .ToArrayAsync(cancellationToken);
+        var votes = (await voteRepository.GetAll()
+                .Where(x => questionIds.Contains(x.QuestionId))
+                .GroupBy(x => x.QuestionId)
+                .ToArrayAsync(cancellationToken))
+            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x.ToArray()))
+            .ToArray();
 
-        if (groupedVotes.Length == 0)
+
+        if (votes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
                 (int)ErrorCodes.VotesNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(votes);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
         IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
-        var votes = await voteRepository.GetAll()
-            .Where(x => userIds.Contains(x.UserId))
-            .ToArrayAsync(cancellationToken);
-
-        var groupedVotes = votes
-            .GroupBy(x => x.UserId)
+        var votes = (await voteRepository.GetAll()
+                .Where(x => userIds.Contains(x.UserId))
+                .GroupBy(x => x.UserId)
+                .ToArrayAsync(cancellationToken))
             .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x.ToArray()))
             .ToArray();
 
-        if (groupedVotes.Length == 0)
+        if (votes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
                 (int)ErrorCodes.VotesNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(votes);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
-        IEnumerable<long> voteTypes, CancellationToken cancellationToken = default)
+        IEnumerable<long> voteTypeIds, CancellationToken cancellationToken = default)
     {
-        var votes = await voteRepository.GetAll()
-            .Where(x => voteTypes.Contains(x.VoteTypeId))
-            .ToArrayAsync(cancellationToken);
-
-        var groupedVotes = votes
-            .GroupBy(x => x.VoteTypeId)
+        var votes = (await voteRepository.GetAll()
+                .Where(x => voteTypeIds.Contains(x.VoteTypeId))
+                .GroupBy(x => x.VoteTypeId)
+                .ToArrayAsync(cancellationToken))
             .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x.ToArray()))
             .ToArray();
 
-        if (groupedVotes.Length == 0)
+        if (votes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
                 (int)ErrorCodes.VotesNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(votes);
     }
 }

@@ -60,19 +60,17 @@ public class GetQuestionService(
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(
         IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
-        var questions = await questionRepository.GetAll()
-            .Where(x => userIds.Contains(x.UserId))
-            .ToArrayAsync(cancellationToken);
-
-        var groupedQuestions = questions
-            .GroupBy(x => x.UserId)
+        var questions = (await questionRepository.GetAll()
+                .Where(x => userIds.Contains(x.UserId))
+                .GroupBy(x => x.UserId)
+                .ToArrayAsync(cancellationToken))
             .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Key, x.ToArray()))
             .ToArray();
 
-        if (groupedQuestions.Length == 0)
+        if (questions.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
                 (int)ErrorCodes.QuestionsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(groupedQuestions);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Success(questions);
     }
 }

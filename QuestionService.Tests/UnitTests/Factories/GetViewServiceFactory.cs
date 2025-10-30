@@ -18,7 +18,7 @@ internal class GetViewServiceFactory
 
     public GetViewServiceFactory()
     {
-        _getViewService = new GetViewService(ViewRepository, QuestionRepository);
+        _getViewService = new GetViewService(ViewRepository);
     }
 
     public IGetViewService GetService()

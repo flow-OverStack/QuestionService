@@ -8,8 +8,7 @@ using QuestionService.Domain.Results;
 
 namespace QuestionService.Application.Services;
 
-public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepository<Question> questionRepository)
-    : IGetViewService
+public class GetViewService(IBaseRepository<View> viewRepository) : IGetViewService
 {
     public Task<QueryableResult<View>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -39,36 +38,35 @@ public class GetViewService(IBaseRepository<View> viewRepository, IBaseRepositor
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(
         IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
-        var views = await viewRepository.GetAll()
-            .Where(x => x.UserId != null && userIds.Contains((long)x.UserId))
-            .ToArrayAsync(cancellationToken);
-
-        var groupedViews = views
-            .GroupBy(x => (long)x.UserId!)
-            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x.ToArray()))
+        var views = (await viewRepository.GetAll()
+                .Where(x => x.UserId.HasValue && userIds.Contains(x.UserId.Value))
+                .GroupBy(x => x.UserId)
+                .ToArrayAsync(cancellationToken))
+            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key!.Value, x.ToArray()))
             .ToArray();
 
 
-        if (groupedViews.Length == 0)
+        if (views.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews);
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(views);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
         IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
-        var groupedViews = await questionRepository.GetAll()
-            .Where(x => questionIds.Contains(x.Id))
-            .Include(x => x.Views)
-            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Id, x.Views))
-            .ToArrayAsync(cancellationToken);
+        var views = (await viewRepository.GetAll()
+                .Where(x => questionIds.Contains(x.QuestionId))
+                .GroupBy(x => x.QuestionId)
+                .ToArrayAsync(cancellationToken))
+            .Select(x => new KeyValuePair<long, IEnumerable<View>>(x.Key, x.ToArray()))
+            .ToArray();
 
-        if (groupedViews.Length == 0)
+        if (views.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
                 (int)ErrorCodes.ViewsNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(groupedViews);
+        return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Success(views);
     }
 }

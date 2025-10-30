@@ -55,9 +55,9 @@ public class CacheGetVoteService(IVoteCacheRepository cacheRepository, GetVoteSe
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
-        IEnumerable<long> voteTypes, CancellationToken cancellationToken = default)
+        IEnumerable<long> voteTypeIds, CancellationToken cancellationToken = default)
     {
-        var groupedVotes = (await cacheRepository.GetVoteTypesVotesAsync(voteTypes, cancellationToken)).ToArray();
+        var groupedVotes = (await cacheRepository.GetVoteTypesVotesAsync(voteTypeIds, cancellationToken)).ToArray();
 
         if (groupedVotes.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,

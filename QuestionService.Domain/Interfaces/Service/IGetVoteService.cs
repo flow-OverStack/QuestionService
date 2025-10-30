@@ -43,9 +43,9 @@ public interface IGetVoteService
     /// <summary>
     ///     Gets votes of vote types by their ids
     /// </summary>
-    /// <param name="voteTypes"></param>
+    /// <param name="voteTypeIds"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(IEnumerable<long> voteTypes,
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(IEnumerable<long> voteTypeIds,
         CancellationToken cancellationToken = default);
 }
