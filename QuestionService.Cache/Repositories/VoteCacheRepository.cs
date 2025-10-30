@@ -63,6 +63,17 @@ public class VoteCacheRepository : IVoteCacheRepository
             cancellationToken);
     }
 
+    public Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
+        IEnumerable<long> voteTypeIds, CancellationToken cancellationToken = default)
+    {
+        return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+            voteTypeIds,
+            CacheKeyHelper.GetVoteTypeVotesKey,
+            CacheKeyHelper.GetIdFromKey,
+            async (idsToFetch, ct) => (await _voteInner.GetVoteTypesVotesAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken);
+    }
+
     private static string GetVoteValue(long questionId, long userId) =>
         string.Format(VoteValuePattern, questionId, userId);
 

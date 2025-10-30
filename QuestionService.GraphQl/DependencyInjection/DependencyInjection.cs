@@ -27,6 +27,7 @@ public static class DependencyInjection
             .AddQueryType<Queries>()
             .AddType<QuestionType>()
             .AddType<VoteType>()
+            .AddType<VoteTypeType>()
             .AddType<TagType>()
             .AddType<UserType>()
             .AddTypeExtension<CollectionSegmentInfoType>()
@@ -35,6 +36,7 @@ public static class DependencyInjection
             .AddErrorFilter<PublicErrorFilter>()
             .AddDataLoader<QuestionDataLoader>()
             .AddDataLoader<VoteDataLoader>()
+            .AddDataLoader<VoteTypeDataLoader>()
             .AddDataLoader<TagDataLoader>()
             .AddDataLoader<ViewDataLoader>()
             .AddDataLoader<GroupTagDataLoader>()
@@ -44,6 +46,7 @@ public static class DependencyInjection
             .AddDataLoader<GroupUserQuestionDataLoader>()
             .AddDataLoader<GroupUserViewDataLoader>()
             .AddDataLoader<GroupUserVoteDataLoader>()
+            .AddDataLoader<GroupVoteTypeVoteDataLoader>()
             .AddApolloFederation(FederationVersion.Federation23)
             .ModifyPagingOptions(opt =>
             {

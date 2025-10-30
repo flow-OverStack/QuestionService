@@ -42,4 +42,16 @@ public interface IVoteCacheRepository
     /// </returns>
     Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(IEnumerable<long> userIds,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Retrieves votes grouped by vote type identifiers from the cache.
+    ///     If any vote type or associated votes are missing, the data is fetched and cached accordingly.
+    /// </summary>
+    /// <param name="voteTypeIds">The list of vote type IDs whose votes should be retrieved.</param>
+    /// <param name="cancellationToken">A cancellation token for the asynchronous operation.</param>
+    /// <returns>
+    ///     A <see cref="IEnumerable{Vote}" /> containing a lookup-like list of vote type Ids to the list of votes.
+    /// </returns>
+    Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(IEnumerable<long> voteTypeIds,
+        CancellationToken cancellationToken = default);
 }

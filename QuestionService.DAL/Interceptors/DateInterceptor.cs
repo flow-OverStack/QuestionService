@@ -16,16 +16,12 @@ public class DateInterceptor : SaveChangesInterceptor
         var entries = dbContext.ChangeTracker.Entries<IAuditable>();
 
         foreach (var entry in entries)
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    entry.Property(x => x.CreatedAt).CurrentValue = DateTime.UtcNow;
-                    break;
+        {
+            if (entry.State == EntityState.Added)
+                entry.Property(x => x.CreatedAt).CurrentValue = DateTime.UtcNow;
 
-                case EntityState.Modified:
-                    entry.Property(x => x.LastModifiedAt).CurrentValue = DateTime.UtcNow;
-                    break;
-            }
+            entry.Property(x => x.LastModifiedAt).CurrentValue = DateTime.UtcNow;
+        }
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
@@ -37,16 +33,12 @@ public class DateInterceptor : SaveChangesInterceptor
 
         var entries = dbContext.ChangeTracker.Entries<IAuditable>();
         foreach (var entry in entries)
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    entry.Property(x => x.CreatedAt).CurrentValue = DateTime.UtcNow;
-                    break;
+        {
+            if (entry.State == EntityState.Added)
+                entry.Property(x => x.CreatedAt).CurrentValue = DateTime.UtcNow;
 
-                case EntityState.Modified:
-                    entry.Property(x => x.LastModifiedAt).CurrentValue = DateTime.UtcNow;
-                    break;
-            }
+            entry.Property(x => x.LastModifiedAt).CurrentValue = DateTime.UtcNow;
+        }
 
         return base.SavingChanges(eventData, result);
     }

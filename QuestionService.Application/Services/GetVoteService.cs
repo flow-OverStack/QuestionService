@@ -82,4 +82,23 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository, IBaseRepositor
 
         return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes);
     }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
+        IEnumerable<long> voteTypes, CancellationToken cancellationToken = default)
+    {
+        var votes = await voteRepository.GetAll()
+            .Where(x => voteTypes.Contains(x.VoteTypeId))
+            .ToArrayAsync(cancellationToken);
+
+        var groupedVotes = votes
+            .GroupBy(x => x.VoteTypeId)
+            .Select(x => new KeyValuePair<long, IEnumerable<Vote>>(x.Key, x.ToArray()))
+            .ToArray();
+
+        if (groupedVotes.Length == 0)
+            return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Failure(ErrorMessage.VotesNotFound,
+                (int)ErrorCodes.VotesNotFound);
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>.Success(groupedVotes);
+    }
 }

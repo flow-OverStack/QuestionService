@@ -91,6 +91,33 @@ public class Queries
         return vote;
     }
 
+    [GraphQLDescription("Returns a list of paginated votes types")]
+    [UseOffsetPagingValidationMiddleware]
+    [UseOffsetPaging]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<IQueryable<VoteType>> GetVoteTypes([Service] IGetVoteTypeService voteTypeService,
+        CancellationToken cancellationToken)
+    {
+        var result = await voteTypeService.GetAllAsync(cancellationToken);
+
+        if (!result.IsSuccess)
+            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+
+        return result.Data;
+    }
+
+    [GraphQLDescription("Returns a vote type by its id")]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<VoteType?> GetVoteType(long id, VoteTypeDataLoader voteTypeLoader,
+        CancellationToken cancellationToken)
+    {
+        var voteType = await voteTypeLoader.LoadAsync(id, cancellationToken);
+
+        return voteType;
+    }
+
     [GraphQLDescription("Returns a list of paginated views")]
     [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]

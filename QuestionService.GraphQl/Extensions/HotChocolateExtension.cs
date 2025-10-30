@@ -4,11 +4,6 @@ using QuestionService.Domain.Enums;
 
 namespace QuestionService.GraphQl.Extensions;
 
-/// <summary> Extension methods for mapping <c>HotChocolate</c> GraphQL AST nodes to domain models.</summary>
-/// <remarks>
-/// This class violates Clean Architecture principles by introducing a dependency on the <c>HotChocolate</c> library
-/// within the <c>Domain</c> layer. If <c>HotChocolate</c> is removed or replaced, <see cref="HotChocolateExtension"/> should also be removed and replaced.
-/// </remarks>
 public static class HotChocolateExtension
 {
     public static IEnumerable<OrderDto> ToDomainOrderBy(this ListValueNode? listValueNode)

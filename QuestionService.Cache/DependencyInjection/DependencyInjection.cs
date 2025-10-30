@@ -46,6 +46,7 @@ public static class DependencyInjection
         services.AddScoped<ITagCacheRepository, TagCacheRepository>();
         services.AddScoped<IViewCacheRepository, ViewCacheRepository>();
         services.AddScoped<IVoteCacheRepository, VoteCacheRepository>();
+        services.AddScoped<IVoteTypeCacheRepository, VoteTypeCacheRepository>();
 
         services.AddScoped<IViewCacheSyncRepository, ViewCacheSyncRepository>();
     }

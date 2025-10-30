@@ -27,6 +27,8 @@ public static class DependencyInjection
         services.AddScoped<IGetQuestionService, CacheGetQuestionService>();
         services.AddScoped<GetVoteService>();
         services.AddScoped<IGetVoteService, CacheGetVoteService>();
+        services.AddScoped<GetVoteTypeService>();
+        services.AddScoped<IGetVoteTypeService, CacheGetVoteTypeService>();
         services.AddScoped<GetTagService>();
         services.AddScoped<IGetTagService, CacheGetTagService>();
         services.AddScoped<GetViewService>();

@@ -81,4 +81,7 @@
     <data name="VoteTypeNotFound" xml:space="preserve">
         <value>Vote type not found</value>
     </data>
+    <data name="VoteTypesNotFound" xml:space="preserve">
+        <value>Vote types not found</value>
+    </data>
 </root>

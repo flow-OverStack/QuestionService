@@ -126,7 +126,7 @@ internal static class MockRepositoriesGetters
                 Body = "questionBody1",
                 UserId = 1,
                 CreatedAt = DateTime.UtcNow,
-                LastModifiedAt = null,
+                LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet()],
                 Votes = [],
                 Views = GetViews().Where(x => x.QuestionId == 1).ToList()
@@ -138,7 +138,7 @@ internal static class MockRepositoriesGetters
                 Body = "questionBody2",
                 UserId = 1,
                 CreatedAt = DateTime.UtcNow,
-                LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
+                LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava()],
                 Votes = GetVotes().Where(x => x.QuestionId == 2).ToList(),
                 Views = GetViews().Where(x => x.QuestionId == 2).ToList()
@@ -150,7 +150,7 @@ internal static class MockRepositoriesGetters
                 Body = "questionBody3",
                 UserId = 3,
                 CreatedAt = DateTime.UtcNow,
-                LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
+                LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava(), GetTagPython()],
                 Votes = GetVotes().Where(x => x.QuestionId == 3).ToList(),
                 Views = GetViews().Where(x => x.QuestionId == 3).ToList()
@@ -162,7 +162,7 @@ internal static class MockRepositoriesGetters
                 Body = "questionBody4",
                 UserId = 3,
                 CreatedAt = DateTime.UtcNow,
-                LastModifiedAt = DateTime.UtcNow.AddMilliseconds(Random.Shared.Next(1, 20)),
+                LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [],
                 Votes = [],
                 Views = GetViews().Where(x => x.QuestionId == 4).ToList()

@@ -16,6 +16,9 @@ public static class CacheKeyHelper
     private const string VoteKeyPattern = "vote:{0},{1}";
     private const string QuestionVotesKeyPattern = "question:{0}:votes";
     private const string UserVotesKeyPattern = "user:{0}:votes";
+    private const string VoteTypeVotesKeyPattern = "voteType:{0}:votes";
+
+    private const string VoteTypeKeyPattern = "voteType:{0}";
 
     private const string ViewQuestionKeyPattern = "view:question:{0}";
     private const string ViewQuestionsKey = "view:questions";
@@ -34,6 +37,16 @@ public static class CacheKeyHelper
     public static string GetVoteKey(long questionId, long userId) => string.Format(VoteKeyPattern, questionId, userId);
     public static string GetQuestionVotesKey(long questionId) => string.Format(QuestionVotesKeyPattern, questionId);
     public static string GetUserVotesKey(long userId) => string.Format(UserVotesKeyPattern, userId);
+
+    public static string GetVoteTypeVotesKey(long voteType)
+    {
+        return string.Format(VoteTypeVotesKeyPattern, voteType);
+    }
+
+    public static string GetVoteTypeKey(long id)
+    {
+        return string.Format(VoteTypeKeyPattern, id);
+    }
 
     public static string GetViewQuestionsKey() => ViewQuestionsKey;
     public static string GetViewQuestionKey(long questionId) => string.Format(ViewQuestionKeyPattern, questionId);

@@ -12,10 +12,11 @@ public class VoteType : ObjectType<Vote>
         descriptor.Description("The vote type.");
         descriptor.Field(x => x.UserId).Description("The ID of the user that voted.");
         descriptor.Field(x => x.QuestionId).Description("The ID of the question that was voted.");
-        descriptor.Field(x => x.VoteType).Description("The reputation change of the vote.");
+        descriptor.Field(x => x.VoteType).Description("The vote type.");
         descriptor.Field(x => x.Question).Description("The question that was voted.");
 
         descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!, default!));
+        descriptor.Field(x => x.VoteType).ResolveWith<Resolvers>(x => x.GetVoteTypeAsync(default!, default!, default!));
 
         descriptor.Field("user") // Field for user from UserService
             .Description("The voter.")
@@ -31,6 +32,15 @@ public class VoteType : ObjectType<Vote>
             var question = await questionLoader.LoadRequiredAsync(vote.QuestionId, cancellationToken);
 
             return question;
+        }
+
+        public async Task<Domain.Entities.VoteType> GetVoteTypeAsync([Parent] Vote vote,
+            VoteTypeDataLoader voteTypeLoader,
+            CancellationToken cancellationToken)
+        {
+            var voteType = await voteTypeLoader.LoadRequiredAsync(vote.VoteTypeId, cancellationToken);
+
+            return voteType;
         }
 
         public UserDto GetUserByVote([Parent] Vote vote, CancellationToken cancellationToken)

@@ -31,5 +31,6 @@ public enum ErrorCodes
     VoteAlreadyGiven = 71,
     VoteNotFound = 72,
     VotesNotFound = 73,
-    VoteTypeNotFound = 74
+    VoteTypeNotFound = 74,
+    VoteTypesNotFound = 75
 }
