@@ -12,7 +12,7 @@ using QuestionService.Cache.Settings;
 using QuestionService.DAL;
 using QuestionService.Grpc;
 using QuestionService.Grpc.Settings;
-using QuestionService.Messaging.Events;
+using QuestionService.Outbox.Events;
 using QuestionService.Tests.FunctionalTests.Configurations;
 using QuestionService.Tests.FunctionalTests.Configurations.TestServices;
 using QuestionService.Tests.FunctionalTests.Extensions;

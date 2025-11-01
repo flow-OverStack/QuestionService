@@ -1,4 +1,4 @@
-namespace QuestionService.Messaging.Events;
+namespace QuestionService.Outbox.Events;
 
 public class BaseEvent
 {

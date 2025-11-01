@@ -16,9 +16,17 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
     public async Task<IEnumerable<OutboxMessage>> GetUnprocessedAsync(int batchSize,
         CancellationToken cancellationToken = default)
     {
-        var unprocessedMessages =
-            await outboxRepository.GetAll().Where(x => x.ProcessedAt == null).Take(batchSize)
-                .ToArrayAsync(cancellationToken);
+        // Multiple outbox instances can process the same messages concurrently.
+        // But consumers should be idempotent (check their EventId) to handle this case.
+
+        var unprocessedMessages = await outboxRepository.GetAll()
+            .Where(x => x.ProcessedAt == null)
+            .Where(x => x.NextRetryAt == null || x.NextRetryAt <= DateTime.UtcNow)
+            .OrderByDescending(x => x.RetryCount != 0)
+            .ThenByDescending(x => x.NextRetryAt)
+            .Take(batchSize)
+            .ToArrayAsync(cancellationToken);
+
         return unprocessedMessages;
     }
 
@@ -32,12 +40,15 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
         await outboxRepository.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task MarkAsFailedAsync(Guid messageId, string errorMessage)
+    public async Task MarkAsFailedAsync(Guid messageId, string errorMessage, int retryCount, DateTime nextRetryAt,
+        CancellationToken cancellationToken = default)
     {
-        var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId);
+        var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
         message.ErrorMessage = errorMessage;
+        message.RetryCount = retryCount;
+        message.NextRetryAt = nextRetryAt;
 
         outboxRepository.Update(message);
-        await outboxRepository.SaveChangesAsync();
+        await outboxRepository.SaveChangesAsync(cancellationToken);
     }
 }

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Messaging.Events;
+using QuestionService.Outbox.Events;
 using QuestionService.Outbox.Interfaces.Repository;
 using QuestionService.Outbox.Interfaces.Service;
 using QuestionService.Outbox.Interfaces.TopicProducer;

@@ -31,6 +31,10 @@ public interface IOutboxRepository
     /// </summary>
     /// <param name="messageId"></param>
     /// <param name="errorMessage"></param>
+    /// <param name="retryCount"></param>
+    /// <param name="nextRetryAt"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task MarkAsFailedAsync(Guid messageId, string errorMessage);
+    Task MarkAsFailedAsync(Guid messageId, string errorMessage, int retryCount, DateTime nextRetryAt,
+        CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,6 @@
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Producer;
-using QuestionService.Messaging.Events;
+using QuestionService.Outbox.Events;
 using QuestionService.Outbox.Interfaces.Service;
 
 namespace QuestionService.Messaging.Producers;

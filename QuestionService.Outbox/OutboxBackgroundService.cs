@@ -8,7 +8,7 @@ namespace QuestionService.Outbox;
 public class OutboxBackgroundService(ILogger logger, IServiceScopeFactory scopeFactory)
     : BackgroundService
 {
-    private const int OutboxProcessorFrequencyInSeconds = 10;
+    private const int OutboxProcessorFrequencyInSeconds = 15;
     private const int BatchSize = 50;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

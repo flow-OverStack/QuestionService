@@ -3,9 +3,9 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Interfaces.Producer;
-using QuestionService.Messaging.Events;
 using QuestionService.Messaging.Producers;
 using QuestionService.Messaging.Settings;
+using QuestionService.Outbox.Events;
 
 namespace QuestionService.Messaging.DependencyInjection;
 
