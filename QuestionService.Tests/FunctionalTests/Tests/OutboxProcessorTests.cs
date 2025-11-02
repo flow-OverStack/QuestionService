@@ -24,7 +24,6 @@ public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) 
 
         await outboxRepository.CreateAsync(new OutboxMessage
         {
-            Id = Guid.NewGuid(),
             Content = JsonConvert.SerializeObject(new BaseEvent
             {
                 EventId = Guid.NewGuid(),

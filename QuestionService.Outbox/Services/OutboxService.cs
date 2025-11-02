@@ -13,7 +13,6 @@ public class OutboxService(IOutboxRepository outboxRepository) : IOutboxService
 
         var outboxMessage = new OutboxMessage
         {
-            Id = Guid.NewGuid(),
             Type = typeof(T).FullName ?? typeof(T).Name,
             Content = JsonConvert.SerializeObject(message)
         };

@@ -24,7 +24,7 @@ public interface IOutboxRepository
     /// <param name="messageId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task MarkAsProcessedAsync(Guid messageId, CancellationToken cancellationToken = default);
+    Task MarkAsProcessedAsync(long messageId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Marks
@@ -35,6 +35,6 @@ public interface IOutboxRepository
     /// <param name="nextRetryAt"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task MarkAsFailedAsync(Guid messageId, string errorMessage, int retryCount, DateTime nextRetryAt,
+    Task MarkAsFailedAsync(long messageId, string errorMessage, int retryCount, DateTime nextRetryAt,
         CancellationToken cancellationToken = default);
 }

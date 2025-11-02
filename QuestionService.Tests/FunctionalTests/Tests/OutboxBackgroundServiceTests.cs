@@ -25,7 +25,6 @@ public class OutboxBackgroundServiceTests(FunctionalTestWebAppFactory factory) :
 
         await outboxRepository.CreateAsync(new OutboxMessage
         {
-            Id = Guid.NewGuid(),
             Content = JsonConvert.SerializeObject(new BaseEvent
             {
                 EventId = Guid.NewGuid(),

@@ -30,7 +30,7 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
         return unprocessedMessages;
     }
 
-    public async Task MarkAsProcessedAsync(Guid messageId, CancellationToken cancellationToken = default)
+    public async Task MarkAsProcessedAsync(long messageId, CancellationToken cancellationToken = default)
     {
         var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
         message.ProcessedAt = DateTime.UtcNow;
@@ -40,7 +40,7 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
         await outboxRepository.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task MarkAsFailedAsync(Guid messageId, string errorMessage, int retryCount, DateTime nextRetryAt,
+    public async Task MarkAsFailedAsync(long messageId, string errorMessage, int retryCount, DateTime nextRetryAt,
         CancellationToken cancellationToken = default)
     {
         var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
