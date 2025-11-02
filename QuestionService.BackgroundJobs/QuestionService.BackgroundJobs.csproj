@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\QuestionService.Domain\QuestionService.Domain.csproj"/>
+        <ProjectReference Include="..\QuestionService.Outbox\QuestionService.Outbox.csproj"/>
     </ItemGroup>
 
 </Project>

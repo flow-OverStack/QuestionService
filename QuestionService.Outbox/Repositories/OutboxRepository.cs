@@ -51,4 +51,13 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
         outboxRepository.Update(message);
         await outboxRepository.SaveChangesAsync(cancellationToken);
     }
+
+    public Task ResetProcessedAsync(DateTime? olderThen = null, CancellationToken cancellationToken = default)
+    {
+        var query = outboxRepository.GetAll().Where(x => x.ProcessedAt != null);
+
+        if (olderThen.HasValue) query = query.Where(x => x.ProcessedAt! < olderThen.Value);
+
+        return query.ExecuteDeleteAsync(cancellationToken);
+    }
 }

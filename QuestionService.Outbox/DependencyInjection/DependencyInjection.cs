@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IOutboxRepository, OutboxRepository>();
         services.AddScoped<IOutboxService, OutboxService>();
         services.AddScoped<IOutboxProcessor, OutboxProcessor>();
+        services.AddScoped<IOutboxResetService, OutboxResetService>();
     }
 
     private static void InitTopicProducers(this IServiceCollection services)

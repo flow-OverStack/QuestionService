@@ -18,7 +18,9 @@ public static class DependencyInjection
                 using var scope = app.Services.CreateAsyncScope();
                 var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
                 recurringJobManager.AddOrUpdate<SyncViewsJob>("ViewsSynchronization",
-                    job => job.RunAsync(CancellationToken.None), "*/10 * * * *"); // Every ten minutes 
+                    job => job.RunAsync(CancellationToken.None), "*/10 * * * *"); // Every ten minutes
+                recurringJobManager.AddOrUpdate<OutboxResetJob>("OutboxReset",
+                    job => job.RunAsync(CancellationToken.None), Cron.Daily);
             }
         );
     }

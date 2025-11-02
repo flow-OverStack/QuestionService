@@ -37,4 +37,11 @@ public interface IOutboxRepository
     /// <returns></returns>
     Task MarkAsFailedAsync(long messageId, string errorMessage, int retryCount, DateTime nextRetryAt,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Resets the processed messages in the outbox that were processed before the specified date.
+    /// </summary>
+    /// <param name="olderThen"></param>
+    /// <param name="cancellationToken"></param>
+    Task ResetProcessedAsync(DateTime? olderThen = null, CancellationToken cancellationToken = default);
 }
