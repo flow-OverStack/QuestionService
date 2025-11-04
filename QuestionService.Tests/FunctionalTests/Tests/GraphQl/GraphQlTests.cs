@@ -25,10 +25,31 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         Assert.NotEmpty(result!.Data.Questions.Edges);
+        Assert.NotEqual(0, result.Data.Questions.TotalCount);
+        Assert.All(result.Data.Questions.Edges, x =>
+        {
+            Assert.NotNull(x.Cursor);
+            Assert.NotNull(x.Node);
+        });
+
         Assert.NotEmpty(result.Data.Tags.Edges);
+        Assert.NotEqual(0, result.Data.Tags.TotalCount);
+        Assert.All(result.Data.Tags.Edges, x =>
+        {
+            Assert.NotNull(x.Cursor);
+            Assert.NotNull(x.Node);
+        });
+
         Assert.NotEmpty(result.Data.Votes.Items);
+        Assert.NotEqual(0, result.Data.Votes.TotalCount);
+
         Assert.NotEmpty(result.Data.Views.Items);
+        Assert.NotEqual(0, result.Data.Views.TotalCount);
+
+        Assert.NotEmpty(result.Data.VoteTypes.Items);
+        Assert.NotEqual(0, result.Data.VoteTypes.TotalCount);
     }
 
     [Trait("Category", "Functional")]
@@ -36,7 +57,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
     public async Task GetAllUsers_ShouldBe_InvalidPaginationError()
     {
         //Arrange
-        var requestBody = new { query = GraphQlHelper.RequestAllWithInvalidPaginationQuery };
+        var requestBody = new { query = GraphQlHelper.RequestWithInvalidPaginationQuery };
 
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
@@ -54,7 +75,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
     public async Task GetAllByIds_ShouldBe_Success()
     {
         //Arrange
-        var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(2, 2, 1, 1, 1) };
+        var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(2, 2, 1, 1, 1, 1) };
 
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
@@ -67,6 +88,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.NotNull(result.Data.Tag);
         Assert.NotNull(result.Data.Vote);
         Assert.NotNull(result.Data.View);
+        Assert.NotNull(result.Data.VoteType);
     }
 
     [Trait("Category", "Functional")]
@@ -74,7 +96,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
     public async Task GetAllByIds_ShouldBe_Null()
     {
         //Arrange
-        var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(0, 0, 0, 0, 0) };
+        var requestBody = new { query = GraphQlHelper.RequestAllByIdsQuery(0, 0, 0, 0, 0, 0) };
 
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
@@ -87,6 +109,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Null(result.Data.Tag);
         Assert.Null(result.Data.Vote);
         Assert.Null(result.Data.View);
+        Assert.Null(result.Data.VoteType);
     }
 
     [Trait("Category", "Functional")]
@@ -104,6 +127,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Single(result!.Errors);
-        Assert.NotNull(result.Errors[0].Extensions?.Code);
+        Assert.NotNull(result.Errors[0].Extensions.Code);
     }
 }

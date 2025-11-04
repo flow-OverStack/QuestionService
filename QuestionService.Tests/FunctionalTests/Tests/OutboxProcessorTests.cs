@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Outbox.Events;
+using QuestionService.Outbox.Interfaces.Service;
 using QuestionService.Tests.FunctionalTests.Base.Exception;
 using Xunit;
 using OutboxMessage = QuestionService.Outbox.Messages.OutboxMessage;
 
 namespace QuestionService.Tests.FunctionalTests.Tests;
 
-public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) : ExceptionBaseFunctionalTest(factory)
+public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) : ExceptionFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
@@ -21,18 +21,14 @@ public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) 
 
         await using var scope = ServiceProvider.CreateAsyncScope();
         var outboxRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<OutboxMessage>>();
+        var outboxService = scope.ServiceProvider.GetRequiredService<IOutboxService>();
 
-        await outboxRepository.CreateAsync(new OutboxMessage
+        await outboxService.AddToOutboxAsync(new BaseEvent
         {
-            Content = JsonConvert.SerializeObject(new BaseEvent
-            {
-                EventId = Guid.NewGuid(),
-                EventType = nameof(BaseEventType.QuestionUpvote),
-                UserId = userId
-            }),
-            Type = typeof(BaseEvent).FullName ?? nameof(BaseEvent)
+            EventId = Guid.NewGuid(),
+            EventType = nameof(BaseEventType.QuestionUpvote),
+            UserId = userId
         });
-        await outboxRepository.SaveChangesAsync();
 
         //Act
         await Task.Delay(TimeSpan.FromSeconds(20)); //Waiting for OutboxBackgroundService to execute the job

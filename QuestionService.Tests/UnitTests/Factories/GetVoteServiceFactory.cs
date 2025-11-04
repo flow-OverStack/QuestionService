@@ -10,9 +10,6 @@ internal class GetVoteServiceFactory
 {
     private readonly IGetVoteService _getVoteService;
 
-    public readonly IBaseRepository<Question> QuestionRepository =
-        MockRepositoriesGetters.GetMockQuestionRepository().Object;
-
     public readonly IBaseRepository<Vote> VoteRepository = MockRepositoriesGetters.GetMockVoteRepository().Object;
 
     public GetVoteServiceFactory()

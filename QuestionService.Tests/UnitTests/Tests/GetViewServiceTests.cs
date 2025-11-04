@@ -11,7 +11,7 @@ public class GetViewServiceTests
     public async Task GetAll_ShouldBe_Success()
     {
         //Arrange
-        var getViewService = new GetViewServiceFactory().GetService();
+        var getViewService = new CacheGetViewServiceFactory().GetService();
 
         //Act
         var result = await getViewService.GetAllAsync();
@@ -27,7 +27,7 @@ public class GetViewServiceTests
     {
         //Arrange
         var viewIds = new List<long> { 1, 2, 0 };
-        var getViewService = new GetViewServiceFactory().GetService();
+        var getViewService = new CacheGetViewServiceFactory().GetService();
 
         //Act
         var result = await getViewService.GetByIdsAsync(viewIds);
@@ -77,7 +77,7 @@ public class GetViewServiceTests
     {
         //Arrange
         var userIds = new List<long> { 1, 2, 0 };
-        var getViewService = new GetViewServiceFactory().GetService();
+        var getViewService = new CacheGetViewServiceFactory().GetService();
 
         //Act
         var result = await getViewService.GetUsersViewsAsync(userIds);
@@ -110,7 +110,7 @@ public class GetViewServiceTests
     {
         //Arrange
         var questionIds = new List<long> { 1, 2, 0 };
-        var getViewService = new GetViewServiceFactory().GetService();
+        var getViewService = new CacheGetViewServiceFactory().GetService();
 
         //Act
         var result = await getViewService.GetQuestionsViewsAsync(questionIds);

@@ -14,7 +14,7 @@ using Xunit;
 
 namespace QuestionService.Tests.FunctionalTests.Tests;
 
-public class ExceptionTests : ExceptionBaseFunctionalTest
+public class ExceptionTests : ExceptionFunctionalTest
 {
     public ExceptionTests(ExceptionFunctionalTestWebAppFactory factory) : base(factory)
     {

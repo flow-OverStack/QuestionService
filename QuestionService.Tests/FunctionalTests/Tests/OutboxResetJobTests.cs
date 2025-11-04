@@ -1,0 +1,50 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using QuestionService.BackgroundJobs.Jobs;
+using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Outbox.Messages;
+using QuestionService.Tests.FunctionalTests.Base.Outboxless;
+using Xunit;
+
+namespace QuestionService.Tests.FunctionalTests.Tests;
+
+public class OutboxResetJobTests : OutboxlessFunctionalTest
+{
+    public OutboxResetJobTests(OutboxlessFunctionalTestWebAppFactory factory) : base(factory)
+    {
+        using var scope = ServiceProvider.CreateScope();
+        var outboxRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<OutboxMessage>>();
+        outboxRepository.GetAll().ExecuteDelete();
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RunOutboxResetJob_ShouldBe_Ok()
+    {
+        //Arrange
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var outboxRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<OutboxMessage>>();
+        var outboxResetJob = ActivatorUtilities.CreateInstance<OutboxResetJob>(scope.ServiceProvider);
+
+        var outboxMessages = new OutboxMessage[]
+        {
+            new() { ProcessedAt = DateTime.UtcNow.AddDays(-8), Type = "TestType1", Content = "TestContent1" },
+            new()
+            {
+                ProcessedAt = DateTime.UtcNow.AddDays(-8), Type = "TestType2", Content = "TestContent2", RetryCount = 3,
+                NextRetryAt = DateTime.UtcNow.AddDays(-9), ErrorMessage = "TestError"
+            },
+            new() { ProcessedAt = DateTime.UtcNow.AddDays(-1), Type = "TestType3", Content = "TestContent3" },
+            new() { ProcessedAt = null, Type = "TestType4", Content = "TestContent4" }
+        };
+        await outboxRepository.CreateRangeAsync(outboxMessages);
+        await outboxRepository.SaveChangesAsync();
+
+        //Act
+        await outboxResetJob.RunAsync();
+
+        //Assert
+        var count = await outboxRepository.GetAll().AsNoTracking().CountAsync();
+        Assert.Equal(2, count);
+    }
+}

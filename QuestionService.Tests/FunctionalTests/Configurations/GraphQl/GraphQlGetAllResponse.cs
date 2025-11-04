@@ -13,4 +13,6 @@ internal class GraphQlGetAllData
     public GraphQlCursorPaginatedResponse<Tag> Tags { get; set; }
     public GraphQlOffsetPaginatedResponse<Vote> Votes { get; set; }
     public GraphQlOffsetPaginatedResponse<View> Views { get; set; }
+
+    public GraphQlOffsetPaginatedResponse<VoteType> VoteTypes { get; set; }
 }

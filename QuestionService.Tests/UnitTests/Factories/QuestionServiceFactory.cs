@@ -31,8 +31,11 @@ internal class QuestionServiceFactory
     public readonly IBaseRepository<VoteType> VoteTypeRepository =
         MockRepositoriesGetters.GetMockVoteTypeRepository().Object;
 
-    public QuestionServiceFactory()
+    public QuestionServiceFactory(IBaseRepository<VoteType>? voteTypeRepository = null)
     {
+        if (voteTypeRepository != null)
+            VoteTypeRepository = voteTypeRepository;
+
         _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, VoteTypeRepository,
             UserProvider, Options.Create(BusinessRules), Mapper, EventProducer);
     }

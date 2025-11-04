@@ -26,10 +26,13 @@ internal static class PrepDb
         var tags = MockRepositoriesGetters.GetTags();
         var questionTags = MockRepositoriesGetters.GetQuestionTags();
         var votes = MockRepositoriesGetters.GetVotes();
+        var voteTypes = MockRepositoriesGetters.GetVoteTypes();
         var views = MockRepositoriesGetters.GetViews();
 
         views.ForEach(x => x.Id = 0);
         tags.ForEach(x => x.Id = 0);
+        voteTypes.ForEach(x => x.Id = 0);
+        votes.ForEach(x => x.VoteType = null!);
 
         var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -38,6 +41,7 @@ internal static class PrepDb
 
         dbContext.Set<Question>().AddRange(questions);
         dbContext.Set<Tag>().AddRange(tags);
+        dbContext.Set<VoteType>().AddRange(voteTypes);
         dbContext.Set<Vote>().AddRange(votes);
         dbContext.Set<View>().AddRange(views);
 

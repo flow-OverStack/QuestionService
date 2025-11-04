@@ -12,7 +12,7 @@ public class OutboxBackgroundServiceTests
     {
         //Arrange
         var outboxService =
-            new TestableOutboxBackgroundService(LoggerConfiguration.GetLogger(), null); //passing null for exception
+            new TestableOutboxBackgroundService(LoggerConfiguration.GetLogger(), null!); // passing null for exception
 
         //Act
         await outboxService.ExecuteAsync();

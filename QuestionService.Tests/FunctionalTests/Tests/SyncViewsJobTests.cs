@@ -29,7 +29,7 @@ public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : Sequential
         await syncViewsJob.RunAsync();
 
         //Assert
-        var count = await viewRepository.GetAll().CountAsync();
+        var count = await viewRepository.GetAll().AsNoTracking().CountAsync();
         Assert.Equal(11, count); // Total 11 views including new ones
     }
 
@@ -49,7 +49,7 @@ public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : Sequential
         await syncViewsJob.RunAsync();
 
         //Assert
-        var count = await viewRepository.GetAll().CountAsync();
+        var count = await viewRepository.GetAll().AsNoTracking().CountAsync();
         Assert.Equal(4, count); // Total 4 views
     }
 }

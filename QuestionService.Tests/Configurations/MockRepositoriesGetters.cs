@@ -115,6 +115,20 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
+    public static IMock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
+    {
+        var mockRepository = new Mock<IBaseRepository<T>>();
+        var entities = Array.Empty<T>().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(entities.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((T entity, CancellationToken _) => entity);
+        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T entity) => entity);
+        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T entity) => entity);
+
+        return mockRepository;
+    }
+
     public static IQueryable<Question> GetQuestions()
     {
         return new Question[]
@@ -183,16 +197,8 @@ internal static class MockRepositoriesGetters
     {
         return new[]
         {
-            new VoteType
-            {
-                Id = 1,
-                Name = nameof(VoteTypes.Upvote)
-            },
-            new VoteType
-            {
-                Id = 2,
-                Name = nameof(VoteTypes.Downvote)
-            }
+            GetVoteTypeUpvote(),
+            GetVoteTypeDownvote()
         }.AsQueryable();
     }
 
@@ -320,7 +326,8 @@ internal static class MockRepositoriesGetters
         {
             UserId = userId,
             QuestionId = questionId,
-            VoteType = new VoteType { Id = 1, Name = nameof(VoteTypes.Upvote) }
+            VoteTypeId = GetVoteTypeUpvote().Id,
+            VoteType = GetVoteTypeUpvote()
         };
     }
 
@@ -330,7 +337,28 @@ internal static class MockRepositoriesGetters
         {
             UserId = userId,
             QuestionId = questionId,
-            VoteType = new VoteType { Id = 2, Name = nameof(VoteTypes.Downvote) }
+            VoteTypeId = GetVoteTypeDownvote().Id,
+            VoteType = GetVoteTypeDownvote()
+        };
+    }
+
+    private static VoteType GetVoteTypeUpvote()
+    {
+        return new VoteType
+        {
+            Id = 1,
+            ReputationChange = 1,
+            Name = nameof(VoteTypes.Upvote)
+        };
+    }
+
+    private static VoteType GetVoteTypeDownvote()
+    {
+        return new VoteType
+        {
+            Id = 2,
+            ReputationChange = -1,
+            Name = nameof(VoteTypes.Downvote)
         };
     }
 }

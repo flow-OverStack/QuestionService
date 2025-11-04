@@ -34,7 +34,6 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
     {
         var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
         message.ProcessedAt = DateTime.UtcNow;
-        message.ErrorMessage = null;
 
         outboxRepository.Update(message);
         await outboxRepository.SaveChangesAsync(cancellationToken);
@@ -44,7 +43,7 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
         CancellationToken cancellationToken = default)
     {
         var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
-        message.ErrorMessage = errorMessage;
+        message.ErrorMessage = $"{message.ErrorMessage}\n[{DateTime.UtcNow}] {errorMessage}";
         message.RetryCount = retryCount;
         message.NextRetryAt = nextRetryAt;
 

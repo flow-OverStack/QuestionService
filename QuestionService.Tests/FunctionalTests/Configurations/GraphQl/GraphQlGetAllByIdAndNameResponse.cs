@@ -13,4 +13,6 @@ internal class GraphQlGetAllByIdAndNameData
     public Tag? Tag { get; set; }
     public Vote? Vote { get; set; }
     public View? View { get; set; }
+
+    public VoteType? VoteType { get; set; }
 }

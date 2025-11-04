@@ -40,7 +40,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
             last = businessRules.Value.DefaultPageSize;
 
         var pagination =
-            new CursorPageDto(first, after, before, last, order.ToDomainOrderBy());
+            new CursorPageDto(first, after, before, last, order.ToOrderDto());
 
         if (!cursorPageValidator.IsValid(pagination, out var errors))
             throw GraphQlExceptionHelper.GetException(

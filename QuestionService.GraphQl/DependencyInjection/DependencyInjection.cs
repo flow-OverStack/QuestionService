@@ -59,7 +59,7 @@ public static class DependencyInjection
                 opt.IncludeTotalCount = true;
             })
             .AddDbContextCursorPagingProvider()
-            .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
+            .ModifyCostOptions(opt => opt.MaxFieldCost *= 3);
     }
 
     /// <summary>

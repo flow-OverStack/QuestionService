@@ -181,7 +181,7 @@ public class QuestionService(
             }
             else
             {
-                if (vote.VoteType == voteType)
+                if (vote.VoteType.Id == voteType.Id)
                     return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
                         (int)ErrorCodes.VoteAlreadyGiven);
 
@@ -253,7 +253,7 @@ public class QuestionService(
             }
             else
             {
-                if (vote.VoteType == voteType)
+                if (vote.VoteType.Id == voteType.Id)
                     return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
                         (int)ErrorCodes.VoteAlreadyGiven);
 

@@ -6,7 +6,7 @@ namespace QuestionService.GraphQl.Extensions;
 
 public static class HotChocolateExtension
 {
-    public static IEnumerable<OrderDto> ToDomainOrderBy(this ListValueNode? listValueNode)
+    public static IEnumerable<OrderDto> ToOrderDto(this ListValueNode? listValueNode)
     {
         if (listValueNode == null || listValueNode.Items.Count != 1) return [];
 

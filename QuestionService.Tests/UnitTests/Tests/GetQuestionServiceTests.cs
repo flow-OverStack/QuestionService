@@ -11,7 +11,7 @@ public class GetQuestionServiceTests
     public async Task GetAll_ShouldBe_Success()
     {
         //Arrange
-        var getQuestionService = new GetQuestionServiceFactory().GetService();
+        var getQuestionService = new CacheGetQuestionServiceFactory().GetService();
 
         //Act
         var result = await getQuestionService.GetAllAsync();
@@ -28,7 +28,7 @@ public class GetQuestionServiceTests
     {
         //Arrange
         var questionIds = new List<long> { 1, 2, 0 };
-        var getQuestionService = new GetQuestionServiceFactory().GetService();
+        var getQuestionService = new CacheGetQuestionServiceFactory().GetService();
 
         //Act
         var result = await getQuestionService.GetByIdsAsync(questionIds);
@@ -78,7 +78,7 @@ public class GetQuestionServiceTests
     {
         //Arrange
         var tagIds = new List<long> { 1, 2, 0 };
-        var getQuestionService = new GetQuestionServiceFactory().GetService();
+        var getQuestionService = new CacheGetQuestionServiceFactory().GetService();
 
         //Act
         var result = await getQuestionService.GetQuestionsWithTagsAsync(tagIds);
@@ -111,7 +111,7 @@ public class GetQuestionServiceTests
     {
         //Arrange
         var userIds = new List<long> { 1, 2, 0 };
-        var getQuestionService = new GetQuestionServiceFactory().GetService();
+        var getQuestionService = new CacheGetQuestionServiceFactory().GetService();
 
         //Act
         var result = await getQuestionService.GetUsersQuestionsAsync(userIds);

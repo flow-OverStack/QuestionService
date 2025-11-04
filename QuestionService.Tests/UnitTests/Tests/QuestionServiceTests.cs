@@ -1,5 +1,7 @@
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Question;
+using QuestionService.Domain.Entities;
+using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Factories;
 using Xunit;
 
@@ -328,6 +330,25 @@ public class QuestionServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task UpvoteQuestion_ShouldBe_VoteTypeNotFound()
+    {
+        //Arrange
+        var questionService =
+            new QuestionServiceFactory(MockRepositoriesGetters.GetEmptyMockRepository<VoteType>().Object).GetService();
+        const long initiatorId = 1;
+        const long questionId = 1;
+
+        //Act
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.VoteTypeNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task UpvoteQuestion_ShouldBe_TooLowReputation()
     {
         //Arrange
@@ -447,6 +468,25 @@ public class QuestionServiceTests
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.TooLowReputation, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task DownvoteQuestion_ShouldBe_VoteTypeNotFound()
+    {
+        //Arrange
+        var questionService =
+            new QuestionServiceFactory(MockRepositoriesGetters.GetEmptyMockRepository<VoteType>().Object).GetService();
+        const long initiatorId = 1;
+        const long questionId = 1;
+
+        //Act
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.VoteTypeNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 

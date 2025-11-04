@@ -11,7 +11,7 @@ public class GetTagServiceTests
     public async Task GetAll_ShouldBe_Success()
     {
         //Arrange
-        var getTagService = new GetTagServiceFactory().GetService();
+        var getTagService = new CacheGetTagServiceFactory().GetService();
 
         //Act
         var result = await getTagService.GetAllAsync();
@@ -27,7 +27,7 @@ public class GetTagServiceTests
     {
         //Arrange
         var tagIds = new List<long> { 1, 2, 0 };
-        var getTagService = new GetTagServiceFactory().GetService();
+        var getTagService = new CacheGetTagServiceFactory().GetService();
 
         //Act
         var result = await getTagService.GetByIdsAsync(tagIds);
@@ -77,7 +77,7 @@ public class GetTagServiceTests
     {
         //Arrange
         var questionIds = new List<long> { 1, 2, 0 };
-        var getTagService = new GetTagServiceFactory().GetService();
+        var getTagService = new CacheGetTagServiceFactory().GetService();
 
         //Act
         var result = await getTagService.GetQuestionsTagsAsync(questionIds);
