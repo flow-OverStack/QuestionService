@@ -36,6 +36,7 @@ QuestionService is a microservice in the Flow OverStack platform responsible for
 * **Outbox Pattern** — ensures reliable message delivery to the message queue 
 * **Decorator Pattern** — allows behavior to be added to individual objects dynamically without affecting others. In this project, it is used to implement caching.
 * **Hangfire** — Hosted services for background jobs
+* **Resilience** — Standard .NET resilience handler for HTTP clients (retries, circuit breaker, timeout), Hangfire retries and MassTransit retries, circuit breaker and kill switch
 * **Observability** — Traces, logs, and metrics collected via OpenTelemetry and Logstash, exported to Aspire dashboard, Jaeger, ElasticSearch, and Prometheus
 * **Monitoring & Visualization** — Dashboards in Grafana, Kibana and Aspire
 * **Health Checks** — Status endpoints to monitor service availability and dependencies
