@@ -7,7 +7,7 @@ namespace QuestionService.Outbox.Services;
 
 public class OutboxService(IOutboxRepository outboxRepository) : IOutboxService
 {
-    public async Task AddToOutboxAsync<T>(T message, CancellationToken cancellationToken = default)
+    public Task AddToOutboxAsync<T>(T message, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
 
@@ -17,6 +17,6 @@ public class OutboxService(IOutboxRepository outboxRepository) : IOutboxService
             Content = JsonConvert.SerializeObject(message)
         };
 
-        await outboxRepository.AddAsync(outboxMessage, cancellationToken);
+        return outboxRepository.AddAsync(outboxMessage, cancellationToken);
     }
 }

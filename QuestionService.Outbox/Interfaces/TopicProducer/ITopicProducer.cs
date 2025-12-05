@@ -3,7 +3,7 @@ namespace QuestionService.Outbox.Interfaces.TopicProducer;
 public interface ITopicProducer
 {
     /// <summary>
-    ///     Checks if message of type messageType can be produced or not
+    ///     Checks if a message of type messageType can be produced or not
     /// </summary>
     /// <param name="messageType"></param>
     /// <returns></returns>

@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
-using QuestionService.Application.Mappings;
 using QuestionService.Application.Resources;
 using QuestionService.Application.Settings;
 using QuestionService.Domain.Dtos.ExternalEntity;
@@ -131,8 +130,22 @@ public class QuestionService(
         if (!HasAccess(initiator, question))
             return BaseResult<QuestionDto>.Failure(ErrorMessage.OperationForbidden, (int)ErrorCodes.OperationForbidden);
 
-        unitOfWork.Questions.Remove(question);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            unitOfWork.Questions.Remove(question);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.QuestionDeleted, cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            throw;
+        }
+
 
         return BaseResult<QuestionDto>.Success(mapper.Map<QuestionDto>(question));
     }
@@ -167,7 +180,6 @@ public class QuestionService(
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            BaseEventType? previousVoteType = null;
             if (vote == null)
             {
                 vote = new Vote
@@ -185,16 +197,13 @@ public class QuestionService(
                     return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
                         (int)ErrorCodes.VoteAlreadyGiven);
 
-                previousVoteType = VoteEventMapper.Map(vote.VoteType.Name);
-
                 vote.VoteType = voteType;
                 unitOfWork.Votes.Update(vote);
             }
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(question.UserId, BaseEventType.QuestionUpvote, previousVoteType,
-                cancellationToken);
+            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.QuestionUpvote, cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }
@@ -239,7 +248,6 @@ public class QuestionService(
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            BaseEventType? previousVoteType = null;
             if (vote == null)
             {
                 vote = new Vote
@@ -257,15 +265,13 @@ public class QuestionService(
                     return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteAlreadyGiven,
                         (int)ErrorCodes.VoteAlreadyGiven);
 
-                previousVoteType = VoteEventMapper.Map(vote.VoteType.Name);
-
                 vote.VoteType = voteType;
                 unitOfWork.Votes.Update(vote);
             }
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(question.UserId, BaseEventType.QuestionDownvote, previousVoteType,
+            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.QuestionDownvote,
                 cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);

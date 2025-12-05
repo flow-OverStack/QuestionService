@@ -3,15 +3,18 @@ using QuestionService.Outbox.Interfaces.TopicProducer;
 
 namespace QuestionService.Outbox.TopicProducers;
 
-public class TopicProducer<T>(ITopicProducer<T> producer) : ITopicProducer where T : class
+public class TopicProducer<TEvent>(ITopicProducer<TEvent> producer) : ITopicProducer where TEvent : class
 {
-    public bool CanProduce(Type messageType) => messageType == typeof(T);
-
-    public async Task ProduceAsync(object message, CancellationToken cancellationToken = default)
+    public bool CanProduce(Type messageType)
     {
-        if (CanProduce(message.GetType()))
-            await producer.Produce((T)message, cancellationToken);
-        else
+        return messageType == typeof(TEvent);
+    }
+
+    public Task ProduceAsync(object message, CancellationToken cancellationToken = default)
+    {
+        if (!CanProduce(message.GetType()))
             throw new ArgumentException($"Cannot produce message of type {message.GetType()}.");
+
+        return producer.Produce((TEvent)message, cancellationToken);
     }
 }

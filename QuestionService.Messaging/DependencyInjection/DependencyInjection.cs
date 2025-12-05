@@ -32,10 +32,10 @@ public static class DependencyInjection
             {
                 // Scope is not created because IOptions<KafkaSettings> is a singleton
                 using var provider = rider.BuildServiceProvider();
-                var kafkaMainTopic = provider.GetRequiredService<IOptions<KafkaSettings>>().Value.MainEventsTopic;
+                var kafkaSettings = provider.GetRequiredService<IOptions<KafkaSettings>>().Value;
 
-                rider.AddProducer<BaseEvent>(kafkaMainTopic,
-                    new ProducerConfig { Acks = Acks.All, EnableIdempotence = false });
+                var defaultProducerConfig = new ProducerConfig { Acks = Acks.All, EnableIdempotence = false };
+                rider.AddProducer<BaseEvent>(kafkaSettings.BaseEventTopic, defaultProducerConfig);
 
                 rider.UsingKafka((context, factoryConfigurator) =>
                 {

@@ -1,3 +1,4 @@
+using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
 using QuestionService.Domain.Interfaces.Producer;
 using QuestionService.Outbox.Events;
@@ -7,17 +8,18 @@ namespace QuestionService.Messaging.Producers;
 
 public class BaseEventProducer(IOutboxService outboxService) : IBaseEventProducer
 {
-    public async Task ProduceAsync(long userId, BaseEventType eventType, BaseEventType? cancelsEventType = null,
+    public Task ProduceAsync(long userId, long questionId, BaseEventType eventType,
         CancellationToken cancellationToken = default)
     {
         var baseEvent = new BaseEvent
         {
             EventId = Guid.NewGuid(),
             UserId = userId,
+            EntityId = questionId,
+            EntityType = nameof(Question),
             EventType = eventType.ToString(),
-            CancelsEvent = cancelsEventType?.ToString()
         };
 
-        await outboxService.AddToOutboxAsync(baseEvent, cancellationToken);
+        return outboxService.AddToOutboxAsync(baseEvent, cancellationToken);
     }
 }
