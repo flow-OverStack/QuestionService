@@ -11,7 +11,7 @@ internal static class BaseEventProducerConfiguration
         var mockProducer = new Mock<IBaseEventProducer>();
 
         mockProducer.Setup(x =>
-                x.ProduceAsync(It.IsAny<long>(), It.IsAny<BaseEventType>(), It.IsAny<BaseEventType?>(),
+                x.ProduceAsync(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<BaseEventType>(),
                     It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 

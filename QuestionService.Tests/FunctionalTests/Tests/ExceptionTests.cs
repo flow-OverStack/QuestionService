@@ -35,7 +35,7 @@ public class ExceptionTests : ExceptionFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/question", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
@@ -46,7 +46,7 @@ public class ExceptionTests : ExceptionFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_InternalServerErrorn()
+    public async Task EditQuestion_ShouldBe_InternalServerError()
     {
         //Arrange
         const long questionId = 1;
@@ -55,7 +55,26 @@ public class ExceptionTests : ExceptionFunctionalTest
         //Act
         var response = await HttpClient.PutAsJsonAsync($"/api/v1.0/question/{questionId}", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.StartsWith(ErrorMessage.InternalServerError, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task DeleteQuestion_ShouldBe_InternalServerError()
+    {
+        //Arrange
+        const long questionId = 1;
+
+        //Act
+        var response = await HttpClient.DeleteAsync($"/api/v1.0/question/{questionId}");
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<QuestionDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
