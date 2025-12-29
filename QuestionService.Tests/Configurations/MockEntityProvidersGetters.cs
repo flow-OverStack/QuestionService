@@ -7,7 +7,6 @@ namespace QuestionService.Tests.Configurations;
 internal static class MockEntityProvidersGetters
 {
     public const int MinReputation = 1;
-    public const int MaxDailyReputation = 200;
 
     public static IMock<IEntityProvider<UserDto>> GetMockUserProvider()
     {
@@ -29,49 +28,45 @@ internal static class MockEntityProvidersGetters
             new()
             {
                 Id = 1,
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid(),
                 Username = "testuser1",
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 125,
-                ReputationEarnedToday = 0,
                 Roles = [GetRoleUser(), GetRoleAdmin()]
             },
             new()
             {
                 Id = 2,
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid(),
                 Username = "testuser2",
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 15,
-                ReputationEarnedToday = 0,
                 Roles = [GetRoleUser()]
             },
             new()
             {
                 Id = 3,
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid(),
                 Username = "testuser3",
                 Email = "TestUser3@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = MinReputation,
-                ReputationEarnedToday = MaxDailyReputation,
                 Roles = [GetRoleModer()]
             },
             new()
             {
                 Id = 4,
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid(),
                 Username = "testuser4",
                 Email = "TestUser4@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 125,
-                ReputationEarnedToday = MaxDailyReputation,
                 Roles = [GetRoleModer()]
             }
         }.AsQueryable();

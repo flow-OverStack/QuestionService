@@ -32,14 +32,13 @@ public class UserType : ObjectType<UserDto>
             .Type<NonNullType<ListType<NonNullType<VoteType>>>>();
 
         //Ignore fields that will be retrieved from UserService
-        descriptor.Field(x => x.KeycloakId).Ignore();
+        descriptor.Field(x => x.IdentityId).Ignore();
         descriptor.Field(x => x.Username).Ignore();
         descriptor.Field(x => x.Email).Ignore();
         descriptor.Field(x => x.LastLoginAt).Ignore();
         descriptor.Field(x => x.Reputation).Ignore();
         descriptor.Field(x => x.Roles).Ignore();
         descriptor.Field(x => x.CreatedAt).Ignore();
-        descriptor.Field(x => x.ReputationEarnedToday).Ignore();
     }
 
     private sealed class Resolvers
