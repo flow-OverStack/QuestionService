@@ -136,7 +136,7 @@ public class QuestionService(
             unitOfWork.Questions.Remove(question);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.QuestionDeleted, cancellationToken);
+            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.EntityDeleted, cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }

@@ -54,7 +54,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllUsers_ShouldBe_InvalidPaginationError()
+    public async Task GetAll_ShouldBe_InvalidPaginationError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestWithInvalidPaginationQuery };

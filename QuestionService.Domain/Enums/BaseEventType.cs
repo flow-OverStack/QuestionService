@@ -4,5 +4,5 @@ public enum BaseEventType
 {
     QuestionDownvote,
     QuestionUpvote,
-    QuestionDeleted
+    EntityDeleted
 }
