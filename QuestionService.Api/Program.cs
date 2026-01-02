@@ -70,13 +70,14 @@ app.UseCors("DefaultCorsPolicy");
 
 app.UseMiddleware<ClaimsValidationMiddleware>();
 
-if (app.Environment.IsDevelopment()) app.UseSwaggerUI();
-app.UseSwagger();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwaggerUI();
+    await app.Services.MigrateDatabaseAsync();
+}
 
-await builder.Services.MigrateDatabaseAsync();
+app.UseSwagger();
 
 app.LogListeningUrls();
 
 await app.RunAsync();
-
-public partial class Program;
