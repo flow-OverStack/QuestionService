@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
+using QuestionService.Cache.Interfaces;
+using QuestionService.Cache.Repositories.Base;
 using QuestionService.Cache.Settings;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
@@ -20,11 +22,9 @@ public class TagCacheRepository : ITagCacheRepository
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<Tag, long>(
             cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetTagKey,
-            x => x.Id.ToString(),
-            long.Parse,
-            settings.TimeToLiveInSeconds
+            new CacheTagMapping(),
+            settings.TimeToLiveInSeconds,
+            settings.NullTimeToLiveInSeconds
         );
         _tagInner = tagInner;
     }
@@ -42,9 +42,38 @@ public class TagCacheRepository : ITagCacheRepository
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             questionIds,
+            CacheKeyHelper.GetQuestionKey,
             CacheKeyHelper.GetQuestionTagsKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _tagInner.GetQuestionsTagsAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
+    }
+
+    private sealed class CacheTagMapping : ICacheEntityMapping<Tag, long>
+    {
+        public long GetId(Tag entity)
+        {
+            return entity.Id;
+        }
+
+        public string GetKey(long id)
+        {
+            return CacheKeyHelper.GetTagKey(id);
+        }
+
+        public string GetValue(Tag entity)
+        {
+            return entity.Id.ToString();
+        }
+
+        public long ParseIdFromKey(string key)
+        {
+            return CacheKeyHelper.GetIdFromKey(key);
+        }
+
+        public long ParseIdFromValue(string value)
+        {
+            return long.Parse(value);
+        }
     }
 }

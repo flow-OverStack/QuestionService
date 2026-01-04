@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
+using QuestionService.Cache.Interfaces;
+using QuestionService.Cache.Repositories.Base;
 using QuestionService.Cache.Settings;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
@@ -20,11 +22,9 @@ public class VoteTypeCacheRepository : IVoteTypeCacheRepository
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<VoteType, long>(
             cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetVoteTypeKey,
-            x => x.Id.ToString(),
-            long.Parse,
-            settings.TimeToLiveInSeconds
+            new CacheVoteTypeMapping(),
+            settings.TimeToLiveInSeconds,
+            settings.NullTimeToLiveInSeconds
         );
         _voteTypeInner = voteTypeInner;
     }
@@ -36,5 +36,33 @@ public class VoteTypeCacheRepository : IVoteTypeCacheRepository
             ids,
             async (idsToFetch, ct) => (await _voteTypeInner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
+    }
+
+    private sealed class CacheVoteTypeMapping : ICacheEntityMapping<VoteType, long>
+    {
+        public long GetId(VoteType entity)
+        {
+            return entity.Id;
+        }
+
+        public string GetKey(long id)
+        {
+            return CacheKeyHelper.GetVoteTypeKey(id);
+        }
+
+        public string GetValue(VoteType entity)
+        {
+            return entity.Id.ToString();
+        }
+
+        public long ParseIdFromKey(string key)
+        {
+            return CacheKeyHelper.GetIdFromKey(key);
+        }
+
+        public long ParseIdFromValue(string value)
+        {
+            return long.Parse(value);
+        }
     }
 }

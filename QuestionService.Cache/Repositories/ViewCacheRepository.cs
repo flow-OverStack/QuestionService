@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
+using QuestionService.Cache.Interfaces;
+using QuestionService.Cache.Repositories.Base;
 using QuestionService.Cache.Settings;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
@@ -20,11 +22,9 @@ public class ViewCacheRepository : IViewCacheRepository
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<View, long>(
             cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetViewKey,
-            x => x.Id.ToString(),
-            long.Parse,
-            settings.TimeToLiveInSeconds
+            new CacheViewMapping(),
+            settings.TimeToLiveInSeconds,
+            settings.NullTimeToLiveInSeconds
         );
         _viewInner = viewInner;
     }
@@ -42,6 +42,7 @@ public class ViewCacheRepository : IViewCacheRepository
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             userIds,
+            CacheKeyHelper.GetUserViewsKey, // Key is the same because we don't cache users
             CacheKeyHelper.GetUserViewsKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _viewInner.GetUsersViewsAsync(idsToFetch, ct)).Data ?? [],
@@ -53,9 +54,38 @@ public class ViewCacheRepository : IViewCacheRepository
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             questionIds,
+            CacheKeyHelper.GetQuestionKey,
             CacheKeyHelper.GetQuestionViewsKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _viewInner.GetQuestionsViewsAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
+    }
+
+    private sealed class CacheViewMapping : ICacheEntityMapping<View, long>
+    {
+        public long GetId(View entity)
+        {
+            return entity.Id;
+        }
+
+        public string GetKey(long id)
+        {
+            return CacheKeyHelper.GetViewKey(id);
+        }
+
+        public string GetValue(View entity)
+        {
+            return entity.Id.ToString();
+        }
+
+        public long ParseIdFromKey(string key)
+        {
+            return CacheKeyHelper.GetIdFromKey(key);
+        }
+
+        public long ParseIdFromValue(string value)
+        {
+            return long.Parse(value);
+        }
     }
 }

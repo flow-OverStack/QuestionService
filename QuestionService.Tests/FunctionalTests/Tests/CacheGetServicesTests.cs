@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Tests.FunctionalTests.Base;
 using QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
 using QuestionService.Tests.FunctionalTests.Helper;
@@ -39,7 +40,27 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetQuestionByIdWithWrongEntryInCache_ShouldBe_Ok()
+    public async Task GetQuestionById_ShouldBe_Null()
+    {
+        //Arrange
+        var requestBody = new { query = GraphQlHelper.RequestQuestionByIdQuery(0) };
+
+        //Act
+        // 1st request fetches data from DB
+        await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        // 2nd request fetches data from cache
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlGetAllByIdAndNameResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Null(result!.Data.Question);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetQuestionById_ShouldBe_Ok_With_WrongEntryInCache()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -60,5 +81,24 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(result!.Data.Question);
         Assert.NotNull(result.Data.Question.Tags);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetGroupedById_ShouldBe_Null()
+    {
+        //Arrange
+        const long questionId = 0;
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var repository = scope.ServiceProvider.GetRequiredService<ITagCacheRepository>();
+
+        //Act
+        // The first call marks the user as null in the cache
+        await repository.GetQuestionsTagsAsync([questionId]);
+        // The second call fetches the null entry from the cache
+        var result = await repository.GetQuestionsTagsAsync([questionId]);
+
+        //Assert
+        Assert.Empty(result);
     }
 }

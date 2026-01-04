@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Options;
 using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
+using QuestionService.Cache.Interfaces;
+using QuestionService.Cache.Repositories.Base;
 using QuestionService.Cache.Settings;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
@@ -23,11 +25,9 @@ public class VoteCacheRepository : IVoteCacheRepository
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<Vote, VoteDto>(
             cacheProvider,
-            vote => new VoteDto(vote.QuestionId, vote.UserId),
-            voteDto => CacheKeyHelper.GetVoteKey(voteDto.QuestionId, voteDto.UserId),
-            vote => GetVoteValue(vote.QuestionId, vote.UserId),
-            GetVoteDtoFromValue,
-            settings.TimeToLiveInSeconds
+            new VoteCacheMapping(),
+            settings.TimeToLiveInSeconds,
+            settings.NullTimeToLiveInSeconds
         );
         _voteInner = voteInner;
     }
@@ -46,6 +46,7 @@ public class VoteCacheRepository : IVoteCacheRepository
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             questionIds,
+            CacheKeyHelper.GetQuestionKey,
             CacheKeyHelper.GetQuestionVotesKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _voteInner.GetQuestionsVotesAsync(idsToFetch, ct)).Data ?? [],
@@ -57,6 +58,7 @@ public class VoteCacheRepository : IVoteCacheRepository
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             userIds,
+            CacheKeyHelper.GetUserVotesKey, // Key is the same because we don't cache users
             CacheKeyHelper.GetUserVotesKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _voteInner.GetUsersVotesAsync(idsToFetch, ct)).Data ?? [],
@@ -68,23 +70,55 @@ public class VoteCacheRepository : IVoteCacheRepository
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             voteTypeIds,
+            CacheKeyHelper.GetVoteTypeKey,
             CacheKeyHelper.GetVoteTypeVotesKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _voteInner.GetVoteTypesVotesAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
     }
 
-    private static string GetVoteValue(long questionId, long userId) =>
-        string.Format(VoteValuePattern, questionId, userId);
-
-    private static VoteDto GetVoteDtoFromValue(string value)
+    private sealed class VoteCacheMapping : ICacheEntityMapping<Vote, VoteDto>
     {
-        var parts = value.Split(',');
-        if (parts.Length < 2)
-            throw new ArgumentException($"Invalid value format: {value}");
+        public VoteDto GetId(Vote entity)
+        {
+            return new VoteDto(entity.QuestionId, entity.UserId);
+        }
 
-        var ids = parts.Select(long.Parse).ToArray();
+        public string GetKey(VoteDto id)
+        {
+            return CacheKeyHelper.GetVoteKey(id.QuestionId, id.UserId);
+        }
 
-        return new VoteDto(ids[0], ids[1]);
+        public string GetValue(Vote entity)
+        {
+            return string.Format(VoteValuePattern, entity.QuestionId, entity.UserId);
+        }
+
+        public VoteDto ParseIdFromKey(string key)
+        {
+            var ex = new ArgumentException($"Invalid key format: {key}");
+
+            var parts = key.Split(':');
+            if (parts.Length < 2)
+                throw ex;
+
+            parts = parts[1].Split(',');
+            if (parts.Length < 2)
+                throw ex;
+
+            var ids = parts.Select(long.Parse).ToArray();
+            return new VoteDto(ids[0], ids[1]);
+        }
+
+        public VoteDto ParseIdFromValue(string value)
+        {
+            var parts = value.Split(',');
+            if (parts.Length < 2)
+                throw new ArgumentException($"Invalid value format: {value}");
+
+            var ids = parts.Select(long.Parse).ToArray();
+
+            return new VoteDto(ids[0], ids[1]);
+        }
     }
 }
