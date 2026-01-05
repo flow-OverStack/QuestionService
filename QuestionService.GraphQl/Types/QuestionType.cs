@@ -23,6 +23,7 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.Votes).Description("The votes of the question.");
         descriptor.Field(x => x.CreatedAt).Description("Question creation time.");
         descriptor.Field(x => x.LastModifiedAt).Description("Question last modification time.");
+        descriptor.Field(x => x.Enabled).Ignore();
 
         descriptor.Field("reputation")
             .Type<NonNullType<IntType>>()

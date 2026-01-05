@@ -15,6 +15,7 @@ public class Question : IEntityId<long>, IAuditable
     public List<Vote> Votes { get; set; }
 
     public List<View> Views { get; set; }
+    public bool Enabled { get; set; } = true;
 
     public DateTime CreatedAt { get; set; }
 

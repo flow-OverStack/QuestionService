@@ -14,6 +14,8 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.LastModifiedAt);
         builder.Property(x => x.UserId).IsRequired();
+        builder.Property(x => x.Enabled).IsRequired().HasDefaultValue(true);
+        builder.HasQueryFilter(x => x.Enabled);
 
         builder.HasMany(x => x.Tags)
             .WithMany(x => x.Questions)

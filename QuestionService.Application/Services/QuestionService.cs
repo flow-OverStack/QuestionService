@@ -133,7 +133,8 @@ public class QuestionService(
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            unitOfWork.Questions.Remove(question);
+            question.Enabled = false;
+            unitOfWork.Questions.Update(question);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.EntityDeleted, cancellationToken);

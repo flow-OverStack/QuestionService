@@ -143,7 +143,8 @@ internal static class MockRepositoriesGetters
                 LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet()],
                 Votes = [],
-                Views = GetViews().Where(x => x.QuestionId == 1).ToList()
+                Views = GetViews().Where(x => x.QuestionId == 1).ToList(),
+                Enabled = true
             },
             new()
             {
@@ -155,7 +156,8 @@ internal static class MockRepositoriesGetters
                 LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava()],
                 Votes = GetVotes().Where(x => x.QuestionId == 2).ToList(),
-                Views = GetViews().Where(x => x.QuestionId == 2).ToList()
+                Views = GetViews().Where(x => x.QuestionId == 2).ToList(),
+                Enabled = true
             },
             new()
             {
@@ -167,7 +169,8 @@ internal static class MockRepositoriesGetters
                 LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava(), GetTagPython()],
                 Votes = GetVotes().Where(x => x.QuestionId == 3).ToList(),
-                Views = GetViews().Where(x => x.QuestionId == 3).ToList()
+                Views = GetViews().Where(x => x.QuestionId == 3).ToList(),
+                Enabled = true
             },
             new() // Question without tags (not possible)
             {
@@ -179,7 +182,21 @@ internal static class MockRepositoriesGetters
                 LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [],
                 Votes = [],
-                Views = GetViews().Where(x => x.QuestionId == 4).ToList()
+                Views = GetViews().Where(x => x.QuestionId == 4).ToList(),
+                Enabled = true
+            },
+            new()
+            {
+                Id = 5,
+                Title = "question5",
+                Body = "questionBody5",
+                UserId = 2,
+                CreatedAt = DateTime.UtcNow,
+                LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
+                Tags = [GetTagPython()],
+                Votes = [],
+                Views = GetViews().Where(x => x.QuestionId == 5).ToList(),
+                Enabled = false // Disabled question
             }
         }.AsQueryable();
     }
@@ -285,6 +302,14 @@ internal static class MockRepositoriesGetters
                 UserIp = "1.0.0.1",
                 UserFingerprint = "testFingerprint4"
             },
+            new View
+            {
+                Id = 5,
+                QuestionId = 5,
+                UserId = 2,
+                UserIp = null,
+                UserFingerprint = null
+            }
         }.AsQueryable();
     }
 
