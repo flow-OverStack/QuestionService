@@ -61,7 +61,7 @@ public class OutboxProcessor(
 
             await producer.ProduceAsync(content, cancellationToken);
 
-            await currentOutbox.MarkAsProcessedAsync(message.Id, cancellationToken);
+            await currentOutbox.MarkAsProcessedAsync(message.Id, CancellationToken.None);
 
             logger.Information("Produced message: {content}. Type: {type}", message.Content, type);
 
@@ -69,8 +69,11 @@ public class OutboxProcessor(
         }
         catch (Exception e)
         {
-            await currentOutbox.MarkAsFailedAsync(message.Id, e.Message, message.RetryCount + 1,
-                DateTime.UtcNow.Add(RetryIntervals[message.RetryCount]), CancellationToken.None);
+            if (message.RetryCount >= RetryIntervals.Length)
+                await currentOutbox.MarkAsDeadAsync(message.Id, e.Message, CancellationToken.None);
+            else
+                await currentOutbox.MarkAsFailedAsync(message.Id, e.Message, message.RetryCount + 1,
+                    DateTime.UtcNow.Add(RetryIntervals[message.RetryCount]), CancellationToken.None);
 
             logger.Error(e, "Failed to produce message: {errorMessage}.", e.Message);
 

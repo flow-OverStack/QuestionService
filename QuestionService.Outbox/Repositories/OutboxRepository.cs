@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Domain.Interfaces.Repository;
+using QuestionService.Outbox.Enums;
 using QuestionService.Outbox.Interfaces.Repository;
 using QuestionService.Outbox.Messages;
 
@@ -9,6 +10,7 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
 {
     public async Task AddAsync(OutboxMessage message, CancellationToken cancellationToken = default)
     {
+        message.Status = OutboxMessageStatus.Pending;
         await outboxRepository.CreateAsync(message, cancellationToken);
         await outboxRepository.SaveChangesAsync(cancellationToken);
     }
@@ -20,7 +22,7 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
         // But consumers should be idempotent (check their EventId) to handle this case.
 
         var unprocessedMessages = await outboxRepository.GetAll()
-            .Where(x => x.ProcessedAt == null)
+            .Where(x => x.Status == OutboxMessageStatus.Pending || x.Status == OutboxMessageStatus.Failed)
             .Where(x => x.NextRetryAt == null || x.NextRetryAt <= DateTime.UtcNow)
             .OrderByDescending(x => x.RetryCount != 0)
             .ThenByDescending(x => x.NextRetryAt)
@@ -33,6 +35,8 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
     public async Task MarkAsProcessedAsync(long messageId, CancellationToken cancellationToken = default)
     {
         var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
+
+        message.Status = OutboxMessageStatus.Processed;
         message.ProcessedAt = DateTime.UtcNow;
 
         outboxRepository.Update(message);
@@ -43,9 +47,22 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
         CancellationToken cancellationToken = default)
     {
         var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
-        message.ErrorMessage = $"{message.ErrorMessage}\n[{DateTime.UtcNow}] {errorMessage}";
+
+        message.ErrorMessage = GetErrorMessage(message.ErrorMessage, errorMessage);
         message.RetryCount = retryCount;
         message.NextRetryAt = nextRetryAt;
+        message.Status = OutboxMessageStatus.Failed;
+
+        outboxRepository.Update(message);
+        await outboxRepository.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task MarkAsDeadAsync(long messageId, string errorMessage,
+        CancellationToken cancellationToken = default)
+    {
+        var message = await outboxRepository.GetAll().FirstAsync(x => x.Id == messageId, cancellationToken);
+        message.ErrorMessage = GetErrorMessage(message.ErrorMessage, errorMessage);
+        message.Status = OutboxMessageStatus.Dead;
 
         outboxRepository.Update(message);
         await outboxRepository.SaveChangesAsync(cancellationToken);
@@ -53,10 +70,16 @@ public class OutboxRepository(IBaseRepository<OutboxMessage> outboxRepository) :
 
     public Task ResetProcessedAsync(DateTime? olderThen = null, CancellationToken cancellationToken = default)
     {
-        var query = outboxRepository.GetAll().Where(x => x.ProcessedAt != null);
+        var query = outboxRepository.GetAll().Where(x => x.Status == OutboxMessageStatus.Processed);
 
         if (olderThen.HasValue) query = query.Where(x => x.ProcessedAt! < olderThen.Value);
 
         return query.ExecuteDeleteAsync(cancellationToken);
+    }
+
+    private static string GetErrorMessage(string? existingMessage, string newMessage)
+    {
+        if (string.IsNullOrEmpty(existingMessage)) return $"[{DateTime.UtcNow}] {newMessage}";
+        return $"[{DateTime.UtcNow}] {newMessage}\n{existingMessage}";
     }
 }
