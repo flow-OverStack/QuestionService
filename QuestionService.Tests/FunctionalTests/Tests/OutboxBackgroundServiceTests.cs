@@ -10,8 +10,7 @@ using Xunit;
 
 namespace QuestionService.Tests.FunctionalTests.Tests;
 
-[Collection(nameof(OutboxBackgroundServiceTests))]
-public class OutboxBackgroundServiceTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
+public class OutboxBackgroundServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
