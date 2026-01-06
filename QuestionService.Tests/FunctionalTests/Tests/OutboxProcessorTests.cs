@@ -27,8 +27,8 @@ public class OutboxProcessorTests(ExceptionFunctionalTestWebAppFactory factory) 
         await outboxService.AddToOutboxAsync(new BaseEvent
         {
             EventId = Guid.NewGuid(),
-            EventType = nameof(BaseEventType.QuestionUpvote),
-            UserId = userId
+            EventType = nameof(BaseEventType.EntityUpvoted),
+            AuthorId = userId
         });
 
         //Act

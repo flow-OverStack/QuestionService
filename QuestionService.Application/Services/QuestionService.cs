@@ -137,7 +137,8 @@ public class QuestionService(
             unitOfWork.Questions.Update(question);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.EntityDeleted, cancellationToken);
+            await producer.ProduceAsync(question.UserId, initiator.Id, question.Id, BaseEventType.EntityDeleted,
+                cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }
@@ -204,7 +205,8 @@ public class QuestionService(
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.QuestionUpvote, cancellationToken);
+            await producer.ProduceAsync(question.UserId, initiator.Id, question.Id, BaseEventType.EntityUpvoted,
+                cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }
@@ -272,7 +274,7 @@ public class QuestionService(
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await producer.ProduceAsync(question.UserId, question.Id, BaseEventType.QuestionDownvote,
+            await producer.ProduceAsync(question.UserId, initiator.Id, question.Id, BaseEventType.EntityDownvoted,
                 cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);

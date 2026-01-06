@@ -4,6 +4,6 @@ namespace QuestionService.Domain.Interfaces.Producer;
 
 public interface IBaseEventProducer
 {
-    Task ProduceAsync(long userId, long questionId, BaseEventType eventType,
+    Task ProduceAsync(long authorId, long initiatorId, long questionId, BaseEventType eventType,
         CancellationToken cancellationToken = default);
 }
