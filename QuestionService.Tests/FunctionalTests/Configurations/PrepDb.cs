@@ -20,7 +20,8 @@ internal static class PrepDb
                 Body = x.Body,
                 UserId = x.UserId,
                 CreatedAt = x.CreatedAt,
-                LastModifiedAt = x.LastModifiedAt
+                LastModifiedAt = x.LastModifiedAt,
+                Enabled = x.Enabled
             });
 
         var tags = MockRepositoriesGetters.GetTags();

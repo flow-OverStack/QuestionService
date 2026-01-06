@@ -305,7 +305,7 @@ internal static class MockRepositoriesGetters
             new View
             {
                 Id = 5,
-                QuestionId = 5,
+                QuestionId = 4,
                 UserId = 2,
                 UserIp = null,
                 UserFingerprint = null

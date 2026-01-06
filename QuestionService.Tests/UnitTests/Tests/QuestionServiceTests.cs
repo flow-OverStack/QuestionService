@@ -507,4 +507,76 @@ public class QuestionServiceTests
         Assert.Equal(ErrorMessage.VoteAlreadyGiven, result.ErrorMessage);
         Assert.Null(result.Data);
     }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task RemoveQuestionVote_ShouldBe_Success()
+    {
+        //Arrange
+        var questionService = new QuestionServiceFactory().GetService();
+        const long initiatorId = 1;
+        const long questionId = 2;
+
+        //Act
+        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task RemoveQuestionVote_ShouldBe_UserNotFound()
+    {
+        //Arrange
+        var questionService = new QuestionServiceFactory().GetService();
+        const long initiatorId = 0;
+        const long questionId = 1;
+
+        //Act
+        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task RemoveQuestionVote_ShouldBe_QuestionNotFound()
+    {
+        //Arrange
+        var questionService = new QuestionServiceFactory().GetService();
+        const long initiatorId = 1;
+        const long questionId = 0;
+
+        //Act
+        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task RemoveQuestionVote_ShouldBe_VoteNotFound()
+    {
+        //Arrange
+        var questionService = new QuestionServiceFactory().GetService();
+        const long initiatorId = 1;
+        const long questionId = 1;
+
+        //Act
+        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.VoteNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
 }

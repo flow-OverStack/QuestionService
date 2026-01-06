@@ -54,4 +54,14 @@ public interface IQuestionService
     /// <returns></returns>
     Task<BaseResult<VoteQuestionDto>> DownvoteQuestionAsync(long initiatorId, long questionId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Removes question's vote
+    /// </summary>
+    /// <param name="initiatorId">Id of request initiator (e.g. Id of user or moderator)</param>
+    /// <param name="questionId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<BaseResult<VoteQuestionDto>> RemoveQuestionVoteAsync(long initiatorId, long questionId,
+        CancellationToken cancellationToken = default);
 }

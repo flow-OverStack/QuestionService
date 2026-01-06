@@ -153,7 +153,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         const long questionId = 1;
 
         //Act
-        var response = await HttpClient.PatchAsync($"/api/v1.0/question/downvote/{questionId}", null);
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/{questionId}/downvote", null);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
 
@@ -171,7 +171,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         const long questionId = 0;
 
         //Act
-        var response = await HttpClient.PatchAsync($"/api/v1.0/question/downvote/{questionId}", null);
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/{questionId}/downvote", null);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
 
@@ -190,7 +190,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
         const long questionId = 1;
 
         //Act
-        var response = await HttpClient.PatchAsync($"/api/v1.0/question/upvote/{questionId}", null);
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/{questionId}/upvote", null);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
 
@@ -208,7 +208,44 @@ public class QuestionServiceTests : SequentialFunctionalTest
         const long questionId = 0;
 
         //Act
-        var response = await HttpClient.PatchAsync($"/api/v1.0/question/upvote/{questionId}", null);
+        var response = await HttpClient.PatchAsync($"/api/v1.0/question/{questionId}/upvote", null);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RemoveQuestionVote_ShouldBe_Ok()
+    {
+        //Arrange
+        const long questionId = 2;
+
+        //Act
+        var response = await HttpClient.DeleteAsync($"/api/v1.0/question/{questionId}/vote");
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(result!.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RemoveQuestionVote_ShouldBe_NotFound()
+    {
+        //Arrange
+        const long questionId = 0;
+
+        //Act
+        var response = await HttpClient.DeleteAsync($"/api/v1.0/question/{questionId}/vote");
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<VoteQuestionDto>>(body);
 

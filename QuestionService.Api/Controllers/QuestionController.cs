@@ -114,9 +114,9 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <remarks>
     /// Request to downvote a question:
     /// 
-    ///     PATCH downvote/{questionId}
+    ///     PATCH {questionId}/downvote
     /// </remarks>
-    [HttpPatch("downvote/{questionId:long}")]
+    [HttpPatch("{questionId:long}/downvote")]
     public async Task<ActionResult<BaseResult<VoteQuestionDto>>> DownvoteQuestion(long questionId,
         CancellationToken cancellationToken)
     {
@@ -136,15 +136,36 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <remarks>
     /// Request to upvote a question:
     /// 
-    ///     PATCH upvote/{questionId}
+    ///     PATCH {questionId}/upvote
     /// </remarks>
-    [HttpPatch("upvote/{questionId:long}")]
+    [HttpPatch("{questionId:long}/upvote")]
     public async Task<ActionResult<BaseResult<VoteQuestionDto>>> UpvoteQuestion(long questionId,
         CancellationToken cancellationToken)
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
         var result = await questionService.UpvoteQuestionAsync(userId, questionId, cancellationToken);
+
+        return HandleBaseResult(result);
+    }
+
+    /// <summary>
+    ///     Removes user's vote from a question
+    /// </summary>
+    /// <param name="questionId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     Request to remove a vote from a question:
+    ///     DELETE {questionId}/vote
+    /// </remarks>
+    [HttpDelete("{questionId:long}/vote")]
+    public async Task<ActionResult<BaseResult<VoteQuestionDto>>> RemoveQuestionVote(long questionId,
+        CancellationToken cancellationToken)
+    {
+        var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var result = await questionService.RemoveQuestionVoteAsync(userId, questionId, cancellationToken);
 
         return HandleBaseResult(result);
     }
