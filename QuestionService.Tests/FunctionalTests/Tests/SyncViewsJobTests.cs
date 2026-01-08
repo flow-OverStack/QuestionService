@@ -30,7 +30,7 @@ public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : Sequential
 
         //Assert
         var count = await viewRepository.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(11, count); // Total 11 views including new ones
+        Assert.Equal(11, count); // Total 11 views including new ones (consider views of the disabled questions)
     }
 
     [Trait("Category", "Functional")]
@@ -50,6 +50,6 @@ public class SyncViewsJobTests(FunctionalTestWebAppFactory factory) : Sequential
 
         //Assert
         var count = await viewRepository.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(4, count); // Total 4 views
+        Assert.Equal(4, count); // Total 4 views including new ones (consider views of the disabled questions)
     }
 }

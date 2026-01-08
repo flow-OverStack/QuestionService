@@ -10,6 +10,7 @@ public class VoteConfiguration : IEntityTypeConfiguration<Vote>
     {
         builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.QuestionId).IsRequired();
+        builder.HasQueryFilter(x => x.Question.Enabled);
 
         builder.HasKey(x => new { x.QuestionId, x.UserId });
     }
