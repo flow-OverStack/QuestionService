@@ -11,6 +11,9 @@ public class VoteTypeType : ObjectType<Domain.Entities.VoteType>
 
         descriptor.Field(x => x.Id).Description("The unique identifier of the vote type.");
         descriptor.Field(x => x.Name).Description("The name of the vote type.");
+        descriptor.Field(x => x.MinReputationToVote)
+            .Description("The minimum reputation required to cast this type of vote.");
+        descriptor.Field(x => x.ReputationChange).Description("The reputation change associated with this vote type.");
         descriptor.Field(x => x.Votes).Description("The votes associated with this vote type.");
         descriptor.Field(x => x.Votes).Description("A list of votes of this type.");
 

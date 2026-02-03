@@ -28,9 +28,12 @@ internal static class GraphQlHelper
                                                   }
                                                   votes {
                                                     userId
+                                                    voteTypeId
                                                     voteType {
                                                       id
                                                       name
+                                                      minReputationToVote
+                                                      reputationChange
                                                       votes {
                                                         userId
                                                       }
@@ -65,9 +68,12 @@ internal static class GraphQlHelper
                                             votes(skip: 1, take: 2) {
                                               items {
                                                 userId
+                                                voteTypeId
                                                 voteType {
                                                   id
                                                   name
+                                                  minReputationToVote
+                                                  reputationChange
                                                   votes {
                                                     userId
                                                   }
@@ -121,6 +127,7 @@ internal static class GraphQlHelper
                                               items {
                                                 id
                                                 name
+                                                minReputationToVote
                                                 reputationChange
                                                 votes {
                                                   userId
@@ -196,10 +203,12 @@ internal static class GraphQlHelper
                                                                     }
                                                                     votes {
                                                                       userId
+                                                                      voteTypeId
                                                                       voteType {
                                                                        id
                                                                        name
                                                                        reputationChange
+                                                                       minReputationToVote
                                                                       }
                                                                       question {
                                                                         id
@@ -230,10 +239,12 @@ internal static class GraphQlHelper
                                                               votes(skip: -1, take: 101) {
                                                                 items {
                                                                   userId
+                                                                  voteTypeId
                                                                   voteType {
                                                                    id
                                                                    name
                                                                    reputationChange
+                                                                   minReputationToVote
                                                                   }
                                                                   question {
                                                                     id
@@ -303,10 +314,12 @@ internal static class GraphQlHelper
                 }
                 votes {
                   userId
+                  voteTypeId
                   voteType {
                     id
                     name
                     reputationChange
+                    minReputationToVote
                     votes {
                       userId
                     }
@@ -330,10 +343,12 @@ internal static class GraphQlHelper
               }
               vote(userId: $VOTEUSERID, questionId: $VOTEQUESTIONID) {
                 userId
+                voteTypeId
                 voteType {
                   id
                   name
                   reputationChange
+                  minReputationToVote
                   votes {
                     userId
                   }
@@ -365,6 +380,8 @@ internal static class GraphQlHelper
               voteType(id: $VOTETYPEID) { 
                 id
                 name
+                minReputationToVote
+                reputationChange
                 votes{
                   userId
                   question{

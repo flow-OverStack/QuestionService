@@ -12,6 +12,7 @@ public class VoteType : ObjectType<Vote>
         descriptor.Description("The vote type.");
         descriptor.Field(x => x.UserId).Description("The ID of the user that voted.");
         descriptor.Field(x => x.QuestionId).Description("The ID of the question that was voted.");
+        descriptor.Field(x => x.VoteTypeId).Description("The ID of the vote type.");
         descriptor.Field(x => x.VoteType).Description("The vote type.");
         descriptor.Field(x => x.Question).Description("The question that was voted.");
 

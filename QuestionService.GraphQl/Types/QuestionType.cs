@@ -21,6 +21,7 @@ public class QuestionType : ObjectType<Question>
         descriptor.Field(x => x.UserId).Description("The ID of the author of the question.");
         descriptor.Field(x => x.Tags).Description("The tags of the question.");
         descriptor.Field(x => x.Votes).Description("The votes of the question.");
+        descriptor.Field(x => x.Views).Description("The views of the question.");
         descriptor.Field(x => x.CreatedAt).Description("Question creation time.");
         descriptor.Field(x => x.LastModifiedAt).Description("Question last modification time.");
         descriptor.Field(x => x.Enabled).Ignore();

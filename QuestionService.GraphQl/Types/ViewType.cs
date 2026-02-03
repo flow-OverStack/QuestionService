@@ -15,6 +15,7 @@ public class ViewType : ObjectType<View>
         descriptor.Field(x => x.UserId).Description("The ID of the viewer.");
         descriptor.Field(x => x.UserIp).Description("The IP address of the viewer.");
         descriptor.Field(x => x.UserFingerprint).Description("The unique fingerprint of the viewer's device.");
+        descriptor.Field(x => x.Question).Description("The question that was viewed.");
 
         descriptor.Field(x => x.Question).ResolveWith<Resolvers>(x => x.GetQuestionAsync(default!, default!, default!));
 
