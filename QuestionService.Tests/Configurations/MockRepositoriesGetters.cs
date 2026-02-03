@@ -373,6 +373,7 @@ internal static class MockRepositoriesGetters
         {
             Id = 1,
             ReputationChange = 1,
+            MinReputationToVote = 15,
             Name = nameof(VoteTypes.Upvote)
         };
     }
@@ -383,6 +384,7 @@ internal static class MockRepositoriesGetters
         {
             Id = 2,
             ReputationChange = -1,
+            MinReputationToVote = 125,
             Name = nameof(VoteTypes.Downvote)
         };
     }

@@ -17,7 +17,7 @@ internal class QuestionServiceFactory
 {
     private readonly IQuestionService _questionService;
 
-    public readonly BusinessRules BusinessRules = BusinessRulesConfiguration.GetBusinessRules();
+    public readonly ContentRules ContentRules = BusinessRulesConfiguration.GetBusinessRules();
 
     public readonly IBaseEventProducer EventProducer =
         BaseEventProducerConfiguration.GetBaseEventProducerConfiguration();
@@ -37,7 +37,7 @@ internal class QuestionServiceFactory
             VoteTypeRepository = voteTypeRepository;
 
         _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, VoteTypeRepository,
-            UserProvider, Options.Create(BusinessRules), Mapper, EventProducer);
+            UserProvider, Options.Create(ContentRules), Mapper, EventProducer);
     }
 
     public IQuestionService GetService()

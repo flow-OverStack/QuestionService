@@ -9,14 +9,14 @@ namespace QuestionService.Application.Validators;
 
 public class CursorPageDtoValidator : AbstractValidator<CursorPageDto>, INullSafeValidator<CursorPageDto>
 {
-    public CursorPageDtoValidator(IOptions<BusinessRules> businessRules)
+    public CursorPageDtoValidator(IOptions<ContentRules> contentRules)
     {
         RuleFor(x => x.First)
-            .InclusiveBetween(0, businessRules.Value.MaxPageSize)
+            .InclusiveBetween(0, contentRules.Value.MaxPageSize)
             .When(x => x.First.HasValue);
 
         RuleFor(x => x.Last)
-            .InclusiveBetween(0, businessRules.Value.MaxPageSize)
+            .InclusiveBetween(0, contentRules.Value.MaxPageSize)
             .When(x => x.Last.HasValue);
 
         RuleFor(x => x.After)

@@ -25,11 +25,11 @@ public class ViewService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<View> viewRepository,
     IEntityProvider<UserDto> userProvider,
-    IOptions<BusinessRules> businessRules,
+    IOptions<ContentRules> contentRules,
     IOptions<EntityRules> entityRules)
     : IViewService, IViewDatabaseService
 {
-    private readonly BusinessRules _businessRules = businessRules.Value;
+    private readonly ContentRules _contentRules = contentRules.Value;
     private readonly EntityRules _entityRules = entityRules.Value;
 
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
@@ -39,7 +39,7 @@ public class ViewService(
 
         var spamFilteredViews = views.FilterByMaxValueOccurrences(
             view => (view.UserId?.ToString() ?? view.UserIp)!,
-            _businessRules.UserViewSpamThreshold).ToArray();
+            _contentRules.UserViewSpamThreshold).ToArray();
 
         if (spamFilteredViews.Length == 0) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
 

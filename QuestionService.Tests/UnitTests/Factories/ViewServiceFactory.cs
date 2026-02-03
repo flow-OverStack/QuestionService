@@ -21,10 +21,10 @@ internal class ViewServiceFactory
     private readonly IViewDatabaseService _viewDatabaseService;
     private readonly IViewService _viewService;
 
-    public readonly BusinessRules BusinessRules = BusinessRulesConfiguration.GetBusinessRules();
-
     public readonly IViewCacheSyncRepository CacheRepository =
         new ViewCacheSyncRepository(new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()));
+
+    public readonly ContentRules ContentRules = BusinessRulesConfiguration.GetBusinessRules();
 
     public readonly EntityRules EntityRules = EntityRulesConfiguration.GetEntityRules();
 
@@ -39,7 +39,7 @@ internal class ViewServiceFactory
         if (redisDatabase != null) CacheRepository = new ViewCacheSyncRepository(new RedisCacheProvider(redisDatabase));
 
         var service = new ViewService(CacheRepository, QuestionRepository, ViewRepository, UserProvider,
-            Options.Create(BusinessRules), Options.Create(EntityRules));
+            Options.Create(ContentRules), Options.Create(EntityRules));
 
         _viewService = service;
         _viewDatabaseService = service;

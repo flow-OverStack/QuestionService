@@ -10,6 +10,7 @@ public class VoteTypeConfiguration : IEntityTypeConfiguration<VoteType>
     {
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
         builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.MinReputationToVote).IsRequired().HasDefaultValue(0);
         builder.Property(x => x.ReputationChange).IsRequired().HasDefaultValue(0);
 
         builder.HasMany(x => x.Votes)

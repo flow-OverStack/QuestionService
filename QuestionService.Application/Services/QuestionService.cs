@@ -22,12 +22,12 @@ public class QuestionService(
     IBaseRepository<Tag> tagRepository,
     IBaseRepository<VoteType> voteTypeRepository,
     IEntityProvider<UserDto> userProvider,
-    IOptions<BusinessRules> businessRules,
+    IOptions<ContentRules> contentRules,
     IMapper mapper,
     IBaseEventProducer producer)
     : IQuestionService
 {
-    private readonly BusinessRules _businessRules = businessRules.Value;
+    private readonly ContentRules _contentRules = contentRules.Value;
 
     public async Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto,
         CancellationToken cancellationToken = default)
@@ -162,16 +162,16 @@ public class QuestionService(
         if (question == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
-        if (initiator.Reputation < _businessRules.MinReputationToUpvote)
-            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation,
-                (int)ErrorCodes.OperationForbidden);
-
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
         var voteType = await voteTypeRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Name == nameof(VoteTypes.Upvote), cancellationToken);
         if (voteType == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteTypeNotFound, (int)ErrorCodes.VoteTypeNotFound);
+
+        if (initiator.Reputation < voteType.MinReputationToVote)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation,
+                (int)ErrorCodes.OperationForbidden);
 
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
@@ -229,16 +229,16 @@ public class QuestionService(
         if (question == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
-        if (initiator.Reputation < _businessRules.MinReputationToDownvote)
-            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation,
-                (int)ErrorCodes.OperationForbidden);
-
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
         var voteType = await voteTypeRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Name == nameof(VoteTypes.Downvote), cancellationToken);
         if (voteType == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.VoteTypeNotFound, (int)ErrorCodes.VoteTypeNotFound);
+
+        if (initiator.Reputation < voteType.MinReputationToVote)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.TooLowReputation,
+                (int)ErrorCodes.OperationForbidden);
 
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
@@ -330,15 +330,15 @@ public class QuestionService(
 
     private bool IsLengthValid(EditQuestionDto dto)
     {
-        return dto.Title.HasMinLength(_businessRules.TitleMinLength)
-               && dto.Body.HasMinLength(_businessRules.BodyMinLength)
+        return dto.Title.HasMinLength(_contentRules.TitleMinLength)
+               && dto.Body.HasMinLength(_contentRules.BodyMinLength)
                && dto.TagNames.Any();
     }
 
     private bool IsLengthValid(AskQuestionDto dto)
     {
-        return dto.Title.HasMinLength(_businessRules.TitleMinLength)
-               && dto.Body.HasMinLength(_businessRules.BodyMinLength)
+        return dto.Title.HasMinLength(_contentRules.TitleMinLength)
+               && dto.Body.HasMinLength(_contentRules.BodyMinLength)
                && dto.TagNames.Any();
     }
 }

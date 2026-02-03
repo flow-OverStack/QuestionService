@@ -8,9 +8,9 @@ namespace QuestionService.Application.Validators;
 
 public class OffsetPageDtoValidator : AbstractValidator<OffsetPageDto>, INullSafeValidator<OffsetPageDto>
 {
-    public OffsetPageDtoValidator(IOptions<BusinessRules> businessRules)
+    public OffsetPageDtoValidator(IOptions<ContentRules> contentRules)
     {
-        var maxPageSize = businessRules.Value.MaxPageSize;
+        var maxPageSize = contentRules.Value.MaxPageSize;
 
         RuleFor(x => x.Skip).NotNull().GreaterThanOrEqualTo(0);
         RuleFor(x => x.Take).NotNull().InclusiveBetween(0, maxPageSize);
