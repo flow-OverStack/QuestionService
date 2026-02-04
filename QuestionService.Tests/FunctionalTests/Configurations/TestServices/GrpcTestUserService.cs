@@ -17,32 +17,41 @@ internal class GrpcTestUserService : UserService.UserServiceClient
         new MapperConfiguration(cfg => cfg.AddMaps(typeof(GrpcMapping))).CreateMapper();
 
     public override GrpcUser GetUserWithRolesById(GetUserByIdRequest request, CallOptions options) =>
-        GetUserById(request.UserId);
+        GetUserById(request.Id);
 
     public override GrpcUser GetUserWithRolesById(GetUserByIdRequest request, Metadata? headers = default,
-        DateTime? deadline = null, CancellationToken cancellationToken = default) => GetUserById(request.UserId);
+        DateTime? deadline = null, CancellationToken cancellationToken = default)
+    {
+        return GetUserById(request.Id);
+    }
 
     public override AsyncUnaryCall<GrpcUser>
         GetUserWithRolesByIdAsync(GetUserByIdRequest request, CallOptions options) =>
-        ToAsyncUnaryCall(GetUserById(request.UserId));
+        ToAsyncUnaryCall(GetUserById(request.Id));
 
     public override AsyncUnaryCall<GrpcUser> GetUserWithRolesByIdAsync(GetUserByIdRequest request,
         Metadata headers = null,
         DateTime? deadline = null, CancellationToken cancellationToken = default) =>
-        ToAsyncUnaryCall(GetUserById(request.UserId));
+        ToAsyncUnaryCall(GetUserById(request.Id));
 
     public override GetUsersByIdsResponse GetUsersByIds(GetUsersByIdsRequest request, CallOptions options) =>
-        GetUsersByIds(request.UserIds);
+        GetUsersByIds(request.Ids);
 
     public override GetUsersByIdsResponse GetUsersByIds(GetUsersByIdsRequest request, Metadata headers = null,
-        DateTime? deadline = null, CancellationToken cancellationToken = default) => GetUsersByIds(request.UserIds);
+        DateTime? deadline = null, CancellationToken cancellationToken = default)
+    {
+        return GetUsersByIds(request.Ids);
+    }
 
     public override AsyncUnaryCall<GetUsersByIdsResponse> GetUsersByIdsAsync(GetUsersByIdsRequest request,
-        CallOptions options) => ToAsyncUnaryCall(GetUsersByIds(request.UserIds));
+        CallOptions options)
+    {
+        return ToAsyncUnaryCall(GetUsersByIds(request.Ids));
+    }
 
     public override AsyncUnaryCall<GetUsersByIdsResponse> GetUsersByIdsAsync(GetUsersByIdsRequest request,
         Metadata headers = null, DateTime? deadline = null, CancellationToken cancellationToken = default) =>
-        ToAsyncUnaryCall(GetUsersByIds(request.UserIds));
+        ToAsyncUnaryCall(GetUsersByIds(request.Ids));
 
     private static AsyncUnaryCall<T> ToAsyncUnaryCall<T>(T response)
     {
