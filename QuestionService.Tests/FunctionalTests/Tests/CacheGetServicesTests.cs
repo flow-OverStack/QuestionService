@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Tests.FunctionalTests.Base;
-using QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
+using QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using QuestionService.Tests.FunctionalTests.Helper;
 using StackExchange.Redis;
 using Xunit;

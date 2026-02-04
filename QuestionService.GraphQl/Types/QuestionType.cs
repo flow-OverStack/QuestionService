@@ -30,6 +30,10 @@ public class QuestionType : ObjectType<Question>
             .Type<NonNullType<IntType>>()
             .Description("The reputation of the question.")
             .ResolveWith<Resolvers>(x => x.CalculateReputationAsync(default!, default!, default!, default!));
+        descriptor.Field("viewCount")
+            .Type<NonNullType<IntType>>()
+            .Description("The view count of the question")
+            .ResolveWith<Resolvers>(x => x.GetViewCountAsync(default!, default!, default!));
 
         descriptor.Field(x => x.Tags).ResolveWith<Resolvers>(x => x.GetTagsAsync(default!, default!, default!));
         descriptor.Field(x => x.Votes).ResolveWith<Resolvers>(x => x.GetVotesAsync(default!, default!, default!));
@@ -98,6 +102,14 @@ public class QuestionType : ObjectType<Question>
 
             var sum = voteTypes.Sum(x => x.ReputationChange);
             return sum;
+        }
+
+        public async Task<int> GetViewCountAsync([Parent] Question question, GroupViewDataLoader viewLoader,
+            CancellationToken cancellationToken)
+        {
+            var views = await viewLoader.LoadRequiredAsync(question.Id, cancellationToken);
+
+            return views.Length;
         }
     }
 }

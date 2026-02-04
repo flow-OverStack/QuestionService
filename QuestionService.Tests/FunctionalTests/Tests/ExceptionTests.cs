@@ -8,7 +8,7 @@ using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Results;
 using QuestionService.Tests.FunctionalTests.Base.Exception;
-using QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
+using QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Xunit;
 

@@ -1,5 +1,5 @@
 using System.Net;
-using QuestionService.Grpc.Handlers;
+using QuestionService.GrpcClient.Handlers;
 
 namespace QuestionService.Tests.UnitTests.Configurations;
 

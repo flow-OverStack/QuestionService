@@ -1,6 +1,7 @@
 using QuestionService.Domain.Entities;
+using QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Entities;
 
-namespace QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
+namespace QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 
 internal class GraphQlGetAllByIdAndNameResponse
 {
@@ -9,7 +10,7 @@ internal class GraphQlGetAllByIdAndNameResponse
 
 internal class GraphQlGetAllByIdAndNameData
 {
-    public Question? Question { get; set; }
+    public GraphQlQuestion? Question { get; set; }
     public Tag? Tag { get; set; }
     public Vote? Vote { get; set; }
     public View? View { get; set; }

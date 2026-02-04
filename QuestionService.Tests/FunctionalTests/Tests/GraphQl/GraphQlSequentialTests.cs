@@ -7,7 +7,7 @@ using QuestionService.Application.Resources;
 using QuestionService.DAL;
 using QuestionService.Domain.Entities;
 using QuestionService.Tests.FunctionalTests.Base;
-using QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
+using QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Xunit;
 

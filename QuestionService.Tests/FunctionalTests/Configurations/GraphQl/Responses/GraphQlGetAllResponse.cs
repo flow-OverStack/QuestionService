@@ -1,6 +1,7 @@
 using QuestionService.Domain.Entities;
+using QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Entities;
 
-namespace QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
+namespace QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 
 internal class GraphQlGetAllResponse
 {
@@ -9,7 +10,7 @@ internal class GraphQlGetAllResponse
 
 internal class GraphQlGetAllData
 {
-    public GraphQlCursorPaginatedResponse<Question> Questions { get; set; }
+    public GraphQlCursorPaginatedResponse<GraphQlQuestion> Questions { get; set; }
     public GraphQlCursorPaginatedResponse<Tag> Tags { get; set; }
     public GraphQlOffsetPaginatedResponse<Vote> Votes { get; set; }
     public GraphQlOffsetPaginatedResponse<View> Views { get; set; }

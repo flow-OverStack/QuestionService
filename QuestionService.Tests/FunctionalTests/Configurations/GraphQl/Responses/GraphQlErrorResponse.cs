@@ -1,4 +1,4 @@
-namespace QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
+namespace QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 
 internal class GraphQlErrorResponse
 {

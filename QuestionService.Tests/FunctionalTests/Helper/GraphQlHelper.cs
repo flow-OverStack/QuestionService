@@ -14,6 +14,7 @@ internal static class GraphQlHelper
                                                   title
                                                   body
                                                   reputation
+                                                  viewCount
                                                   userId
                                                   createdAt
                                                   lastModifiedAt
@@ -151,6 +152,8 @@ internal static class GraphQlHelper
                                                                 title
                                                                 body
                                                                 userId
+                                                                reputation
+                                                                viewCount
                                                                 createdAt
                                                                 lastModifiedAt
                                                                 tags {
@@ -190,6 +193,8 @@ internal static class GraphQlHelper
                                                                     title
                                                                     body
                                                                     userId
+                                                                    reputation
+                                                                    viewCount
                                                                     createdAt
                                                                     lastModifiedAt
                                                                     tags {
@@ -301,6 +306,8 @@ internal static class GraphQlHelper
                 title
                 body
                 userId
+                reputation
+                viewCount
                 createdAt
                 lastModifiedAt
                 tags {
@@ -408,6 +415,8 @@ internal static class GraphQlHelper
                 title
                 body
                 userId
+                reputation
+                viewCount
                 createdAt
                 lastModifiedAt
                 tags {

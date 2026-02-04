@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using QuestionService.Application.Resources;
 using QuestionService.Tests.FunctionalTests.Base;
-using QuestionService.Tests.FunctionalTests.Configurations.GraphQl;
+using QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using QuestionService.Tests.FunctionalTests.Helper;
 using Xunit;
 
