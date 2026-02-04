@@ -1,4 +1,4 @@
-namespace QuestionService.Grpc.Settings;
+namespace QuestionService.GrpcClient.Settings;
 
 public class GrpcHosts
 {

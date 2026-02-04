@@ -2,12 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Interfaces.Provider;
-using QuestionService.Grpc.Handlers;
-using QuestionService.Grpc.Mappings;
-using QuestionService.Grpc.Providers;
-using QuestionService.Grpc.Settings;
+using QuestionService.GrpcClient.Handlers;
+using QuestionService.GrpcClient.Mappings;
+using QuestionService.GrpcClient.Providers;
+using QuestionService.GrpcClient.Settings;
 
-namespace QuestionService.Grpc.DependencyInjection;
+namespace QuestionService.GrpcClient.DependencyInjection;
 
 public static class DependencyInjection
 {

@@ -1,7 +1,7 @@
 using AutoMapper;
 using QuestionService.Domain.Dtos.ExternalEntity;
 
-namespace QuestionService.Grpc.Mappings;
+namespace QuestionService.GrpcClient.Mappings;
 
 public class UserMapping : Profile
 {

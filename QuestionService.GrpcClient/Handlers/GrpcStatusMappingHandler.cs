@@ -1,7 +1,7 @@
 using System.Net;
 using Grpc.Core;
 
-namespace QuestionService.Grpc.Handlers;
+namespace QuestionService.GrpcClient.Handlers;
 
 public class GrpcStatusMappingHandler : DelegatingHandler
 {

@@ -4,7 +4,7 @@ using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Interfaces.Provider;
 
-namespace QuestionService.Grpc.Providers;
+namespace QuestionService.GrpcClient.Providers;
 
 public class UserProvider(UserService.UserServiceClient client, IMapper mapper) : IEntityProvider<UserDto>
 {

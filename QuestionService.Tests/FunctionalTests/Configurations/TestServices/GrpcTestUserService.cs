@@ -3,8 +3,8 @@ using Grpc.Core;
 using QuestionService.Application.Enum;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.ExternalEntity;
-using QuestionService.Grpc;
-using QuestionService.Grpc.Mappings;
+using QuestionService.GrpcClient;
+using QuestionService.GrpcClient.Mappings;
 using QuestionService.Tests.Configurations;
 
 namespace QuestionService.Tests.FunctionalTests.Configurations.TestServices;

@@ -26,7 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.DAL", "QuestionService.DAL\QuestionService.DAL.csproj", "{6B6058F8-F22F-4BC6-B6D5-1D693E24CE97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Grpc", "QuestionService.Grpc\QuestionService.Grpc.csproj", "{BE96CF75-3383-43BC-A992-9240EB45B45C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.GrpcClient", "QuestionService.GrpcClient\QuestionService.GrpcClient.csproj", "{BE96CF75-3383-43BC-A992-9240EB45B45C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{09F07A13-8ECC-4415-859E-9F7CE518168E}"
 EndProject
@@ -41,6 +41,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.BackgroundJobs", "QuestionService.BackgroundJobs\QuestionService.BackgroundJobs.csproj", "{74FBE52D-D61C-48D1-A9B9-AF24A9F5577F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.Cache", "QuestionService.Cache\QuestionService.Cache.csproj", "{300BB8BB-4D77-436E-B830-DAF968222904}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestionService.GrpcServer", "QuestionService.GrpcServer\QuestionService.GrpcServer.csproj", "{370354BA-8A82-4FF0-A2AD-8174F460672E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,7 @@ Global
 		{1A274F95-DF39-414F-84E2-37C5FF23A7B7} = {41A284F2-24C9-4EF2-9E74-5B1AAE7BBD57}
 		{74FBE52D-D61C-48D1-A9B9-AF24A9F5577F} = {2007777B-BACA-4F38-A88E-D12A80648B68}
 		{300BB8BB-4D77-436E-B830-DAF968222904} = {2007777B-BACA-4F38-A88E-D12A80648B68}
+		{370354BA-8A82-4FF0-A2AD-8174F460672E} = {41A284F2-24C9-4EF2-9E74-5B1AAE7BBD57}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{672FB5AA-F527-4C51-975B-32A528319331}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -105,5 +108,9 @@ Global
 		{300BB8BB-4D77-436E-B830-DAF968222904}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{300BB8BB-4D77-436E-B830-DAF968222904}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{300BB8BB-4D77-436E-B830-DAF968222904}.Release|Any CPU.Build.0 = Release|Any CPU
+		{370354BA-8A82-4FF0-A2AD-8174F460672E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{370354BA-8A82-4FF0-A2AD-8174F460672E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{370354BA-8A82-4FF0-A2AD-8174F460672E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{370354BA-8A82-4FF0-A2AD-8174F460672E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "QuestionService.Grpc";
+option csharp_namespace = "QuestionService.GrpcClient";
 
 service UserService{
   rpc GetUserWithRolesById(GetUserByIdRequest) returns (GrpcUser);

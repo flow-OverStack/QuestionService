@@ -1,7 +1,7 @@
 using AutoMapper;
 using ProtoTimestamp = Google.Protobuf.WellKnownTypes.Timestamp;
 
-namespace QuestionService.Grpc.Mappings;
+namespace QuestionService.GrpcClient.Mappings;
 
 public class GrpcMapping : Profile
 {
