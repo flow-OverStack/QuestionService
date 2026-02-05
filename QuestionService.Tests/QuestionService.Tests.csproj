@@ -31,4 +31,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <Protobuf Include="FunctionalTests\Configurations\Protos\QuestionService.proto" GrpcServices="Client"/>
+    </ItemGroup>
+
 </Project>

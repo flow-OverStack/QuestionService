@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "QuestionService.Tests";
+
+service QuestionService{
+  rpc GetQuestionById(GetQuestionByIdRequest) returns (GrpcQuestion);
+  rpc GetQuestionsByIds(GetQuestionsByIdsRequest) returns (GetQuestionsByIdsResponse);
+}
+
+message GetQuestionByIdRequest{
+  int64 id = 1;
+}
+
+message GetQuestionsByIdsRequest{
+  repeated int64 ids = 1;
+}
+
+message GetQuestionsByIdsResponse {
+  repeated GrpcQuestion questions = 1;
+}
+
+message GrpcQuestion {
+  string title = 1;
+  string body = 2;
+  int64 id = 3;
+  int64 user_id = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
