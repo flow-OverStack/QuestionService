@@ -6,18 +6,18 @@ option csharp_namespace = "QuestionService.GrpcServer";
 
 service QuestionService{
   rpc GetQuestionById(GetQuestionByIdRequest) returns (GrpcQuestion);
-  rpc GetQuestionsByIds(GetQuestionByIdsRequest) returns (GetQuestionByIdsResponse);
+  rpc GetQuestionsByIds(GetQuestionsByIdsRequest) returns (GetQuestionsByIdsResponse);
 }
 
 message GetQuestionByIdRequest{
   int64 id = 1;
 }
 
-message GetQuestionByIdsRequest{
+message GetQuestionsByIdsRequest{
   repeated int64 ids = 1;
 }
 
-message GetQuestionByIdsResponse {
+message GetQuestionsByIdsResponse {
   repeated GrpcQuestion questions = 1;
 }
 

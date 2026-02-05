@@ -61,6 +61,7 @@ app.UseRouting();
 app.MapControllers();
 app.UseLocalization();
 app.UseGraphQl();
+app.UseGrpcServices();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfire();
