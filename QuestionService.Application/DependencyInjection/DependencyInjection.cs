@@ -36,5 +36,8 @@ public static class DependencyInjection
 
         services.AddScoped<INullSafeValidator<OffsetPageDto>, OffsetPageDtoValidator>();
         services.AddScoped<INullSafeValidator<CursorPageDto>, CursorPageDtoValidator>();
+        services.AddScoped<IQuestionValidator, QuestionValidator>();
+        services.AddScoped<ITagValidator, TagValidator>();
+        services.AddScoped<IViewValidator, ViewValidator>();
     }
 }

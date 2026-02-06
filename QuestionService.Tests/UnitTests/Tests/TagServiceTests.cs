@@ -25,7 +25,7 @@ public class TagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task CreateTag_ShouldBe_LengthOutOfRange()
+    public async Task CreateTag_ShouldBe_InvalidTagName()
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
@@ -36,7 +36,7 @@ public class TagServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.LengthOutOfRange, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidTagName, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -75,18 +75,19 @@ public class TagServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateTag_ShouldBe_LengthOutOfRange()
+    public async Task UpdateTag_ShouldBe_InvalidTagDescription()
     {
         //Arrange
         var tagService = new TagServiceFactory().GetService();
-        var dto = new TagDto(1, "TooLongTagNameTooLongTagNameTooLongTagName", "NewTagDescription");
+        var dto = new TagDto(1, ".NET",
+            "TooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescriptionTooLongTagDescription");
 
         //Act
         var result = await tagService.UpdateTagAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.LengthOutOfRange, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidTagDescription, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 

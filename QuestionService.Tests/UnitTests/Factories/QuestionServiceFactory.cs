@@ -1,6 +1,5 @@
 using AutoMapper;
-using Microsoft.Extensions.Options;
-using QuestionService.Application.Settings;
+using QuestionService.Application.Validators;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Producer;
@@ -16,8 +15,6 @@ namespace QuestionService.Tests.UnitTests.Factories;
 internal class QuestionServiceFactory
 {
     private readonly IQuestionService _questionService;
-
-    public readonly ContentRules ContentRules = BusinessRulesConfiguration.GetBusinessRules();
 
     public readonly IBaseEventProducer EventProducer =
         BaseEventProducerConfiguration.GetBaseEventProducerConfiguration();
@@ -37,7 +34,7 @@ internal class QuestionServiceFactory
             VoteTypeRepository = voteTypeRepository;
 
         _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, VoteTypeRepository,
-            UserProvider, Options.Create(ContentRules), Mapper, EventProducer);
+            UserProvider, Mapper, EventProducer, new QuestionValidator(new TagValidator()));
     }
 
     public IQuestionService GetService()

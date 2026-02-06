@@ -25,7 +25,7 @@ public class BaseController : ControllerBase
     private static readonly IReadOnlyDictionary<int, int> ErrorStatusCodeMap = new Dictionary<int, int>
     {
         // Data
-        { (int)ErrorCodes.LengthOutOfRange, StatusCodes.Status400BadRequest },
+        { (int)ErrorCodes.InvalidProperty, StatusCodes.Status400BadRequest },
         { (int)ErrorCodes.InvalidDataFormat, StatusCodes.Status400BadRequest },
 
         // User

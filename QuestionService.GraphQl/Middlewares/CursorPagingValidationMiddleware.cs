@@ -23,7 +23,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
 
     public async Task InvokeAsync(IMiddlewareContext context,
         INullSafeValidator<CursorPageDto> cursorPageValidator,
-        IOptions<ContentRules> contentRules)
+        IOptions<PaginationRules> paginationRules)
     {
         var first = context.ArgumentValue<int?>(FirstArgName);
         var after = context.ArgumentValue<string?>(AfterArgName);
@@ -33,11 +33,11 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
 
         // Specifying default values if need
         if (after == null && first == null && before == null && last == null)
-            first = contentRules.Value.DefaultPageSize;
+            first = paginationRules.Value.DefaultPageSize;
         if (after != null && first == null)
-            first = contentRules.Value.DefaultPageSize;
+            first = paginationRules.Value.DefaultPageSize;
         if (before != null && last == null)
-            last = contentRules.Value.DefaultPageSize;
+            last = paginationRules.Value.DefaultPageSize;
 
         var pagination =
             new CursorPageDto(first, after, before, last, order.ToOrderDto());

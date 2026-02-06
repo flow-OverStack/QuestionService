@@ -11,7 +11,7 @@ public enum ErrorCodes
     //Views: 61-70
     //Vote: 71-80
 
-    LengthOutOfRange = 1,
+    InvalidProperty = 1,
     InvalidDataFormat = 2,
 
     UserNotFound = 21,

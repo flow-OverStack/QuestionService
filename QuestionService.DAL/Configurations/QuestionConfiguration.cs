@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using QuestionService.Domain.Entities;
+using QuestionService.Domain.Settings;
 
 namespace QuestionService.DAL.Configurations;
 
@@ -9,8 +10,8 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
     public void Configure(EntityTypeBuilder<Question> builder)
     {
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
-        builder.Property(x => x.Title).IsRequired();
-        builder.Property(x => x.Body).IsRequired();
+        builder.Property(x => x.Title).IsRequired().HasMaxLength(BusinessRules.TitleMaxLength);
+        builder.Property(x => x.Body).IsRequired().HasMaxLength(BusinessRules.BodyMaxLength);
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.LastModifiedAt);
         builder.Property(x => x.UserId).IsRequired();

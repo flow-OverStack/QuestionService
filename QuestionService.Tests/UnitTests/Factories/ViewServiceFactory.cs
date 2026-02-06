@@ -1,6 +1,5 @@
-using Microsoft.Extensions.Options;
 using QuestionService.Application.Services;
-using QuestionService.Application.Settings;
+using QuestionService.Application.Validators;
 using QuestionService.Cache.Providers;
 using QuestionService.Cache.Repositories;
 using QuestionService.Domain.Dtos.ExternalEntity;
@@ -9,7 +8,6 @@ using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
-using QuestionService.Domain.Settings;
 using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Configurations;
 using StackExchange.Redis;
@@ -24,10 +22,6 @@ internal class ViewServiceFactory
     public readonly IViewCacheSyncRepository CacheRepository =
         new ViewCacheSyncRepository(new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()));
 
-    public readonly ContentRules ContentRules = BusinessRulesConfiguration.GetBusinessRules();
-
-    public readonly EntityRules EntityRules = EntityRulesConfiguration.GetEntityRules();
-
     public readonly IBaseRepository<Question> QuestionRepository =
         MockRepositoriesGetters.GetMockQuestionRepository().Object;
 
@@ -39,7 +33,7 @@ internal class ViewServiceFactory
         if (redisDatabase != null) CacheRepository = new ViewCacheSyncRepository(new RedisCacheProvider(redisDatabase));
 
         var service = new ViewService(CacheRepository, QuestionRepository, ViewRepository, UserProvider,
-            Options.Create(ContentRules), Options.Create(EntityRules));
+            new ViewValidator());
 
         _viewService = service;
         _viewDatabaseService = service;

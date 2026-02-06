@@ -9,14 +9,14 @@ namespace QuestionService.Application.Validators;
 
 public class CursorPageDtoValidator : AbstractValidator<CursorPageDto>, INullSafeValidator<CursorPageDto>
 {
-    public CursorPageDtoValidator(IOptions<ContentRules> contentRules)
+    public CursorPageDtoValidator(IOptions<PaginationRules> pagination)
     {
         RuleFor(x => x.First)
-            .InclusiveBetween(0, contentRules.Value.MaxPageSize)
+            .InclusiveBetween(0, pagination.Value.MaxPageSize)
             .When(x => x.First.HasValue);
 
         RuleFor(x => x.Last)
-            .InclusiveBetween(0, contentRules.Value.MaxPageSize)
+            .InclusiveBetween(0, pagination.Value.MaxPageSize)
             .When(x => x.Last.HasValue);
 
         RuleFor(x => x.After)
@@ -59,7 +59,7 @@ public class CursorPageDtoValidator : AbstractValidator<CursorPageDto>, INullSaf
 
         var result = Validate(instance);
 
-        errorMessages = result.Errors.Select(x => x.ErrorMessage);
+        errorMessages = result.Errors.Select(x => x.ErrorMessage).Distinct();
 
         return result.IsValid;
     }

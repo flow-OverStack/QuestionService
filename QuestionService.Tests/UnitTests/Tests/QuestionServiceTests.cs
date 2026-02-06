@@ -28,7 +28,7 @@ public class QuestionServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AskQuestion_ShouldBe_LengthOutOfRange()
+    public async Task AskQuestion_ShouldBe_InvalidTags()
     {
         //Arrange
         var questionService = new QuestionServiceFactory().GetService();
@@ -40,7 +40,7 @@ public class QuestionServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.LengthOutOfRange, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidTags, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -104,14 +104,14 @@ public class QuestionServiceTests
         //Arrange
         var questionService = new QuestionServiceFactory().GetService();
         const long initiatorId = 1;
-        var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", []);
+        var dto = new EditQuestionDto(1, string.Empty, "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
         //Act
         var result = await questionService.EditQuestionAsync(initiatorId, dto);
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.LengthOutOfRange, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidTitle, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 

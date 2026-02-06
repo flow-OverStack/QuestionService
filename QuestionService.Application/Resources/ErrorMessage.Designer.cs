@@ -69,6 +69,15 @@ namespace QuestionService.Application.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Question body is invalid.
+        /// </summary>
+        public static string InvalidBody {
+            get {
+                return ResourceManager.GetString("InvalidBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Received from cache data is of invalid format.
         /// </summary>
         public static string InvalidCacheDataFormat {
@@ -96,11 +105,38 @@ namespace QuestionService.Application.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Length out of range.
+        ///   Looks up a localized string similar to Tag description is invalid.
         /// </summary>
-        public static string LengthOutOfRange {
+        public static string InvalidTagDescription {
             get {
-                return ResourceManager.GetString("LengthOutOfRange", resourceCulture);
+                return ResourceManager.GetString("InvalidTagDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tag name is invalid.
+        /// </summary>
+        public static string InvalidTagName {
+            get {
+                return ResourceManager.GetString("InvalidTagName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question tags are invalid.
+        /// </summary>
+        public static string InvalidTags {
+            get {
+                return ResourceManager.GetString("InvalidTags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question title is invalid.
+        /// </summary>
+        public static string InvalidTitle {
+            get {
+                return ResourceManager.GetString("InvalidTitle", resourceCulture);
             }
         }
         

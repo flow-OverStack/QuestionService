@@ -1,17 +1,22 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using QuestionService.Domain.Entities;
+using QuestionService.Domain.Settings;
 
 namespace QuestionService.DAL.Configurations;
 
 public class ViewConfiguration : IEntityTypeConfiguration<View>
 {
+    private const int IPv6MaxLength = 39;
+
     public void Configure(EntityTypeBuilder<View> builder)
     {
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
         builder.Property(x => x.QuestionId).IsRequired();
         builder.Property(x => x.UserId).IsRequired(false);
-        builder.Property(x => x.UserIp).HasMaxLength(40).IsRequired(false); //IPv6 max length is 39 (rounded to 40)
+        builder.Property(x => x.UserIp).HasMaxLength(IPv6MaxLength).IsFixedLength().IsRequired(false);
+        builder.Property(x => x.UserFingerprint).IsRequired(false)
+            .HasMaxLength(EntityConstraints.UserFingerprintLength);
         builder.HasQueryFilter(x => x.Question.Enabled);
 
         builder.ToTable(t => t.HasCheckConstraint("CK_View_UserId_Or_UserIpAndFingerprint", """

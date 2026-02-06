@@ -33,9 +33,6 @@
     <data name="ValueConnotBeNullOrEmpty" xml:space="preserve">
         <value>Value cannot be null or empty</value>
     </data>
-    <data name="LengthOutOfRange" xml:space="preserve">
-        <value>Length out of range</value>
-    </data>
     <data name="TooLowReputation" xml:space="preserve">
         <value>Too low reputation</value>
     </data>
@@ -83,5 +80,20 @@
     </data>
     <data name="VoteTypesNotFound" xml:space="preserve">
         <value>Vote types not found</value>
+    </data>
+    <data name="InvalidTitle" xml:space="preserve">
+        <value>Question title is invalid</value>
+    </data>
+    <data name="InvalidBody" xml:space="preserve">
+        <value>Question body is invalid</value>
+    </data>
+    <data name="InvalidTags" xml:space="preserve">
+        <value>Question tags are invalid</value>
+    </data>
+    <data name="InvalidTagName" xml:space="preserve">
+        <value>Tag name is invalid</value>
+    </data>
+    <data name="InvalidTagDescription" xml:space="preserve">
+        <value>Tag description is invalid</value>
     </data>
 </root>

@@ -1,28 +1,27 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Tag;
 using QuestionService.Domain.Entities;
-using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Domain.Results;
-using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Services;
 
-public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOptions<EntityRules> entityRules)
-    : ITagService
+public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, ITagValidator tagValidator) : ITagService
 {
-    private readonly EntityRules _entityRules = entityRules.Value;
-
     public async Task<BaseResult<TagDto>> CreateTagAsync(CreateTagDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!IsValidData(dto))
-            return BaseResult<TagDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
+        if (!tagValidator.IsValid(dto.Name, dto.Description, out var errorMessages))
+        {
+            var message = string.Join(", ", errorMessages);
+            return BaseResult<TagDto>.Failure(message, (int)ErrorCodes.InvalidProperty);
+        }
+
 
         var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name, cancellationToken);
         if (tag != null)
@@ -38,8 +37,11 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
 
     public async Task<BaseResult<TagDto>> UpdateTagAsync(TagDto dto, CancellationToken cancellationToken = default)
     {
-        if (!IsValidData(dto))
-            return BaseResult<TagDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
+        if (!tagValidator.IsValid(dto.Name, dto.Description, out var errorMessages))
+        {
+            var message = string.Join(", ", errorMessages);
+            return BaseResult<TagDto>.Failure(message, (int)ErrorCodes.InvalidProperty);
+        }
 
         var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
         if (tag == null)
@@ -64,17 +66,5 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IOpt
         await tagRepository.SaveChangesAsync(cancellationToken);
 
         return BaseResult<TagDto>.Success(mapper.Map<TagDto>(tag));
-    }
-
-    private bool IsValidData(CreateTagDto dto)
-    {
-        return dto.Name.HasMaxLength(_entityRules.TagMaxLength) &&
-               dto.Description.HasMaxLength(_entityRules.TagDescriptionMaxLength);
-    }
-
-    private bool IsValidData(TagDto dto)
-    {
-        return dto.Name.HasMaxLength(_entityRules.TagMaxLength) &&
-               dto.Description.HasMaxLength(_entityRules.TagDescriptionMaxLength);
     }
 }

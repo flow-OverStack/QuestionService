@@ -1,18 +1,16 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
 using QuestionService.Application.Resources;
-using QuestionService.Application.Settings;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.Question;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Enums;
-using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Interfaces.Producer;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Domain.Results;
 
 namespace QuestionService.Application.Services;
@@ -22,18 +20,19 @@ public class QuestionService(
     IBaseRepository<Tag> tagRepository,
     IBaseRepository<VoteType> voteTypeRepository,
     IEntityProvider<UserDto> userProvider,
-    IOptions<ContentRules> contentRules,
     IMapper mapper,
-    IBaseEventProducer producer)
+    IBaseEventProducer producer,
+    IQuestionValidator questionValidator)
     : IQuestionService
 {
-    private readonly ContentRules _contentRules = contentRules.Value;
-
     public async Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!IsLengthValid(dto))
-            return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
+        if (!questionValidator.IsValid(dto.Title, dto.Body, dto.TagNames, out var messages))
+        {
+            var message = string.Join(", ", messages);
+            return BaseResult<QuestionDto>.Failure(message, (int)ErrorCodes.InvalidProperty);
+        }
 
         var user = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         if (user == null)
@@ -70,8 +69,11 @@ public class QuestionService(
     public async Task<BaseResult<QuestionDto>> EditQuestionAsync(long initiatorId, EditQuestionDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!IsLengthValid(dto))
-            return BaseResult<QuestionDto>.Failure(ErrorMessage.LengthOutOfRange, (int)ErrorCodes.LengthOutOfRange);
+        if (!questionValidator.IsValid(dto.Title, dto.Body, dto.TagNames, out var messages))
+        {
+            var message = string.Join(", ", messages);
+            return BaseResult<QuestionDto>.Failure(message, (int)ErrorCodes.InvalidProperty);
+        }
 
         var initiator = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         if (initiator == null)
@@ -326,19 +328,5 @@ public class QuestionService(
         return initiator.Roles.Select(x => x.Name).Contains(nameof(Roles.Admin))
                || initiator.Roles.Select(x => x.Name).Contains(nameof(Roles.Moderator))
                || toQuestion.UserId == initiator.Id;
-    }
-
-    private bool IsLengthValid(EditQuestionDto dto)
-    {
-        return dto.Title.HasMinLength(_contentRules.TitleMinLength)
-               && dto.Body.HasMinLength(_contentRules.BodyMinLength)
-               && dto.TagNames.Any();
-    }
-
-    private bool IsLengthValid(AskQuestionDto dto)
-    {
-        return dto.Title.HasMinLength(_contentRules.TitleMinLength)
-               && dto.Body.HasMinLength(_contentRules.BodyMinLength)
-               && dto.TagNames.Any();
     }
 }

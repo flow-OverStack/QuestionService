@@ -9,7 +9,6 @@ using QuestionService.BackgroundJobs.DependencyInjection;
 using QuestionService.Cache.DependencyInjection;
 using QuestionService.Cache.Settings;
 using QuestionService.DAL.DependencyInjection;
-using QuestionService.Domain.Settings;
 using QuestionService.GraphQl.DependencyInjection;
 using QuestionService.GrpcClient.DependencyInjection;
 using QuestionService.GrpcClient.Settings;
@@ -23,8 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<KeycloakSettings>(builder.Configuration.GetSection(nameof(KeycloakSettings)));
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection(nameof(RedisSettings)));
-builder.Services.Configure<ContentRules>(builder.Configuration.GetSection(nameof(ContentRules)));
-builder.Services.Configure<EntityRules>(builder.Configuration.GetSection(nameof(EntityRules)));
+builder.Services.Configure<PaginationRules>(builder.Configuration.GetSection(nameof(PaginationRules)));
 builder.Services.Configure<GrpcHosts>(builder.Configuration.GetSection(nameof(GrpcHosts)));
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);

@@ -1,20 +1,16 @@
-using System.Net;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using QuestionService.Application.Enum;
-using QuestionService.Application.Resources;
-using QuestionService.Application.Settings;
 using QuestionService.Domain.Comparers;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.View;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Extensions;
-using QuestionService.Domain.Helpers;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Domain.Results;
 using QuestionService.Domain.Settings;
 
@@ -25,13 +21,9 @@ public class ViewService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<View> viewRepository,
     IEntityProvider<UserDto> userProvider,
-    IOptions<ContentRules> contentRules,
-    IOptions<EntityRules> entityRules)
+    IViewValidator validator)
     : IViewService, IViewDatabaseService
 {
-    private readonly ContentRules _contentRules = contentRules.Value;
-    private readonly EntityRules _entityRules = entityRules.Value;
-
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
         CancellationToken cancellationToken = default)
     {
@@ -39,7 +31,7 @@ public class ViewService(
 
         var spamFilteredViews = views.FilterByMaxValueOccurrences(
             view => (view.UserId?.ToString() ?? view.UserIp)!,
-            _contentRules.UserViewSpamThreshold).ToArray();
+            BusinessRules.UserViewSpamThreshold).ToArray();
 
         if (spamFilteredViews.Length == 0) return BaseResult<SyncedViewsDto>.Success(new SyncedViewsDto(0));
 
@@ -82,9 +74,11 @@ public class ViewService(
     public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!IsValidData(dto))
-            return BaseResult.Failure(ErrorMessage.InvalidDataFormat,
-                (int)ErrorCodes.InvalidDataFormat);
+        if (!validator.IsValid(dto.UserIp, dto.UserFingerprint, out var messages))
+        {
+            var message = string.Join("; ", messages);
+            return BaseResult.Failure(message, (int)ErrorCodes.InvalidDataFormat);
+        }
 
         // We do not check user and question existence
         // because that may increase the request processing time
@@ -93,12 +87,5 @@ public class ViewService(
         await cacheRepository.AddViewAsync(dto, cancellationToken);
 
         return BaseResult.Success();
-    }
-
-    private bool IsValidData(IncrementViewsDto dto)
-    {
-        return !StringHelper.AnyNullOrWhiteSpace(dto.UserIp, dto.UserFingerprint)
-               && dto.UserFingerprint.HasMaxLength(_entityRules.UserFingerprintLength)
-               && IPAddress.TryParse(dto.UserIp, out _);
     }
 }

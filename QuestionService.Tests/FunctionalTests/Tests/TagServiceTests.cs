@@ -58,7 +58,7 @@ public class TagServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(ErrorMessage.LengthOutOfRange, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidTagName, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
