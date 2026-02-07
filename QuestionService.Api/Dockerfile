@@ -11,12 +11,13 @@ COPY ["QuestionService.Api/QuestionService.Api.csproj", "QuestionService.Api/"]
 COPY ["QuestionService.Application/QuestionService.Application.csproj", "QuestionService.Application/"]
 COPY ["QuestionService.Domain/QuestionService.Domain.csproj", "QuestionService.Domain/"]
 COPY ["QuestionService.BackgroundJobs/QuestionService.BackgroundJobs.csproj", "QuestionService.BackgroundJobs/"]
-COPY ["QuestionService.DAL/QuestionService.DAL.csproj", "QuestionService.DAL/"]
 COPY ["QuestionService.Outbox/QuestionService.Outbox.csproj", "QuestionService.Outbox/"]
+COPY ["QuestionService.DAL/QuestionService.DAL.csproj", "QuestionService.DAL/"]
 COPY ["QuestionService.GraphQl/QuestionService.GraphQl.csproj", "QuestionService.GraphQl/"]
-COPY ["QuestionService.Grpc/QuestionService.Grpc.csproj", "QuestionService.Grpc/"]
 COPY ["QuestionService.Messaging/QuestionService.Messaging.csproj", "QuestionService.Messaging/"]
 COPY ["QuestionService.Cache/QuestionService.Cache.csproj", "QuestionService.Cache/"]
+COPY ["QuestionService.GrpcClient/QuestionService.GrpcClient.csproj", "QuestionService.GrpcClient/"]
+COPY ["QuestionService.GrpcServer/QuestionService.GrpcServer.csproj", "QuestionService.GrpcServer/"]
 RUN dotnet restore "QuestionService.Api/QuestionService.Api.csproj"
 COPY . .
 WORKDIR "/src/QuestionService.Api"
