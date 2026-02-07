@@ -47,6 +47,7 @@ builder.Services.AddApplication();
 
 builder.AddOpenTelemetry();
 builder.Services.AddHealthChecks(builder.Configuration);
+builder.WebHost.ConfigurePorts(builder.Configuration);
 builder.Services.AddCors(builder.Configuration, builder.Environment);
 
 var app = builder.Build();

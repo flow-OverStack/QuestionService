@@ -11,6 +11,7 @@ using MassTransit.Monitoring;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -32,6 +33,7 @@ namespace QuestionService.Api;
 public static class Startup
 {
     private const string AppStartupSectionName = "AppStartupSettings";
+    private const string AppPortsSectionName = "Ports";
     private const string TelemetrySectionName = "TelemetrySettings";
     private const string AspireDashboardUrlName = "AspireDashboardUrl";
     private const string JaegerUrlName = "JaegerUrl";
@@ -42,6 +44,9 @@ public static class Startup
     private const string UserServiceHealthCheckUrlName = "UserServiceHealthCheckUrl";
     private const string ElasticSearchUrlName = "ElasticSearchUrl";
     private const string AppStartupUrlLogName = "AppStartupUrlLog";
+    private const string GrpcPortName = "GrpcPort";
+    private const string RestApiPortName = "RestApiPort";
+    private const string UseHttpsForRestApiName = "UseHttpsForRestApi";
     private const string ServiceName = "QuestionService";
 
     /// <summary>
@@ -158,6 +163,34 @@ public static class Startup
                 app.Configuration.GetSection(AppStartupSectionName).GetValue<string>(AppStartupUrlLogName);
 
             hosts.ForEach(host => Log.Information("{0}{1}", appStartupHostLog, host));
+        });
+    }
+
+    /// <summary>
+    ///     Configures Kestrel server to listen on specific ports for gRPC and REST API endpoints.
+    ///     Reads port configuration from application settings and sets up appropriate protocols and HTTPS settings.
+    /// </summary>
+    /// <param name="hostBuilder">The web host builder to configure.</param>
+    /// <param name="configuration">The configuration containing port settings.</param>
+    public static void ConfigurePorts(this IWebHostBuilder hostBuilder, IConfiguration configuration)
+    {
+        var grpcPort = configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+            .GetValue<int>(GrpcPortName);
+
+        var apiPort = configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+            .GetValue<int>(RestApiPortName);
+
+        var useHttpsForApi = configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+            .GetValue<bool>(UseHttpsForRestApiName);
+
+        hostBuilder.ConfigureKestrel(opt =>
+        {
+            opt.ListenAnyIP(grpcPort, listenOpt => listenOpt.Protocols = HttpProtocols.Http2);
+            opt.ListenAnyIP(apiPort, listenOpt =>
+            {
+                listenOpt.Protocols = HttpProtocols.Http1AndHttp2;
+                if (useHttpsForApi) listenOpt.UseHttps();
+            });
         });
     }
 
@@ -310,12 +343,12 @@ public static class Startup
                 options.MinimumAvailableServers = 1;
                 options.MaximumJobsFailed = 10; // 10 failed jobs means the server is down
             })
-            .AddUrlGroup(new Uri(prometheusUrl), name: "prometheus")
-            .AddUrlGroup(new Uri(logstashUrl), name: "logstash")
-            .AddUrlGroup(new Uri(keycloakSettings.Host), name: "keycloak")
-            .AddUrlGroup(new Uri(jaegerUrl), name: "jaeger")
-            .AddUrlGroup(new Uri(aspireDashboardUrl), name: "aspire")
-            .AddUrlGroup(new Uri(userServiceHealthCheckUrl), name: "user-service");
+            .AddUrlGroup(new Uri(prometheusUrl), "prometheus")
+            .AddUrlGroup(new Uri(logstashUrl), "logstash")
+            .AddUrlGroup(new Uri(keycloakSettings.Host), "keycloak")
+            .AddUrlGroup(new Uri(jaegerUrl), "jaeger")
+            .AddUrlGroup(new Uri(aspireDashboardUrl), "aspire")
+            .AddUrlGroup(new Uri(userServiceHealthCheckUrl), "user-service");
     }
 
     /// <summary>

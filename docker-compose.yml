@@ -7,12 +7,16 @@
       - logstash
     ports:
       - "8087:8080"
+      - "8088:8081"
     networks:
       - question-service-network
       - flow-overstack_common
     environment:
       ConnectionStrings__PostgresSQL: Server=postgres-db;Port=5432;Database=question-service-db;User Id=postgres; Password=${QUESTION_DB_PASSWORD}
       Serilog__WriteTo__2__Args__requestUri: http://logstash:8080
+      AppStartupSettings__Ports__GrpcPort: 8081
+      AppStartupSettings__Ports__RestApiPort: 8080
+      AppStartupSettings__Ports__UseHttpsForRestApi: false
       GrpcHosts__UsersHost: http://user-service:8081
       KeycloakSettings__Host: http://keycloak:8080
       KafkaSettings__Host: broker:29092
