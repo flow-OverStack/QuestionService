@@ -29,8 +29,8 @@ public class GetVoteServiceTests
         //Arrange
         var dtos = new List<VoteDto>
         {
-            new(1, 1),
-            new(2, 2),
+            new(1, 2),
+            new(2, 3),
             new(0, 0),
         };
         var getVoteService = new CacheGetVoteServiceFactory().GetService();

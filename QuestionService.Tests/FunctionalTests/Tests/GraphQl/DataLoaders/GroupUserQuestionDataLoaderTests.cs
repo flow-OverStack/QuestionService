@@ -21,7 +21,7 @@ public class GroupUserQuestionDataLoaderTests(FunctionalTestWebAppFactory factor
         var result = await dataLoader.LoadRequiredAsync(userId);
 
         //Assert
-        Assert.Equal(2, result.Length); // User with id 1 has 2 questions
+        Assert.Single(result); // User with id 1 has 1 question
     }
 
     [Trait("Category", "Functional")]

@@ -10,6 +10,7 @@ public enum ErrorCodes
     //Tags: 51-60
     //Views: 61-70
     //Vote: 71-80
+    //VoteType: 81-90
 
     InvalidProperty = 1,
     InvalidDataFormat = 2,

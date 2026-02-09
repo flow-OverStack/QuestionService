@@ -21,7 +21,7 @@ public class GroupVoteDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
         var result = await dataLoader.LoadRequiredAsync(questionId);
 
         //Assert
-        Assert.Equal(3, result.Length); // Question with id 2 has 3 votes
+        Assert.Equal(2, result.Length); // Question with id 2 has 2 votes
     }
 
     [Trait("Category", "Functional")]
