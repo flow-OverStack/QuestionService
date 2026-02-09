@@ -50,7 +50,12 @@ public class BaseController : ControllerBase
         // Votes
         { (int)ErrorCodes.VoteAlreadyGiven, StatusCodes.Status409Conflict },
         { (int)ErrorCodes.VoteNotFound, StatusCodes.Status404NotFound },
-        { (int)ErrorCodes.VotesNotFound, StatusCodes.Status404NotFound }
+        { (int)ErrorCodes.VotesNotFound, StatusCodes.Status404NotFound },
+        { (int)ErrorCodes.CannotVoteForOwnPost, StatusCodes.Status403Forbidden },
+
+        // Vote Types
+        { (int)ErrorCodes.VoteTypeNotFound, StatusCodes.Status404NotFound },
+        { (int)ErrorCodes.VoteTypesNotFound, StatusCodes.Status404NotFound }
     };
 
     /// <summary>
