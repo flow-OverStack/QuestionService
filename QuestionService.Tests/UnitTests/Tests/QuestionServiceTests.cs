@@ -264,7 +264,7 @@ public class QuestionServiceTests
     {
         //Arrange
         var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
+        const long initiatorId = 2;
         const long questionId = 1;
 
         //Act
@@ -330,12 +330,30 @@ public class QuestionServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task UpvoteQuestion_ShouldBe_CannotVoteForOwnPost()
+    {
+        //Arrange
+        var questionService = new QuestionServiceFactory().GetService();
+        const long initiatorId = 1;
+        const long questionId = 1;
+
+        //Act
+        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.CannotVoteForOwnPost, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task UpvoteQuestion_ShouldBe_VoteTypeNotFound()
     {
         //Arrange
         var questionService =
             new QuestionServiceFactory(MockRepositoriesGetters.GetEmptyMockRepository<VoteType>().Object).GetService();
-        const long initiatorId = 1;
+        const long initiatorId = 2;
         const long questionId = 1;
 
         //Act
@@ -390,7 +408,7 @@ public class QuestionServiceTests
         //Arrange
         var questionService = new QuestionServiceFactory().GetService();
         const long initiatorId = 1;
-        const long questionId = 1;
+        const long questionId = 4;
 
         //Act
         var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
@@ -455,6 +473,24 @@ public class QuestionServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task DownvoteQuestion_ShouldBe_CannotVoteForOwnPost()
+    {
+        //Arrange
+        var questionService = new QuestionServiceFactory().GetService();
+        const long initiatorId = 1;
+        const long questionId = 1;
+
+        //Act
+        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.CannotVoteForOwnPost, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task DownvoteQuestion_ShouldBe_TooLowReputation()
     {
         //Arrange
@@ -478,7 +514,7 @@ public class QuestionServiceTests
         //Arrange
         var questionService =
             new QuestionServiceFactory(MockRepositoriesGetters.GetEmptyMockRepository<VoteType>().Object).GetService();
-        const long initiatorId = 1;
+        const long initiatorId = 2;
         const long questionId = 1;
 
         //Act

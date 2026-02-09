@@ -151,7 +151,7 @@ internal static class MockRepositoriesGetters
                 Id = 2,
                 Title = "question2",
                 Body = "questionBody2",
-                UserId = 1,
+                UserId = 2,
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow.AddSeconds(Random.Shared.Next(1, 20)),
                 Tags = [GetTagDotNet(), GetTagJava()],
@@ -205,7 +205,7 @@ internal static class MockRepositoriesGetters
     {
         return new[]
         {
-            GetUpvote(1, 2), GetUpvote(2, 2), GetDownvote(4, 2),
+            GetUpvote(1, 2), GetUpvote(2, 1), GetDownvote(4, 2),
             GetUpvote(2, 3), GetDownvote(1, 3), GetDownvote(4, 3)
         }.AsQueryable();
     }

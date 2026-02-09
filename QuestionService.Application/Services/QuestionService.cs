@@ -164,6 +164,10 @@ public class QuestionService(
         if (question == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
 
+        if (initiator.Id == question.UserId)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.CannotVoteForOwnPost,
+                (int)ErrorCodes.CannotVoteForOwnPost);
+
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 
         var voteType = await voteTypeRepository.GetAll()
@@ -230,6 +234,10 @@ public class QuestionService(
             .FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
         if (question == null)
             return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.QuestionNotFound, (int)ErrorCodes.QuestionNotFound);
+
+        if (initiator.Id == question.UserId)
+            return BaseResult<VoteQuestionDto>.Failure(ErrorMessage.CannotVoteForOwnPost,
+                (int)ErrorCodes.CannotVoteForOwnPost);
 
         var vote = question.Votes.FirstOrDefault(x => x.UserId == initiator.Id);
 

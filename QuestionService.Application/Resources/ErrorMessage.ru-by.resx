@@ -96,4 +96,7 @@
     <data name="InvalidTagDescription" xml:space="preserve">
         <value>Неверное описание тэга</value>
     </data>
+    <data name="CannotVoteForOwnPost" xml:space="preserve">
+        <value>Невозможно проголосовать за собственный пост</value>
+    </data>
 </root>

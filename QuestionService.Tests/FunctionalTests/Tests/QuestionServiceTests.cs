@@ -150,7 +150,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
     public async Task DownvoteQuestion_ShouldBe_Ok()
     {
         //Arrange
-        const long questionId = 1;
+        const long questionId = 2;
 
         //Act
         var response = await HttpClient.PatchAsync($"/api/v1.0/question/{questionId}/downvote", null);
@@ -187,7 +187,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
     public async Task UpvoteQuestion_ShouldBe_Ok()
     {
         //Arrange
-        const long questionId = 1;
+        const long questionId = 3;
 
         //Act
         var response = await HttpClient.PatchAsync($"/api/v1.0/question/{questionId}/upvote", null);

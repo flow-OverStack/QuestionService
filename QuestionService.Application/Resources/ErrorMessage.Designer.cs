@@ -60,6 +60,15 @@ namespace QuestionService.Application.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Сan&apos;t vote for your own post.
+        /// </summary>
+        public static string CannotVoteForOwnPost {
+            get {
+                return ResourceManager.GetString("CannotVoteForOwnPost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal server error.
         /// </summary>
         public static string InternalServerError {

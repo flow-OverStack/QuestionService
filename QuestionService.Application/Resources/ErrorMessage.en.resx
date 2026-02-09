@@ -96,4 +96,7 @@
     <data name="InvalidTagDescription" xml:space="preserve">
         <value>Tag description is invalid</value>
     </data>
+    <data name="CannotVoteForOwnPost" xml:space="preserve">
+        <value>Сan't vote for your own post</value>
+    </data>
 </root>

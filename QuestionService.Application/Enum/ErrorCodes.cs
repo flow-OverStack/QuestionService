@@ -32,5 +32,6 @@ public enum ErrorCodes
     VoteNotFound = 72,
     VotesNotFound = 73,
     VoteTypeNotFound = 74,
-    VoteTypesNotFound = 75
+    VoteTypesNotFound = 75,
+    CannotVoteForOwnPost = 76
 }
