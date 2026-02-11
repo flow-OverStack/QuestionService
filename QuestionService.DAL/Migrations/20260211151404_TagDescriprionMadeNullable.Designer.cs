@@ -12,8 +12,8 @@ using QuestionService.DAL;
 namespace QuestionService.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260206181604_ConstraintsUpdated")]
-    partial class ConstraintsUpdated
+    [Migration("20260211151404_TagDescriprionMadeNullable")]
+    partial class TagDescriprionMadeNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,7 +87,6 @@ namespace QuestionService.DAL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(400)
                         .HasColumnType("character varying(400)");
 
@@ -117,7 +116,8 @@ namespace QuestionService.DAL.Migrations
 
                     b.Property<string>("UserFingerprint")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character(64)")
+                        .IsFixedLength();
 
                     b.Property<long?>("UserId")
                         .HasColumnType("bigint");

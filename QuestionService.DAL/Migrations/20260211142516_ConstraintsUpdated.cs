@@ -10,13 +10,6 @@ namespace QuestionService.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("""
-                                CREATE EXTENSION IF NOT EXISTS pgcrypto;
-                                UPDATE public."View"
-                                SET "UserIp" = encode(digest("UserIp", 'sha256'), 'hex')
-                                WHERE "UserIp" IS NOT NULL AND length("UserIp") <> 39;
-                                """);
-            
             migrationBuilder.AlterColumn<string>(
                 name: "UserIp",
                 table: "View",
@@ -29,13 +22,31 @@ namespace QuestionService.DAL.Migrations
                 oldMaxLength: 40,
                 oldNullable: true);
 
-            // 2. Title: обрезаем до 150 символов, если длиннее
             migrationBuilder.Sql("""
-                                UPDATE public."Question"
-                                SET "Title" = LEFT("Title", 150)
-                                WHERE "Title" IS NOT NULL AND length("Title") > 150;
-                                """);
+                                 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+                                 UPDATE public."View"
+                                 SET "UserFingerprint" = encode(digest("UserFingerprint", 'sha256'), 'hex')
+                                 WHERE "UserFingerprint" IS NOT NULL AND length("UserFingerprint") <> 64;
+                                 """);
+            
+            migrationBuilder.AlterColumn<string>(
+                name: "UserFingerprint",
+                table: "View",
+                type: "character(64)",
+                fixedLength: true,
+                maxLength: 64,
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "character varying(64)",
+                oldMaxLength: 64,
+                oldNullable: true);
 
+            migrationBuilder.Sql("""
+                                 UPDATE public."Question"
+                                 SET "Title" = LEFT("Title", 150)
+                                 WHERE "Title" IS NOT NULL AND length("Title") > 150;
+                                 """);
+            
             migrationBuilder.AlterColumn<string>(
                 name: "Title",
                 table: "Question",
@@ -45,13 +56,12 @@ namespace QuestionService.DAL.Migrations
                 oldClrType: typeof(string),
                 oldType: "text");
 
-
             migrationBuilder.Sql("""
                                     UPDATE public."Question"
                                     SET "Body" = LEFT("Body", 30000)
                                     WHERE "Body" IS NOT NULL AND length("Body") > 30000;
                                  """);
-
+            
             migrationBuilder.AlterColumn<string>(
                 name: "Body",
                 table: "Question",
@@ -61,7 +71,6 @@ namespace QuestionService.DAL.Migrations
                 oldClrType: typeof(string),
                 oldType: "text");
         }
-
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -76,6 +85,18 @@ namespace QuestionService.DAL.Migrations
                 oldType: "character(39)",
                 oldFixedLength: true,
                 oldMaxLength: 39,
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "UserFingerprint",
+                table: "View",
+                type: "character varying(64)",
+                maxLength: 64,
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "character(64)",
+                oldFixedLength: true,
+                oldMaxLength: 64,
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(

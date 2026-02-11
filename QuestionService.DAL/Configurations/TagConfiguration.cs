@@ -11,7 +11,7 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
     {
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
         builder.Property(x => x.Name).IsRequired().HasMaxLength(BusinessRules.TagMaxLength);
-        builder.Property(x => x.Description).HasMaxLength(BusinessRules.TagDescriptionMaxLength);
+        builder.Property(x => x.Description).HasMaxLength(BusinessRules.TagDescriptionMaxLength).IsRequired(false);
 
         builder.HasIndex(x => x.Name).IsUnique();
     }

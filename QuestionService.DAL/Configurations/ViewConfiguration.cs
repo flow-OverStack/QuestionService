@@ -15,8 +15,8 @@ public class ViewConfiguration : IEntityTypeConfiguration<View>
         builder.Property(x => x.QuestionId).IsRequired();
         builder.Property(x => x.UserId).IsRequired(false);
         builder.Property(x => x.UserIp).HasMaxLength(IPv6MaxLength).IsFixedLength().IsRequired(false);
-        builder.Property(x => x.UserFingerprint).IsRequired(false)
-            .HasMaxLength(EntityConstraints.UserFingerprintLength);
+        builder.Property(x => x.UserFingerprint).IsRequired(false).HasMaxLength(EntityConstraints.UserFingerprintLength)
+            .IsFixedLength();
         builder.HasQueryFilter(x => x.Question.Enabled);
 
         builder.ToTable(t => t.HasCheckConstraint("CK_View_UserId_Or_UserIpAndFingerprint", """
