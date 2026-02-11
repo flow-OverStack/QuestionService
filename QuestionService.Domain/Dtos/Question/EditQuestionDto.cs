@@ -1,3 +1,5 @@
+using QuestionService.Domain.Interfaces.Validation;
+
 namespace QuestionService.Domain.Dtos.Question;
 
-public record EditQuestionDto(long Id, string Title, string Body, IEnumerable<string> TagNames);
+public record EditQuestionDto(long Id, string Title, string Body, IEnumerable<string> TagNames) : IValidatableQuestion;

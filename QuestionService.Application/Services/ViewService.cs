@@ -1,3 +1,4 @@
+using FluentValidation;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Application.Enum;
@@ -21,7 +22,7 @@ public class ViewService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<View> viewRepository,
     IEntityProvider<UserDto> userProvider,
-    IViewValidator validator)
+    IValidator<IValidatableView> validator)
     : IViewService, IViewDatabaseService
 {
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
@@ -74,9 +75,10 @@ public class ViewService(
     public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!validator.IsValid(dto.UserIp, dto.UserFingerprint, out var messages))
+        var validation = await validator.ValidateAsync(dto, cancellationToken);
+        if (!validation.IsValid)
         {
-            var message = string.Join("; ", messages);
+            var message = string.Join("; ", validation.Errors);
             return BaseResult.Failure(message, (int)ErrorCodes.InvalidDataFormat);
         }
 

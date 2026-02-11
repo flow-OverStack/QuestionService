@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using QuestionService.Application.Mappings;
 using QuestionService.Application.Services;
@@ -13,6 +14,7 @@ public static class DependencyInjection
 {
     public static void AddApplication(this IServiceCollection services)
     {
+        ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
         services.AddAutoMapper(typeof(QuestionMapping));
         services.InitServices();
     }
@@ -34,10 +36,10 @@ public static class DependencyInjection
         services.AddScoped<GetViewService>();
         services.AddScoped<IGetViewService, CacheGetViewService>();
 
-        services.AddScoped<INullSafeValidator<OffsetPageDto>, OffsetPageDtoValidator>();
-        services.AddScoped<INullSafeValidator<CursorPageDto>, CursorPageDtoValidator>();
-        services.AddScoped<IQuestionValidator, QuestionValidator>();
-        services.AddScoped<ITagValidator, TagValidator>();
-        services.AddScoped<IViewValidator, ViewValidator>();
+        services.AddScoped<IValidator<OffsetPageDto>, OffsetPageDtoValidator>();
+        services.AddScoped<IValidator<CursorPageDto>, CursorPageDtoValidator>();
+        services.AddScoped<IValidator<IValidatableQuestion>, QuestionValidator>();
+        services.AddScoped<IValidator<IValidatableTag>, TagValidator>();
+        services.AddScoped<IValidator<IValidatableView>, ViewValidator>();
     }
 }

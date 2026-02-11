@@ -34,7 +34,7 @@ internal class QuestionServiceFactory
             VoteTypeRepository = voteTypeRepository;
 
         _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, VoteTypeRepository,
-            UserProvider, Mapper, EventProducer, new QuestionValidator(new TagValidator()));
+            UserProvider, Mapper, EventProducer, new QuestionValidator());
     }
 
     public IQuestionService GetService()

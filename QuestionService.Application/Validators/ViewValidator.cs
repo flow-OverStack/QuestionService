@@ -6,7 +6,7 @@ using QuestionService.Domain.Settings;
 
 namespace QuestionService.Application.Validators;
 
-public class ViewValidator : AbstractValidator<(string UserIp, string UserFingerprint)>, IViewValidator
+public class ViewValidator : AbstractValidator<IValidatableView>
 {
     public ViewValidator()
     {
@@ -17,18 +17,5 @@ public class ViewValidator : AbstractValidator<(string UserIp, string UserFinger
         RuleFor(x => x.UserFingerprint)
             .NotEmpty().WithMessage(ErrorMessage.InvalidDataFormat)
             .MaximumLength(EntityConstraints.UserFingerprintLength).WithMessage(ErrorMessage.InvalidDataFormat);
-    }
-
-    public bool IsValid(string userIp, string userFingerprint, out IEnumerable<string> errorMessages)
-    {
-        errorMessages = [];
-
-        var instance = (UserIp: userIp, UserFingerprint: userFingerprint);
-
-        var result = Validate(instance);
-
-        errorMessages = result.Errors.Select(x => x.ErrorMessage).Distinct();
-
-        return result.IsValid;
     }
 }

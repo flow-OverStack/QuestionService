@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Application.Enum;
 using QuestionService.Application.Resources;
@@ -22,17 +23,16 @@ public class QuestionService(
     IEntityProvider<UserDto> userProvider,
     IMapper mapper,
     IBaseEventProducer producer,
-    IQuestionValidator questionValidator)
+    IValidator<IValidatableQuestion> questionValidator)
     : IQuestionService
 {
     public async Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!questionValidator.IsValid(dto.Title, dto.Body, dto.TagNames, out var messages))
-        {
-            var message = string.Join(", ", messages);
-            return BaseResult<QuestionDto>.Failure(message, (int)ErrorCodes.InvalidProperty);
-        }
+        var validation = await ValidateQuestionDto(dto, cancellationToken);
+        if (!validation.isValid)
+            return BaseResult<QuestionDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
+
 
         var user = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         if (user == null)
@@ -69,11 +69,9 @@ public class QuestionService(
     public async Task<BaseResult<QuestionDto>> EditQuestionAsync(long initiatorId, EditQuestionDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!questionValidator.IsValid(dto.Title, dto.Body, dto.TagNames, out var messages))
-        {
-            var message = string.Join(", ", messages);
-            return BaseResult<QuestionDto>.Failure(message, (int)ErrorCodes.InvalidProperty);
-        }
+        var validation = await ValidateQuestionDto(dto, cancellationToken);
+        if (!validation.isValid)
+            return BaseResult<QuestionDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
 
         var initiator = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         if (initiator == null)
@@ -336,5 +334,15 @@ public class QuestionService(
         return initiator.Roles.Select(x => x.Name).Contains(nameof(Roles.Admin))
                || initiator.Roles.Select(x => x.Name).Contains(nameof(Roles.Moderator))
                || toQuestion.UserId == initiator.Id;
+    }
+
+    private async Task<(bool isValid, string errorMessage)> ValidateQuestionDto(IValidatableQuestion question,
+        CancellationToken cancellationToken = default)
+    {
+        var validation = await questionValidator.ValidateAsync(question, cancellationToken);
+        if (validation.IsValid) return (true, string.Empty);
+
+        var errorMessage = string.Join(", ", validation.Errors);
+        return (false, errorMessage);
     }
 }
