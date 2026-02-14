@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
 using QuestionService.Cache.Interfaces;
 using QuestionService.Cache.Repositories.Base;
@@ -7,17 +6,14 @@ using QuestionService.Cache.Settings;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository.Cache;
-using QuestionService.Domain.Interfaces.Service;
 
 namespace QuestionService.Cache.Repositories;
 
 public class VoteTypeCacheRepository : IVoteTypeCacheRepository
 {
     private readonly IBaseCacheRepository<VoteType, long> _repository;
-    private readonly IGetVoteTypeService _voteTypeInner;
 
-    public VoteTypeCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings,
-        GetVoteTypeService voteTypeInner)
+    public VoteTypeCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
     {
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<VoteType, long>(
@@ -26,16 +22,13 @@ public class VoteTypeCacheRepository : IVoteTypeCacheRepository
             settings.TimeToLiveInSeconds,
             settings.NullTimeToLiveInSeconds
         );
-        _voteTypeInner = voteTypeInner;
     }
 
     public Task<IEnumerable<VoteType>> GetByIdsAsync(IEnumerable<long> ids,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<VoteType>>> fetch,
         CancellationToken cancellationToken = default)
     {
-        return _repository.GetByIdsOrFetchAndCacheAsync(
-            ids,
-            async (idsToFetch, ct) => (await _voteTypeInner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
-            cancellationToken);
+        return _repository.GetByIdsOrFetchAndCacheAsync(ids, fetch, cancellationToken);
     }
 
     private sealed class CacheVoteTypeMapping : ICacheEntityMapping<VoteType, long>

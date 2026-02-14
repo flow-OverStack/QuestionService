@@ -4,7 +4,6 @@ using QuestionService.Cache.Providers;
 using QuestionService.Cache.Repositories;
 using QuestionService.Cache.Settings;
 using QuestionService.Domain.Interfaces.Provider;
-using QuestionService.Domain.Interfaces.Repository.Cache;
 using StackExchange.Redis;
 
 namespace QuestionService.Cache.DependencyInjection;
@@ -42,12 +41,10 @@ public static class DependencyInjection
 
     private static void InitRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IQuestionCacheRepository, QuestionCacheRepository>();
-        services.AddScoped<ITagCacheRepository, TagCacheRepository>();
-        services.AddScoped<IViewCacheRepository, ViewCacheRepository>();
-        services.AddScoped<IVoteCacheRepository, VoteCacheRepository>();
-        services.AddScoped<IVoteTypeCacheRepository, VoteTypeCacheRepository>();
-
-        services.AddScoped<IViewCacheSyncRepository, ViewCacheSyncRepository>();
+        services.Scan(scan => scan
+            .FromAssemblyOf<QuestionCacheRepository>()
+            .AddClasses(c => c.InExactNamespaceOf<QuestionCacheRepository>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
     }
 }

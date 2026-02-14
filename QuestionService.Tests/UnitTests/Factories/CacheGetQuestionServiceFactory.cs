@@ -20,8 +20,7 @@ internal class CacheGetQuestionServiceFactory
     public readonly IQuestionCacheRepository QuestionCacheRepository =
         new QuestionCacheRepository(
             new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
-            (GetQuestionService)new GetQuestionServiceFactory().GetService());
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
 
     public readonly RedisSettings RedisSettings = RedisSettingsConfiguration.GetRedisSettingsConfiguration();
 

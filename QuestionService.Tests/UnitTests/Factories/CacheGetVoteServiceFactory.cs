@@ -19,8 +19,7 @@ internal class CacheGetVoteServiceFactory
     public readonly IVoteCacheRepository VoteCacheRepository =
         new VoteCacheRepository(
             new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
-            (GetVoteService)new GetVoteServiceFactory().GetService());
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
 
     public CacheGetVoteServiceFactory()
     {

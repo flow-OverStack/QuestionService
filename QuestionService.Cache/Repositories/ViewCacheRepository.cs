@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
 using QuestionService.Cache.Interfaces;
 using QuestionService.Cache.Repositories.Base;
@@ -7,17 +6,14 @@ using QuestionService.Cache.Settings;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository.Cache;
-using QuestionService.Domain.Interfaces.Service;
 
 namespace QuestionService.Cache.Repositories;
 
 public class ViewCacheRepository : IViewCacheRepository
 {
     private readonly IBaseCacheRepository<View, long> _repository;
-    private readonly IGetViewService _viewInner;
 
-    public ViewCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings,
-        GetViewService viewInner)
+    public ViewCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
     {
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<View, long>(
@@ -26,18 +22,17 @@ public class ViewCacheRepository : IViewCacheRepository
             settings.TimeToLiveInSeconds,
             settings.NullTimeToLiveInSeconds
         );
-        _viewInner = viewInner;
     }
 
-    public Task<IEnumerable<View>> GetByIdsAsync(IEnumerable<long> ids, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<View>> GetByIdsAsync(IEnumerable<long> ids,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<View>>> fetch,
+        CancellationToken cancellationToken = default)
     {
-        return _repository.GetByIdsOrFetchAndCacheAsync(
-            ids,
-            async (idsToFetch, ct) => (await _viewInner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
-            cancellationToken);
+        return _repository.GetByIdsOrFetchAndCacheAsync(ids, fetch, cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(IEnumerable<long> userIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<View>>>>> fetch,
         CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
@@ -45,19 +40,21 @@ public class ViewCacheRepository : IViewCacheRepository
             CacheKeyHelper.GetUserViewsKey, // Key is the same because we don't cache users
             CacheKeyHelper.GetUserViewsKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _viewInner.GetUsersViewsAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
-        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
+        IEnumerable<long> questionIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<View>>>>> fetch,
+        CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             questionIds,
             CacheKeyHelper.GetQuestionKey,
             CacheKeyHelper.GetQuestionViewsKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _viewInner.GetQuestionsViewsAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 

@@ -7,7 +7,7 @@ using QuestionService.Domain.Results;
 
 namespace QuestionService.Application.Services.Cache;
 
-public class CacheGetQuestionService(IQuestionCacheRepository cacheRepository, GetQuestionService inner)
+public class CacheGetQuestionService(IQuestionCacheRepository cacheRepository, IGetQuestionService inner)
     : IGetQuestionService
 {
     public Task<QueryableResult<Question>> GetAllAsync(CancellationToken cancellationToken = default) =>
@@ -17,7 +17,9 @@ public class CacheGetQuestionService(IQuestionCacheRepository cacheRepository, G
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var questions = (await cacheRepository.GetByIdsAsync(idsArray, cancellationToken)).ToArray();
+        var questions = (await cacheRepository.GetByIdsAsync(idsArray,
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (questions.Length == 0)
             return idsArray.Length switch
@@ -34,7 +36,9 @@ public class CacheGetQuestionService(IQuestionCacheRepository cacheRepository, G
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
         IEnumerable<long> tagIds, CancellationToken cancellationToken = default)
     {
-        var groupedQuestions = (await cacheRepository.GetQuestionsWithTagsAsync(tagIds, cancellationToken)).ToArray();
+        var groupedQuestions = (await cacheRepository.GetQuestionsWithTagsAsync(tagIds,
+            async (idsToFetch, ct) => (await inner.GetQuestionsWithTagsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (groupedQuestions.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,
@@ -46,7 +50,9 @@ public class CacheGetQuestionService(IQuestionCacheRepository cacheRepository, G
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(
         IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
-        var groupedQuestions = (await cacheRepository.GetUsersQuestionsAsync(userIds, cancellationToken)).ToArray();
+        var groupedQuestions = (await cacheRepository.GetUsersQuestionsAsync(userIds,
+            async (idsToFetch, ct) => (await inner.GetUsersQuestionsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (groupedQuestions.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Question>>>.Failure(ErrorMessage.QuestionsNotFound,

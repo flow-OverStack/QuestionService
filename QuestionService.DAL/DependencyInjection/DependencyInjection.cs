@@ -31,13 +31,19 @@ public static class DependencyInjection
 
     private static void InitRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IBaseRepository<Question>, BaseRepository<Question>>();
-        services.AddScoped<IBaseRepository<Tag>, BaseRepository<Tag>>();
-        services.AddScoped<IBaseRepository<QuestionTag>, BaseRepository<QuestionTag>>();
-        services.AddScoped<IBaseRepository<Vote>, BaseRepository<Vote>>();
-        services.AddScoped<IBaseRepository<VoteType>, BaseRepository<VoteType>>();
-        services.AddScoped<IBaseRepository<OutboxMessage>, BaseRepository<OutboxMessage>>();
-        services.AddScoped<IBaseRepository<View>, BaseRepository<View>>();
+        services.AddBaseRepositories(typeof(Question), typeof(Tag), typeof(QuestionTag), typeof(Vote), typeof(VoteType),
+            typeof(OutboxMessage), typeof(View));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+    }
+
+    private static void AddBaseRepositories(this IServiceCollection services, params Type[] entityTypes)
+    {
+        foreach (var entityType in entityTypes)
+        {
+            var interfaceType = typeof(IBaseRepository<>).MakeGenericType(entityType);
+            var implementationType = typeof(BaseRepository<>).MakeGenericType(entityType);
+
+            services.AddScoped(interfaceType, implementationType);
+        }
     }
 }

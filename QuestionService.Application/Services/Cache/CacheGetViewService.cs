@@ -7,7 +7,7 @@ using QuestionService.Domain.Results;
 
 namespace QuestionService.Application.Services.Cache;
 
-public class CacheGetViewService(IViewCacheRepository cacheRepository, GetViewService inner) : IGetViewService
+public class CacheGetViewService(IViewCacheRepository cacheRepository, IGetViewService inner) : IGetViewService
 {
     public Task<QueryableResult<View>> GetAllAsync(CancellationToken cancellationToken = default) =>
         inner.GetAllAsync(cancellationToken);
@@ -16,7 +16,9 @@ public class CacheGetViewService(IViewCacheRepository cacheRepository, GetViewSe
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var views = (await cacheRepository.GetByIdsAsync(idsArray, cancellationToken)).ToArray();
+        var views = (await cacheRepository.GetByIdsAsync(idsArray,
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (views.Length == 0)
             return idsArray.Length switch
@@ -32,7 +34,9 @@ public class CacheGetViewService(IViewCacheRepository cacheRepository, GetViewSe
         IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
-        var groupedViews = (await cacheRepository.GetUsersViewsAsync(userIds, cancellationToken)).ToArray();
+        var groupedViews = (await cacheRepository.GetUsersViewsAsync(userIds,
+            async (idsToFetch, ct) => (await inner.GetUsersViewsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (groupedViews.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,
@@ -44,7 +48,9 @@ public class CacheGetViewService(IViewCacheRepository cacheRepository, GetViewSe
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
         IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
     {
-        var groupedViews = (await cacheRepository.GetQuestionsViewsAsync(questionIds, cancellationToken)).ToArray();
+        var groupedViews = (await cacheRepository.GetQuestionsViewsAsync(questionIds,
+            async (idsToFetch, ct) => (await inner.GetQuestionsViewsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (groupedViews.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<View>>>.Failure(ErrorMessage.ViewsNotFound,

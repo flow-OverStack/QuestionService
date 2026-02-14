@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
 using QuestionService.Cache.Interfaces;
 using QuestionService.Cache.Repositories.Base;
@@ -8,7 +7,6 @@ using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository.Cache;
-using QuestionService.Domain.Interfaces.Service;
 
 namespace QuestionService.Cache.Repositories;
 
@@ -17,10 +15,8 @@ public class VoteCacheRepository : IVoteCacheRepository
     private const string VoteValuePattern = "{0},{1}";
 
     private readonly IBaseCacheRepository<Vote, VoteDto> _repository;
-    private readonly IGetVoteService _voteInner;
 
-    public VoteCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings,
-        GetVoteService voteInner)
+    public VoteCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
     {
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<Vote, VoteDto>(
@@ -29,31 +25,31 @@ public class VoteCacheRepository : IVoteCacheRepository
             settings.TimeToLiveInSeconds,
             settings.NullTimeToLiveInSeconds
         );
-        _voteInner = voteInner;
     }
 
     public Task<IEnumerable<Vote>> GetByDtosAsync(IEnumerable<VoteDto> dtos,
+        Func<IEnumerable<VoteDto>, CancellationToken, Task<IEnumerable<Vote>>> fetch,
         CancellationToken cancellationToken = default)
     {
-        return _repository.GetByIdsOrFetchAndCacheAsync(
-            dtos,
-            async (dtosToFetch, ct) => (await _voteInner.GetByDtosAsync(dtosToFetch, ct)).Data ?? [],
-            cancellationToken);
+        return _repository.GetByIdsOrFetchAndCacheAsync(dtos, fetch, cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
-        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
+        IEnumerable<long> questionIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>>> fetch,
+        CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             questionIds,
             CacheKeyHelper.GetQuestionKey,
             CacheKeyHelper.GetQuestionVotesKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _voteInner.GetQuestionsVotesAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(IEnumerable<long> userIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>>> fetch,
         CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
@@ -61,19 +57,21 @@ public class VoteCacheRepository : IVoteCacheRepository
             CacheKeyHelper.GetUserVotesKey, // Key is the same because we don't cache users
             CacheKeyHelper.GetUserVotesKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _voteInner.GetUsersVotesAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
-        IEnumerable<long> voteTypeIds, CancellationToken cancellationToken = default)
+        IEnumerable<long> voteTypeIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<Vote>>>>> fetch,
+        CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             voteTypeIds,
             CacheKeyHelper.GetVoteTypeKey,
             CacheKeyHelper.GetVoteTypeVotesKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _voteInner.GetVoteTypesVotesAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 

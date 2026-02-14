@@ -7,7 +7,7 @@ using QuestionService.Domain.Results;
 
 namespace QuestionService.Application.Services.Cache;
 
-public class CacheGetVoteTypeService(IVoteTypeCacheRepository cacheRepository, GetVoteTypeService inner)
+public class CacheGetVoteTypeService(IVoteTypeCacheRepository cacheRepository, IGetVoteTypeService inner)
     : IGetVoteTypeService
 {
     public Task<QueryableResult<VoteType>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -19,7 +19,9 @@ public class CacheGetVoteTypeService(IVoteTypeCacheRepository cacheRepository, G
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var voteTypes = (await cacheRepository.GetByIdsAsync(idsArray, cancellationToken)).ToArray();
+        var voteTypes = (await cacheRepository.GetByIdsAsync(idsArray,
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (voteTypes.Length == 0)
             return idsArray.Length switch

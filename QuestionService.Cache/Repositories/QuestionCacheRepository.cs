@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using QuestionService.Application.Services;
 using QuestionService.Cache.Helpers;
 using QuestionService.Cache.Interfaces;
 using QuestionService.Cache.Repositories.Base;
@@ -7,17 +6,14 @@ using QuestionService.Cache.Settings;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository.Cache;
-using QuestionService.Domain.Interfaces.Service;
 
 namespace QuestionService.Cache.Repositories;
 
 public class QuestionCacheRepository : IQuestionCacheRepository
 {
-    private readonly IGetQuestionService _questionInner;
     private readonly IBaseCacheRepository<Question, long> _repository;
 
-    public QuestionCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings,
-        GetQuestionService questionInner)
+    public QuestionCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
     {
         var settings = redisSettings.Value;
         _repository = new BaseCacheRepository<Question, long>(
@@ -26,39 +22,41 @@ public class QuestionCacheRepository : IQuestionCacheRepository
             settings.TimeToLiveInSeconds,
             settings.NullTimeToLiveInSeconds
         );
-        _questionInner = questionInner;
     }
 
     public Task<IEnumerable<Question>> GetByIdsAsync(IEnumerable<long> ids,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<Question>>> fetch,
         CancellationToken cancellationToken = default)
+
     {
-        return _repository.GetByIdsOrFetchAndCacheAsync(
-            ids,
-            async (idsToFetch, ct) => (await _questionInner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
-            cancellationToken);
+        return _repository.GetByIdsOrFetchAndCacheAsync(ids, fetch, cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
-        IEnumerable<long> tagIds, CancellationToken cancellationToken = default)
+        IEnumerable<long> tagIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<Question>>>>> fetch,
+        CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             tagIds,
             CacheKeyHelper.GetTagKey,
             CacheKeyHelper.GetTagQuestionsKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _questionInner.GetQuestionsWithTagsAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(
-        IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+        IEnumerable<long> userIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<Question>>>>> fetch,
+        CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             userIds,
             CacheKeyHelper.GetUserQuestionsKey, // Key is the same because we don't cache users
             CacheKeyHelper.GetUserQuestionsKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _questionInner.GetUsersQuestionsAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 

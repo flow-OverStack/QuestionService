@@ -19,8 +19,7 @@ internal class CacheGetViewServiceFactory
     public readonly IViewCacheRepository ViewCacheRepository =
         new ViewCacheRepository(
             new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
-            (GetViewService)new GetViewServiceFactory().GetService());
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
 
     public CacheGetViewServiceFactory()
     {
