@@ -1,3 +1,4 @@
+using FluentValidation;
 using QuestionService.Application.Services;
 using QuestionService.Application.Validators;
 using QuestionService.Cache.Providers;
@@ -8,6 +9,7 @@ using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Repository.Cache;
 using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Configurations;
 using StackExchange.Redis;
@@ -26,14 +28,17 @@ internal class ViewServiceFactory
         MockRepositoriesGetters.GetMockQuestionRepository().Object;
 
     public readonly IEntityProvider<UserDto> UserProvider = MockEntityProvidersGetters.GetMockUserProvider().Object;
+
+    public readonly IValidator<IValidatableView> Validator =
+        ValidatorConfiguration<IValidatableView>.GetValidator(new ViewValidator());
+
     public readonly IBaseRepository<View> ViewRepository = MockRepositoriesGetters.GetMockViewRepository().Object;
 
     public ViewServiceFactory(IDatabase? redisDatabase = null)
     {
         if (redisDatabase != null) CacheRepository = new ViewCacheSyncRepository(new RedisCacheProvider(redisDatabase));
 
-        var service = new ViewService(CacheRepository, QuestionRepository, ViewRepository, UserProvider,
-            new ViewValidator());
+        var service = new ViewService(CacheRepository, QuestionRepository, ViewRepository, UserProvider, Validator);
 
         _viewService = service;
         _viewDatabaseService = service;

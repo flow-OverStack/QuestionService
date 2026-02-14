@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using QuestionService.Application.Validators;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Entities;
@@ -6,6 +7,7 @@ using QuestionService.Domain.Interfaces.Producer;
 using QuestionService.Domain.Interfaces.Provider;
 using QuestionService.Domain.Interfaces.Repository;
 using QuestionService.Domain.Interfaces.Service;
+using QuestionService.Domain.Interfaces.Validation;
 using QuestionService.Tests.Configurations;
 using QuestionService.Tests.UnitTests.Configurations;
 using MapperConfiguration = QuestionService.Tests.UnitTests.Configurations.MapperConfiguration;
@@ -25,6 +27,9 @@ internal class QuestionServiceFactory
     public readonly IUnitOfWork UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork().Object;
     public readonly IEntityProvider<UserDto> UserProvider = MockEntityProvidersGetters.GetMockUserProvider().Object;
 
+    public readonly IValidator<IValidatableQuestion> Validator =
+        ValidatorConfiguration<IValidatableQuestion>.GetValidator(new QuestionValidator());
+
     public readonly IBaseRepository<VoteType> VoteTypeRepository =
         MockRepositoriesGetters.GetMockVoteTypeRepository().Object;
 
@@ -34,7 +39,7 @@ internal class QuestionServiceFactory
             VoteTypeRepository = voteTypeRepository;
 
         _questionService = new Application.Services.QuestionService(UnitOfWork, TagRepository, VoteTypeRepository,
-            UserProvider, Mapper, EventProducer, new QuestionValidator());
+            UserProvider, Mapper, EventProducer, Validator);
     }
 
     public IQuestionService GetService()
