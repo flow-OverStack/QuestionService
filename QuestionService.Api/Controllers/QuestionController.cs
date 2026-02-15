@@ -16,7 +16,7 @@ namespace QuestionService.Api.Controllers;
 /// <response code="200">If question was asked/edited/deleted</response>
 /// <response code="400">If question was not asked/edited/deleted</response>
 /// <response code="403">If the operation was forbidden for user</response>
-/// <response code="500">If internal server error occured</response>
+/// <response code="500">If internal server error occurred</response>
 [Authorize]
 public class QuestionController(IQuestionService questionService) : BaseController
 {
@@ -83,7 +83,6 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// 
     ///     PUT
     ///     {
-    ///         "id":0
     ///         "title":"string",
     ///         "body":"string",
     ///         "tagNames":[
