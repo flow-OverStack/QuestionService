@@ -22,10 +22,7 @@ public static class DependencyInjection
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-        services.Scan(scan => scan.FromAssemblyOf<Services.QuestionService>()
-            .AddClasses(c => c.AssignableTo(typeof(IValidator<>)))
-            .AsImplementedInterfaces()
-            .WithScopedLifetime());
+        services.AddValidatorsFromAssemblyContaining<Services.QuestionService>();
 
         services.Decorate<IGetQuestionService, CacheGetQuestionService>();
         services.Decorate<IGetVoteService, CacheGetVoteService>();
