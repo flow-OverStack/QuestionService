@@ -35,7 +35,7 @@
       RedisSettings__TimeToLiveInSeconds: 300
   
   postgres-db:
-    image: postgres:latest
+    image: postgres:17
     container_name: postgres-question-db
     ports:
       - "5435:5432"
