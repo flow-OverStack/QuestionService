@@ -20,9 +20,24 @@ editing, retrieval, and moderation. It handles question-related business logic, 
    QUESTION_DB_PASSWORD=db_password
    REDIS_PASSWORD=redis_password
    ```
-6. On the first run (or after updating migrations), you can apply EF Core migrations in two ways:
-   1. Start the development version — migrations will be applied automatically to the configured database.
-   2. Generate a SQL script with `dotnet ef migrations script` and apply it to the database
+6. On the first run (or after updating migrations), apply EF Core migrations to the database:
+
+   **Option A — Automatic ✅ Recommended for Quick Start**
+
+   In `docker-compose.yml`, temporarily add `ASPNETCORE_ENVIRONMENT: Development` to the `question-service` environment:
+   ```yaml
+   question-service:
+      # ... other variables
+      environment:
+        # ... other variables
+        ASPNETCORE_ENVIRONMENT: Development
+   ```
+   Start the services — migrations will be applied automatically on startup.
+   > ⚠️ After the first run, **remove** `ASPNETCORE_ENVIRONMENT: Development` from `docker-compose.yml` and restart the container.
+
+   **Option B — Manual SQL script (Production)**
+
+   Generate a SQL script with `dotnet ef migrations script` and apply it to the database
       manually ([Production approach](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#sql-scripts))
 7. Start the service
     ```bash
