@@ -113,7 +113,7 @@ public static class Startup
                 //TermsOfService = termsOfServiceUrl,
                 Contact = new OpenApiContact
                 {
-                    Name = "UserService api contact"
+                    Name = "QuestionService api contact"
                     //maybe add in future
                     //Url = termsOfServiceUrl
                 }

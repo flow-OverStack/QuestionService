@@ -11,10 +11,6 @@ namespace QuestionService.Api.Controllers;
 /// <summary>
 ///     View controller
 /// </summary>
-/// <response code="200">If views were incremented</response>
-/// <response code="400">If views were not incremented</response>
-/// <response code="422">If some request data (eg userIp) was not provided</response>
-/// <response code="500">If internal server error occured</response>
 public class ViewController(IViewService viewService) : BaseController
 {
     private const string FingerprintHeaderName = "X-Fingerprint";
@@ -28,10 +24,16 @@ public class ViewController(IViewService viewService) : BaseController
     /// <returns></returns>
     /// <remarks>
     /// Request to increment views of a question
-    /// 
+    ///
     ///     POST {questionId}
     /// </remarks>
+    /// <response code="204">Views were incremented successfully</response>
+    /// <response code="400">Invalid data format</response>
+    /// <response code="422">IP address or X-Fingerprint header not provided</response>
     [HttpPost("{questionId:long}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<BaseResult>> IncrementViews(long questionId, CancellationToken cancellationToken,
         [FromHeader(Name = FingerprintHeaderName)]
         string? fingerprint = null)

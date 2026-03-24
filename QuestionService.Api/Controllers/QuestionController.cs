@@ -13,10 +13,6 @@ namespace QuestionService.Api.Controllers;
 /// <summary>
 ///     Question controller
 /// </summary>
-/// <response code="200">If question was asked/edited/deleted</response>
-/// <response code="400">If question was not asked/edited/deleted</response>
-/// <response code="403">If the operation was forbidden for user</response>
-/// <response code="500">If internal server error occurred</response>
 [Authorize]
 public class QuestionController(IQuestionService questionService) : BaseController
 {
@@ -28,7 +24,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <returns></returns>
     /// <remarks>
     /// Request to ask a question:
-    /// 
+    ///
     ///     POST
     ///     {
     ///         "title":"string",
@@ -38,7 +34,15 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///          ]
     ///     }
     /// </remarks>
+    /// <response code="201">Question was created successfully</response>
+    /// <response code="400">Validation failed (invalid property)</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="404">User or tags not found</response>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<QuestionDto>>> AskQuestion(AskQuestionDto dto,
         CancellationToken cancellationToken)
     {
@@ -57,10 +61,18 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <returns></returns>
     /// <remarks>
     /// Request to delete a question:
-    /// 
+    ///
     ///     DELETE {questionId}
     /// </remarks>
+    /// <response code="200">Question was deleted successfully</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="403">User is not the owner of the question</response>
+    /// <response code="404">User or question not found</response>
     [HttpDelete("{questionId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<QuestionDto>>> DeleteQuestion(long questionId,
         CancellationToken cancellationToken)
     {
@@ -80,7 +92,7 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <returns></returns>
     /// <remarks>
     /// Request to edit a question:
-    /// 
+    ///
     ///     PUT
     ///     {
     ///         "title":"string",
@@ -88,9 +100,19 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     ///         "tagNames":[
     ///            "string"
     ///          ]
-    ///     } 
+    ///     }
     /// </remarks>
+    /// <response code="200">Question was edited successfully</response>
+    /// <response code="400">Validation failed (invalid property)</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="403">User is not the owner of the question</response>
+    /// <response code="404">User, question or tags not found</response>
     [HttpPut("{questionId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<QuestionDto>>> EditQuestion(long questionId,
         RequestEditQuestionDto requestDto,
         CancellationToken cancellationToken)
@@ -112,10 +134,20 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <returns></returns>
     /// <remarks>
     /// Request to downvote a question:
-    /// 
+    ///
     ///     PATCH {questionId}/downvote
     /// </remarks>
+    /// <response code="200">Vote was cast successfully</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="403">User is voting on their own post or has insufficient reputation</response>
+    /// <response code="404">User, question or vote type not found</response>
+    /// <response code="409">User has already voted on this question</response>
     [HttpPatch("{questionId:long}/downvote")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<VoteQuestionDto>>> DownvoteQuestion(long questionId,
         CancellationToken cancellationToken)
     {
@@ -134,10 +166,20 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <returns></returns>
     /// <remarks>
     /// Request to upvote a question:
-    /// 
+    ///
     ///     PATCH {questionId}/upvote
     /// </remarks>
+    /// <response code="200">Vote was cast successfully</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="403">User is voting on their own post or has insufficient reputation</response>
+    /// <response code="404">User, question or vote type not found</response>
+    /// <response code="409">User has already voted on this question</response>
     [HttpPatch("{questionId:long}/upvote")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<VoteQuestionDto>>> UpvoteQuestion(long questionId,
         CancellationToken cancellationToken)
     {
@@ -156,9 +198,16 @@ public class QuestionController(IQuestionService questionService) : BaseControll
     /// <returns></returns>
     /// <remarks>
     ///     Request to remove a vote from a question:
+    ///
     ///     DELETE {questionId}/vote
     /// </remarks>
+    /// <response code="200">Vote was removed successfully</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="404">User, question or vote not found</response>
     [HttpDelete("{questionId:long}/vote")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<VoteQuestionDto>>> RemoveQuestionVote(long questionId,
         CancellationToken cancellationToken)
     {

@@ -12,10 +12,6 @@ namespace QuestionService.Api.Controllers;
 /// <summary>
 ///     Tag controller
 /// </summary>
-/// <response code="200">If tag was added/updated/deleted</response>
-/// <response code="400">If tag was not added/updated/deleted</response>
-/// <response code="403">If the operation was forbidden for user</response>
-/// <response code="500">If internal server error occured</response>
 [Authorize(Roles = $"{nameof(Roles.Moderator)},{nameof(Roles.Admin)}")]
 public class TagController(ITagService tagService) : BaseController
 {
@@ -26,7 +22,7 @@ public class TagController(ITagService tagService) : BaseController
     /// <param name="cancellationToken"></param>
     /// <remarks>
     /// Request to create a tag:
-    /// 
+    ///
     ///     POST
     ///     {
     ///         "name":"string",
@@ -34,7 +30,17 @@ public class TagController(ITagService tagService) : BaseController
     ///     }
     /// </remarks>
     /// <returns></returns>
+    /// <response code="201">Tag was created successfully</response>
+    /// <response code="400">Validation failed (invalid property)</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="403">User does not have Moderator or Admin role</response>
+    /// <response code="409">Tag with this name already exists</response>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<TagDto>>> CreateTag([FromBody] CreateTagDto dto,
         CancellationToken cancellationToken)
     {
@@ -50,7 +56,7 @@ public class TagController(ITagService tagService) : BaseController
     /// <param name="cancellationToken"></param>
     /// <remarks>
     /// Request to update a tag:
-    /// 
+    ///
     ///     PUT
     ///     {
     ///         "id":1,
@@ -59,7 +65,17 @@ public class TagController(ITagService tagService) : BaseController
     ///     }
     /// </remarks>
     /// <returns></returns>
+    /// <response code="200">Tag was updated successfully</response>
+    /// <response code="400">Validation failed (invalid property)</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="403">User does not have Moderator or Admin role</response>
+    /// <response code="404">Tag not found</response>
     [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<TagDto>>> UpdateTag([FromBody] TagDto dto,
         CancellationToken cancellationToken)
     {
@@ -75,11 +91,19 @@ public class TagController(ITagService tagService) : BaseController
     /// <param name="cancellationToken"></param>
     /// <remarks>
     /// Request to delete a tag:
-    /// 
+    ///
     ///     DELETE {id:long}
     /// </remarks>
     /// <returns></returns>
+    /// <response code="200">Tag was deleted successfully</response>
+    /// <response code="401">User is not authenticated</response>
+    /// <response code="403">User does not have Moderator or Admin role</response>
+    /// <response code="404">Tag not found</response>
     [HttpDelete("{id:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<TagDto>>> DeleteTag(long id,
         CancellationToken cancellationToken)
     {
