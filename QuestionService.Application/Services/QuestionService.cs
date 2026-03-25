@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Application.Enum;
+using QuestionService.Application.Helpers;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.Question;
@@ -29,9 +30,9 @@ public class QuestionService(
     public async Task<BaseResult<QuestionDto>> AskQuestionAsync(long initiatorId, AskQuestionDto dto,
         CancellationToken cancellationToken = default)
     {
-        var validation = await ValidateQuestionDto(dto, cancellationToken);
-        if (!validation.isValid)
-            return BaseResult<QuestionDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
+        var validation = await questionValidator.ValidateWithMessageAsync(dto, cancellationToken);
+        if (!validation.IsValid)
+            return BaseResult<QuestionDto>.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
 
         var user = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
@@ -69,9 +70,9 @@ public class QuestionService(
     public async Task<BaseResult<QuestionDto>> EditQuestionAsync(long initiatorId, EditQuestionDto dto,
         CancellationToken cancellationToken = default)
     {
-        var validation = await ValidateQuestionDto(dto, cancellationToken);
-        if (!validation.isValid)
-            return BaseResult<QuestionDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
+        var validation = await questionValidator.ValidateWithMessageAsync(dto, cancellationToken);
+        if (!validation.IsValid)
+            return BaseResult<QuestionDto>.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
         var initiator = await userProvider.GetByIdAsync(initiatorId, cancellationToken);
         if (initiator == null)
@@ -334,15 +335,5 @@ public class QuestionService(
         return initiator.Roles.Select(x => x.Name).Contains(nameof(Roles.Admin))
                || initiator.Roles.Select(x => x.Name).Contains(nameof(Roles.Moderator))
                || toQuestion.UserId == initiator.Id;
-    }
-
-    private async Task<(bool isValid, string errorMessage)> ValidateQuestionDto(IValidatableQuestion question,
-        CancellationToken cancellationToken = default)
-    {
-        var validation = await questionValidator.ValidateAsync(question, cancellationToken);
-        if (validation.IsValid) return (true, string.Empty);
-
-        var errorMessage = string.Join(", ", validation.Errors);
-        return (false, errorMessage);
     }
 }

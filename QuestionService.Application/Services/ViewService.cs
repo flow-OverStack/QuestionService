@@ -2,6 +2,7 @@ using FluentValidation;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Application.Enum;
+using QuestionService.Application.Helpers;
 using QuestionService.Domain.Comparers;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.Domain.Dtos.View;
@@ -22,7 +23,7 @@ public class ViewService(
     IBaseRepository<Question> questionRepository,
     IBaseRepository<View> viewRepository,
     IEntityProvider<UserDto> userProvider,
-    IValidator<IValidatableView> validator)
+    IValidator<IValidatableView> viewValidator)
     : IViewService, IViewDatabaseService
 {
     public async Task<BaseResult<SyncedViewsDto>> SyncViewsToDatabaseAsync(
@@ -75,12 +76,9 @@ public class ViewService(
     public async Task<BaseResult> IncrementViewsAsync(IncrementViewsDto dto,
         CancellationToken cancellationToken = default)
     {
-        var validation = await validator.ValidateAsync(dto, cancellationToken);
+        var validation = await viewValidator.ValidateWithMessageAsync(dto, cancellationToken);
         if (!validation.IsValid)
-        {
-            var message = string.Join("; ", validation.Errors);
-            return BaseResult.Failure(message, (int)ErrorCodes.InvalidDataFormat);
-        }
+            return BaseResult.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
         // We do not check user and question existence
         // because that may increase the request processing time

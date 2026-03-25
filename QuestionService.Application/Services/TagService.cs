@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Application.Enum;
+using QuestionService.Application.Helpers;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Tag;
 using QuestionService.Domain.Entities;
@@ -18,9 +19,9 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IVal
     public async Task<BaseResult<TagDto>> CreateTagAsync(CreateTagDto dto,
         CancellationToken cancellationToken = default)
     {
-        var validation = await ValidateTagDto(dto, cancellationToken);
-        if (!validation.isValid)
-            return BaseResult<TagDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
+        var validation = await tagValidator.ValidateWithMessageAsync(dto, cancellationToken);
+        if (!validation.IsValid)
+            return BaseResult<TagDto>.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
 
         var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name, cancellationToken);
@@ -37,9 +38,9 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IVal
 
     public async Task<BaseResult<TagDto>> UpdateTagAsync(TagDto dto, CancellationToken cancellationToken = default)
     {
-        var validation = await ValidateTagDto(dto, cancellationToken);
-        if (!validation.isValid)
-            return BaseResult<TagDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
+        var validation = await tagValidator.ValidateWithMessageAsync(dto, cancellationToken);
+        if (!validation.IsValid)
+            return BaseResult<TagDto>.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
         var tag = await tagRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
         if (tag == null)
@@ -64,15 +65,5 @@ public class TagService(IBaseRepository<Tag> tagRepository, IMapper mapper, IVal
         await tagRepository.SaveChangesAsync(cancellationToken);
 
         return BaseResult<TagDto>.Success(mapper.Map<TagDto>(tag));
-    }
-
-    private async Task<(bool isValid, string errorMessage)> ValidateTagDto(IValidatableTag tag,
-        CancellationToken cancellationToken = default)
-    {
-        var validation = await tagValidator.ValidateAsync(tag, cancellationToken);
-        if (validation.IsValid) return (true, string.Empty);
-
-        var errorMessage = string.Join(", ", validation.Errors);
-        return (false, errorMessage);
     }
 }
