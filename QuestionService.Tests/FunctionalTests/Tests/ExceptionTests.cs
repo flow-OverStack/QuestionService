@@ -18,7 +18,7 @@ public class ExceptionTests : ExceptionFunctionalTest
 {
     public ExceptionTests(ExceptionFunctionalTestWebAppFactory factory) : base(factory)
     {
-        var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", 1, [
+        var token = TokenHelper.GetRsaToken("testuser1", 1, [
             new RoleDto { Name = "User" }
         ]);
 

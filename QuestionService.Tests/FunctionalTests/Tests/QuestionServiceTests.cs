@@ -18,7 +18,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
 {
     public QuestionServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
     {
-        var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", 1, [new RoleDto { Name = "User" }]);
+        var token = TokenHelper.GetRsaToken("testuser1", 1, [new RoleDto { Name = "User" }]);
 
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
@@ -46,7 +46,7 @@ public class QuestionServiceTests : SequentialFunctionalTest
     public async Task AskQuestion_ShouldBe_NotFound()
     {
         //Arrange
-        var token = TokenHelper.GetRsaTokenWithRoleClaims("WrongUser", 0, [
+        var token = TokenHelper.GetRsaToken("WrongUser", 0, [
             new RoleDto
             {
                 Id = 1,

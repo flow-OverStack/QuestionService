@@ -16,7 +16,7 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
     {
         //Arrange
         const string forbiddenUrl = "/api/v1.0/question";
-        var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser2", 2, []);
+        var token = TokenHelper.GetRsaToken("testuser2", 2, []);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         //Act
@@ -50,7 +50,7 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
     public async Task RequestForbiddenResource_ShouldBe_Forbidden()
     {
         //Arrange
-        var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", 1, [
+        var token = TokenHelper.GetRsaToken("testuser1", 1, [
             new RoleDto { Name = "User" }
         ]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

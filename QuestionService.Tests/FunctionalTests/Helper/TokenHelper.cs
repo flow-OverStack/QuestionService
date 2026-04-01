@@ -64,13 +64,15 @@ internal static class TokenHelper
         return Issuer;
     }
 
-    public static string GetRsaTokenWithRoleClaims(string username, long userId, IEnumerable<RoleDto> roles)
+    public static string GetRsaToken(string username, long userId, IEnumerable<RoleDto> roles)
     {
         Claim[] claims =
         [
             ..roles.Select(x => new Claim(ClaimTypes.Role, x.Name)).ToArray(),
             new(JwtRegisteredClaimNames.PreferredUsername, username),
-            new(ClaimTypes.NameIdentifier, userId.ToString())
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Email, "testEmail@test.com")
         ];
 
         var tokenString = claims.GetRsaTokenFromClaims();
