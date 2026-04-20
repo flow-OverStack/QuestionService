@@ -29,17 +29,15 @@ public class ViewController(IViewService viewService) : BaseController
     /// </remarks>
     /// <response code="204">Views were incremented successfully</response>
     /// <response code="400">Invalid data format</response>
-    /// <response code="422">IP address or X-Fingerprint header not provided</response>
     [HttpPost("{questionId:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<BaseResult>> IncrementViews(long questionId, CancellationToken cancellationToken,
         [FromHeader(Name = FingerprintHeaderName)]
         string? fingerprint = null)
     {
-        if (!TryGetUserIp(out var userIp)) return UnprocessableEntity("IP Address is not provided");
-        if (fingerprint == null) return UnprocessableEntity("Fingerprint is not provided");
+        if (!TryGetUserIp(out var userIp)) return BadRequest("IP Address is not provided");
+        if (fingerprint == null) return BadRequest("Fingerprint is not provided");
 
         var userId = GetUserIdIfExists();
 
