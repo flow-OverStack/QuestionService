@@ -23,7 +23,7 @@ public class QuestionDataLoader(
         if (!result.IsSuccess)
             return dictionary.AsReadOnly();
 
-        result.Data.ToList().ForEach(x => dictionary.Add(x.Id, x));
+        dictionary = result.Data.ToDictionary(x => x.Id, x => x);
 
         return dictionary.AsReadOnly();
     }

@@ -20,9 +20,9 @@ public class GroupUserVoteDataLoader(
         CancellationToken cancellationToken)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
-        var questionService = scope.ServiceProvider.GetRequiredService<IGetVoteService>();
+        var voteService = scope.ServiceProvider.GetRequiredService<IGetVoteService>();
 
-        var result = await questionService.GetUsersVotesAsync(keys, cancellationToken);
+        var result = await voteService.GetUsersVotesAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<IGrouping<long, Vote>>().ToLookup(_ => 0L, _ => default(Vote)!); // Empty lookup
