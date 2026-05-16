@@ -9,7 +9,8 @@ public class VoteType : ObjectType<Vote>
 {
     protected override void Configure(IObjectTypeDescriptor<Vote> descriptor)
     {
-        descriptor.Description("The vote type.");
+        descriptor.Name("QuestionVote");
+        descriptor.Description("The question vote type.");
         descriptor.Field(x => x.UserId).Description("The ID of the user that voted.");
         descriptor.Field(x => x.QuestionId).Description("The ID of the question that was voted.");
         descriptor.Field(x => x.VoteTypeId).Description("The ID of the vote type.");

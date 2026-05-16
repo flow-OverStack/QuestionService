@@ -26,8 +26,8 @@ public class UserType : ObjectType<UserDto>
             .ResolveWith<Resolvers>(x => x.GetUserViewsAsync(default!, default!, default!))
             .Type<NonNullType<ListType<NonNullType<ViewType>>>>();
 
-        descriptor.Field("votes")
-            .Description("The votes of the user.")
+        descriptor.Field("questionVotes")
+            .Description("The question votes of the user.")
             .ResolveWith<Resolvers>(x => x.GetUserVotesAsync(default!, default!, default!))
             .Type<NonNullType<ListType<NonNullType<VoteType>>>>();
 

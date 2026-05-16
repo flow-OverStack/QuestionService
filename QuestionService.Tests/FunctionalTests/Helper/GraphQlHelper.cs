@@ -66,7 +66,7 @@ internal static class GraphQlHelper
                                               totalCount
                                             }
 
-                                            votes(skip: 1, take: 2) {
+                                            questionVotes(skip: 1, take: 2) {
                                               items {
                                                 userId
                                                 voteTypeId
@@ -109,7 +109,7 @@ internal static class GraphQlHelper
                                               totalCount
                                             }
 
-                                            views(skip: 1, take: 2, order: [{ question: { createdAt: DESC } }]) {
+                                            questionViews(skip: 1, take: 2, order: [{ question: { createdAt: DESC } }]) {
                                               items {
                                                 id
                                                 questionId
@@ -124,7 +124,7 @@ internal static class GraphQlHelper
                                               totalCount
                                             }
 
-                                            voteTypes(skip: 1, take: 2, order: [{ reputationChange: ASC }]) {
+                                            questionVoteTypes(skip: 1, take: 2, order: [{ reputationChange: ASC }]) {
                                               items {
                                                 id
                                                 name
@@ -241,7 +241,7 @@ internal static class GraphQlHelper
                                                                 }
                                                                 totalCount
                                                               }
-                                                              votes(skip: -1, take: 101) {
+                                                              questionVotes(skip: -1, take: 101) {
                                                                 items {
                                                                   userId
                                                                   voteTypeId
@@ -279,7 +279,7 @@ internal static class GraphQlHelper
                                                                 }
                                                                 totalCount
                                                               }
-                                                              views(skip: -1, take: -1) {
+                                                              questionViews(skip: -1, take: -1) {
                                                                 items {
                                                                   id
                                                                   questionId
@@ -300,104 +300,104 @@ internal static class GraphQlHelper
       long tagId, long viewId, long voteTypeId)
     {
         return """
-            {
-              question(id: $QUESTIONID) {
-                id
-                title
-                body
-                userId
-                reputation
-                viewCount
-                createdAt
-                lastModifiedAt
-                tags {
-                  id
-                  name
-                  description
-                  questions {
-                    id
-                    title
-                  }
-                }
-                votes {
-                  userId
-                  voteTypeId
-                  voteType {
-                    id
-                    name
-                    reputationChange
-                    minReputationToVote
-                    votes {
-                      userId
-                    }
-                  }
-                  question {
-                    id
-                    title
-                  }
-                }
-                views {
-                  id
-                  questionId
-                  userId
-                  userIp
-                  userFingerprint
-                  question {
-                    id
-                    title
-                  }
-                }
-              }
-              vote(userId: $VOTEUSERID, questionId: $VOTEQUESTIONID) {
-                userId
-                voteTypeId
-                voteType {
-                  id
-                  name
-                  reputationChange
-                  minReputationToVote
-                  votes {
-                    userId
-                  }
-                }
-                question {
-                  id
-                  title
-                }
-              }
-              tag(id: $TAGID) {
-                name
-                description
-                questions {
-                  id
-                  title
-                }
-              }
-              view(id: $VIEWID) {
-                id
-                questionId
-                userId
-                userIp
-                userFingerprint
-                question {
-                  id
-                  title
-                }
-              }
-              voteType(id: $VOTETYPEID) { 
-                id
-                name
-                minReputationToVote
-                reputationChange
-                votes{
-                  userId
-                  question{
-                    title
-                  }
-                }
-              }
-            }
-            """
+               {
+                 question(id: $QUESTIONID) {
+                   id
+                   title
+                   body
+                   userId
+                   reputation
+                   viewCount
+                   createdAt
+                   lastModifiedAt
+                   tags {
+                     id
+                     name
+                     description
+                     questions {
+                       id
+                       title
+                     }
+                   }
+                   votes {
+                     userId
+                     voteTypeId
+                     voteType {
+                       id
+                       name
+                       reputationChange
+                       minReputationToVote
+                       votes {
+                         userId
+                       }
+                     }
+                     question {
+                       id
+                       title
+                     }
+                   }
+                   views {
+                     id
+                     questionId
+                     userId
+                     userIp
+                     userFingerprint
+                     question {
+                       id
+                       title
+                     }
+                   }
+                 }
+                 questionVote(userId: $VOTEUSERID, questionId: $VOTEQUESTIONID) {
+                   userId
+                   voteTypeId
+                   voteType {
+                     id
+                     name
+                     reputationChange
+                     minReputationToVote
+                     votes {
+                       userId
+                     }
+                   }
+                   question {
+                     id
+                     title
+                   }
+                 }
+                 tag(id: $TAGID) {
+                   name
+                   description
+                   questions {
+                     id
+                     title
+                   }
+                 }
+                 questionView(id: $VIEWID) {
+                   id
+                   questionId
+                   userId
+                   userIp
+                   userFingerprint
+                   question {
+                     id
+                     title
+                   }
+                 }
+                 questionVoteType(id: $VOTETYPEID) { 
+                   id
+                   name
+                   minReputationToVote
+                   reputationChange
+                   votes{
+                     userId
+                     question{
+                       title
+                     }
+                   }
+                 }
+               }
+               """
             .Replace("$QUESTIONID", questionId.ToString())
             .Replace("$VOTEQUESTIONID", voteQuestionId.ToString())
             .Replace("$VOTEUSERID", voteUserId.ToString())
@@ -409,28 +409,28 @@ internal static class GraphQlHelper
     public static string RequestQuestionByIdQuery(long questionId)
     {
         return """
-            {
-              question(id: $QUESTIONID) {
-                id
-                title
-                body
-                userId
-                reputation
-                viewCount
-                createdAt
-                lastModifiedAt
-                tags {
-                  id
-                  name
-                  description
-                  questions {
-                    id
-                    title
-                  }
-                }
-              }  
-            }
-            """
+               {
+                 question(id: $QUESTIONID) {
+                   id
+                   title
+                   body
+                   userId
+                   reputation
+                   viewCount
+                   createdAt
+                   lastModifiedAt
+                   tags {
+                     id
+                     name
+                     description
+                     questions {
+                       id
+                       title
+                     }
+                   }
+                 }  
+               }
+               """
             .Replace("$QUESTIONID", questionId.ToString());
     }
 }

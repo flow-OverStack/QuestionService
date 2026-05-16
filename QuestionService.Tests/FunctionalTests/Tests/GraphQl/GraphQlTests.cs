@@ -42,14 +42,14 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
             Assert.NotNull(x.Node);
         });
 
-        Assert.NotEmpty(result.Data.Votes.Items);
-        Assert.NotEqual(0, result.Data.Votes.TotalCount);
+        Assert.NotEmpty(result.Data.QuestionVotes.Items);
+        Assert.NotEqual(0, result.Data.QuestionVotes.TotalCount);
 
-        Assert.NotEmpty(result.Data.Views.Items);
-        Assert.NotEqual(0, result.Data.Views.TotalCount);
+        Assert.NotEmpty(result.Data.QuestionViews.Items);
+        Assert.NotEqual(0, result.Data.QuestionViews.TotalCount);
 
-        Assert.NotEmpty(result.Data.VoteTypes.Items);
-        Assert.NotEqual(0, result.Data.VoteTypes.TotalCount);
+        Assert.NotEmpty(result.Data.QuestionVoteTypes.Items);
+        Assert.NotEqual(0, result.Data.QuestionVoteTypes.TotalCount);
     }
 
     [Trait("Category", "Functional")]
@@ -86,9 +86,9 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(result!.Data.Question);
         Assert.NotNull(result.Data.Tag);
-        Assert.NotNull(result.Data.Vote);
-        Assert.NotNull(result.Data.View);
-        Assert.NotNull(result.Data.VoteType);
+        Assert.NotNull(result.Data.QuestionVote);
+        Assert.NotNull(result.Data.QuestionView);
+        Assert.NotNull(result.Data.QuestionVoteType);
     }
 
     [Trait("Category", "Functional")]
@@ -107,9 +107,9 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Null(result!.Data.Question);
         Assert.Null(result.Data.Tag);
-        Assert.Null(result.Data.Vote);
-        Assert.Null(result.Data.View);
-        Assert.Null(result.Data.VoteType);
+        Assert.Null(result.Data.QuestionVote);
+        Assert.Null(result.Data.QuestionView);
+        Assert.Null(result.Data.QuestionVoteType);
     }
 
     [Trait("Category", "Functional")]

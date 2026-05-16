@@ -68,7 +68,7 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<Vote>> GetVotes([Service] IGetVoteService voteService,
+    public async Task<IQueryable<Vote>> GetQuestionVotes([Service] IGetVoteService voteService,
         CancellationToken cancellationToken)
     {
         var result = await voteService.GetAllAsync(cancellationToken);
@@ -82,7 +82,7 @@ public class Queries
     [GraphQLDescription("Returns a vote by id of the question that was voted and the user that voted")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Vote?> GetVote(long questionId, long userId, VoteDataLoader voteLoader,
+    public async Task<Vote?> GetQuestionVote(long questionId, long userId, VoteDataLoader voteLoader,
         CancellationToken cancellationToken)
     {
         var dto = new VoteDto(questionId, userId);
@@ -96,7 +96,7 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<VoteType>> GetVoteTypes([Service] IGetVoteTypeService voteTypeService,
+    public async Task<IQueryable<VoteType>> GetQuestionVoteTypes([Service] IGetVoteTypeService voteTypeService,
         CancellationToken cancellationToken)
     {
         var result = await voteTypeService.GetAllAsync(cancellationToken);
@@ -110,7 +110,7 @@ public class Queries
     [GraphQLDescription("Returns a vote type by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<VoteType?> GetVoteType(long id, VoteTypeDataLoader voteTypeLoader,
+    public async Task<VoteType?> GetQuestionVoteType(long id, VoteTypeDataLoader voteTypeLoader,
         CancellationToken cancellationToken)
     {
         var voteType = await voteTypeLoader.LoadAsync(id, cancellationToken);
@@ -123,7 +123,7 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<View>> GetViews([Service] IGetViewService viewService,
+    public async Task<IQueryable<View>> GetQuestionViews([Service] IGetViewService viewService,
         CancellationToken cancellationToken)
     {
         var result = await viewService.GetAllAsync(cancellationToken);
@@ -137,7 +137,7 @@ public class Queries
     [GraphQLDescription("Returns a view by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<View?> GetView(long id, ViewDataLoader viewLoader, CancellationToken cancellationToken)
+    public async Task<View?> GetQuestionView(long id, ViewDataLoader viewLoader, CancellationToken cancellationToken)
     {
         var view = await viewLoader.LoadAsync(id, cancellationToken);
 

@@ -7,7 +7,8 @@ public class VoteTypeType : ObjectType<Domain.Entities.VoteType>
 {
     protected override void Configure(IObjectTypeDescriptor<Domain.Entities.VoteType> descriptor)
     {
-        descriptor.Description("Represents the type of a vote.");
+        descriptor.Name("QuestionVoteType");
+        descriptor.Description("Represents the type of a question vote.");
 
         descriptor.Field(x => x.Id).Description("The unique identifier of the vote type.");
         descriptor.Field(x => x.Name).Description("The name of the vote type.");
