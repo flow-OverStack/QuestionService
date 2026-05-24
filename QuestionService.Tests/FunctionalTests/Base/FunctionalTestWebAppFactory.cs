@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Moq;
 using QuestionService.Api.Settings;
 using QuestionService.Cache.Settings;
 using QuestionService.DAL;
@@ -94,7 +95,11 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
             services.AddSingleton<UserService.UserServiceClient, GrpcTestUserService>();
 
             services.RemoveAll<ITopicProducer<BaseEvent>>();
-            services.AddScoped<ITopicProducer<BaseEvent>, TestTopicProducer<BaseEvent>>();
+            services.AddScoped<ITopicProducer<BaseEvent>>(_ =>
+            {
+                var testProducer = new Mock<ITopicProducer<BaseEvent>>();
+                return testProducer.Object;
+            });
 
             services.RemoveAll<IOptions<RedisSettings>>();
             services.Configure<RedisSettings>(x =>
