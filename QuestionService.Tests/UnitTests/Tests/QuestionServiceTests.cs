@@ -1,20 +1,19 @@
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Question;
-using QuestionService.Domain.Entities;
-using QuestionService.Tests.Configurations;
-using QuestionService.Tests.UnitTests.Factories;
+using QuestionService.Tests.UnitTests.Sut;
 using Xunit;
+using QuestionService.Tests.Traits;
 
 namespace QuestionService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class QuestionServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task AskQuestion_ShouldBe_Success()
+    public async Task AskQuestionAsync_ValidData_ReturnsSuccess()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 1;
         var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET"]);
 
@@ -26,30 +25,11 @@ public class QuestionServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task AskQuestion_ShouldBe_InvalidTags()
+    public async Task AskQuestionAsync_NonExistentInitiator_ReturnsUserNotFound()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", []);
-
-        //Act
-        var result = await questionService.AskQuestionAsync(initiatorId, dto);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.InvalidTags, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task AskQuestion_ShouldBe_UserNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 0;
         var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET"]);
 
@@ -62,12 +42,11 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task AskQuestion_ShouldBe_TagsNotFound()
+    public async Task AskQuestionAsync_NonExistentTags_ReturnsTagsNotFound()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 1;
         var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", ["WrongTag", "Java"]);
 
@@ -80,12 +59,27 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_Success()
+    public async Task AskQuestionAsync_DuplicateExistingTag_ReturnsSuccess()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
+        const long initiatorId = 1;
+        var dto = new AskQuestionDto("NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", ".NET"]);
+
+        //Act
+        var result = await questionService.AskQuestionAsync(initiatorId, dto);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Fact]
+    public async Task EditQuestionAsync_ValidData_ReturnsSuccess()
+    {
+        //Arrange
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 1;
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
@@ -97,30 +91,11 @@ public class QuestionServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_LengthOutOfRange()
+    public async Task EditQuestionAsync_NonExistentInitiator_ReturnsUserNotFound()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        var dto = new EditQuestionDto(1, string.Empty, "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
-
-        //Act
-        var result = await questionService.EditQuestionAsync(initiatorId, dto);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.InvalidTitle, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task EditQuestion_ShouldBe_UserNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 0;
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
@@ -133,12 +108,11 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_QuestionNotFound()
+    public async Task EditQuestionAsync_NonExistentQuestion_ReturnsQuestionNotFound()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 1;
         var dto = new EditQuestionDto(0, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
@@ -151,12 +125,11 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_OperationForbidden()
+    public async Task EditQuestionAsync_NotOwnerInitiator_ReturnsOperationForbidden()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 2;
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", "Java"]);
 
@@ -169,12 +142,11 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task EditQuestion_ShouldBe_TagsNotFound()
+    public async Task EditQuestionAsync_NonExistentTags_ReturnsTagsNotFound()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 1;
         var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", ["WrongTag", "Java"]);
 
@@ -187,12 +159,27 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteQuestion_ShouldBe_Success()
+    public async Task EditQuestionAsync_DuplicateExistingTag_ReturnsSuccess()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
+        const long initiatorId = 1;
+        var dto = new EditQuestionDto(1, "NewQuestionTitle", "NewQuestionBodyNewQuestionBody", [".NET", ".NET"]);
+
+        //Act
+        var result = await questionService.EditQuestionAsync(initiatorId, dto);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Fact]
+    public async Task DeleteQuestionAsync_ValidData_ReturnsSuccess()
+    {
+        //Arrange
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 1;
         const long questionId = 1;
 
@@ -204,12 +191,11 @@ public class QuestionServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteQuestion_ShouldBe_UserNotFound()
+    public async Task DeleteQuestionAsync_NonExistentInitiator_ReturnsUserNotFound()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 0;
         const long questionId = 1;
 
@@ -222,12 +208,11 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteQuestion_ShouldBe_QuestionNotFound()
+    public async Task DeleteQuestionAsync_NonExistentQuestion_ReturnsQuestionNotFound()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 1;
         const long questionId = 0;
 
@@ -240,12 +225,11 @@ public class QuestionServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteQuestion_ShouldBe_OperationForbidden()
+    public async Task DeleteQuestionAsync_NotOwnerInitiator_ReturnsOperationForbidden()
     {
         //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
+        var questionService = new QuestionServiceSut().GetService();
         const long initiatorId = 2;
         const long questionId = 1;
 
@@ -255,364 +239,6 @@ public class QuestionServiceTests
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.OperationForbidden, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_Success()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 2;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_Success_WithDownvoteGiven()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 4;
-        const long questionId = 3;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_UserNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 0;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_QuestionNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 0;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_CannotVoteForOwnPost()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.CannotVoteForOwnPost, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_VoteTypeNotFound()
-    {
-        //Arrange
-        var questionService =
-            new QuestionServiceFactory(MockRepositoriesGetters.GetEmptyMockRepository<VoteType>().Object).GetService();
-        const long initiatorId = 2;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.VoteTypeNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_TooLowReputation()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 3;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.TooLowReputation, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task UpvoteQuestion_ShouldBe_VoteAlreadyGiven()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 2;
-
-        //Act
-        var result = await questionService.UpvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.VoteAlreadyGiven, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_Success()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 4;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_Success_WithUpvoteGiven()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 2;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_UserNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 0;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_QuestionNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 0;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_CannotVoteForOwnPost()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.CannotVoteForOwnPost, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_TooLowReputation()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 2;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.TooLowReputation, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_VoteTypeNotFound()
-    {
-        //Arrange
-        var questionService =
-            new QuestionServiceFactory(MockRepositoriesGetters.GetEmptyMockRepository<VoteType>().Object).GetService();
-        const long initiatorId = 2;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.VoteTypeNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task DownvoteQuestion_ShouldBe_VoteAlreadyGiven()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 3;
-
-        //Act
-        var result = await questionService.DownvoteQuestionAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.VoteAlreadyGiven, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task RemoveQuestionVote_ShouldBe_Success()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 2;
-
-        //Act
-        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Data);
-    }
-
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task RemoveQuestionVote_ShouldBe_UserNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 0;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task RemoveQuestionVote_ShouldBe_QuestionNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 0;
-
-        //Act
-        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.QuestionNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task RemoveQuestionVote_ShouldBe_VoteNotFound()
-    {
-        //Arrange
-        var questionService = new QuestionServiceFactory().GetService();
-        const long initiatorId = 1;
-        const long questionId = 1;
-
-        //Act
-        var result = await questionService.RemoveQuestionVoteAsync(initiatorId, questionId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.VoteNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }

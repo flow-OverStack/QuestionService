@@ -15,10 +15,9 @@ public class Queries
     [UsePaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<Question>> GetQuestions([Service] IGetQuestionService questionService,
-        CancellationToken cancellationToken)
+    public IQueryable<Question> GetQuestions([Service] IGetQuestionService questionService)
     {
-        var result = await questionService.GetAllAsync(cancellationToken);
+        var result = questionService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -29,7 +28,7 @@ public class Queries
     [GraphQLDescription("Returns a question by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Question?> GetQuestion(long id, QuestionDataLoader questionLoader,
+    public async Task<Question?> GetQuestionAsync(long id, QuestionDataLoader questionLoader,
         CancellationToken cancellationToken)
     {
         var question = await questionLoader.LoadAsync(id, cancellationToken);
@@ -42,10 +41,9 @@ public class Queries
     [UsePaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<Tag>> GetTags([Service] IGetTagService tagService,
-        CancellationToken cancellationToken)
+    public IQueryable<Tag> GetTags([Service] IGetTagService tagService)
     {
-        var result = await tagService.GetAllAsync(cancellationToken);
+        var result = tagService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -56,7 +54,7 @@ public class Queries
     [GraphQLDescription("Returns a tag by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Tag?> GetTag(long id, TagDataLoader tagLoader, CancellationToken cancellationToken)
+    public async Task<Tag?> GetTagAsync(long id, TagDataLoader tagLoader, CancellationToken cancellationToken)
     {
         var tag = await tagLoader.LoadAsync(id, cancellationToken);
 
@@ -68,10 +66,9 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<Vote>> GetQuestionVotes([Service] IGetVoteService voteService,
-        CancellationToken cancellationToken)
+    public IQueryable<Vote> GetQuestionVotes([Service] IGetVoteService voteService)
     {
-        var result = await voteService.GetAllAsync(cancellationToken);
+        var result = voteService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -82,11 +79,11 @@ public class Queries
     [GraphQLDescription("Returns a vote by id of the question that was voted and the user that voted")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Vote?> GetQuestionVote(long questionId, long userId, VoteDataLoader voteLoader,
+    public async Task<Vote?> GetQuestionVoteAsync(long questionId, long userId, VoteDataLoader voteLoader,
         CancellationToken cancellationToken)
     {
-        var dto = new VoteDto(questionId, userId);
-        var vote = await voteLoader.LoadAsync(dto, cancellationToken);
+        var key = new VoteKey(questionId, userId);
+        var vote = await voteLoader.LoadAsync(key, cancellationToken);
 
         return vote;
     }
@@ -96,10 +93,9 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<VoteType>> GetQuestionVoteTypes([Service] IGetVoteTypeService voteTypeService,
-        CancellationToken cancellationToken)
+    public IQueryable<VoteType> GetQuestionVoteTypes([Service] IGetVoteTypeService voteTypeService)
     {
-        var result = await voteTypeService.GetAllAsync(cancellationToken);
+        var result = voteTypeService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -110,7 +106,7 @@ public class Queries
     [GraphQLDescription("Returns a vote type by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<VoteType?> GetQuestionVoteType(long id, VoteTypeDataLoader voteTypeLoader,
+    public async Task<VoteType?> GetQuestionVoteTypeAsync(long id, VoteTypeDataLoader voteTypeLoader,
         CancellationToken cancellationToken)
     {
         var voteType = await voteTypeLoader.LoadAsync(id, cancellationToken);
@@ -123,10 +119,9 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<View>> GetQuestionViews([Service] IGetViewService viewService,
-        CancellationToken cancellationToken)
+    public IQueryable<View> GetQuestionViews([Service] IGetViewService viewService)
     {
-        var result = await viewService.GetAllAsync(cancellationToken);
+        var result = viewService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -137,7 +132,8 @@ public class Queries
     [GraphQLDescription("Returns a view by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<View?> GetQuestionView(long id, ViewDataLoader viewLoader, CancellationToken cancellationToken)
+    public async Task<View?> GetQuestionViewAsync(long id, ViewDataLoader viewLoader,
+        CancellationToken cancellationToken)
     {
         var view = await viewLoader.LoadAsync(id, cancellationToken);
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using QuestionService.Application.Enum;
+using QuestionService.Application.Enums;
+using QuestionService.Application.Extensions;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Repository;
@@ -13,38 +14,30 @@ public class GetQuestionService(
     IBaseRepository<Tag> tagRepository)
     : IGetQuestionService
 {
-    public Task<QueryableResult<Question>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<Question> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var questions = questionRepository.GetAll();
+        var questions = questionRepository.GetAll().AsNoTracking();
 
         // Since there can be no questions, it is not exception to have no questions
-        return Task.FromResult(QueryableResult<Question>.Success(questions));
+        return QueryableResult<Question>.Success(questions);
     }
 
-    public async Task<CollectionResult<Question>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<Question>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var questions = await questionRepository.GetAll().Where(x => ids.Contains(x.Id))
+        var questions = await questionRepository.GetAll().AsNoTracking().Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
-        if (questions.Length == 0)
-            return ids.Count() switch
-            {
-                <= 1 => CollectionResult<Question>.Failure(ErrorMessage.QuestionNotFound,
-                    (int)ErrorCodes.QuestionNotFound),
-                > 1 => CollectionResult<Question>.Failure(ErrorMessage.QuestionsNotFound,
-                    (int)ErrorCodes.QuestionsNotFound)
-            };
+        if (questions.Length == 0) return CollectionResult<Question>.QuestionsNotFound(ids.Count);
 
         return CollectionResult<Question>.Success(questions);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetQuestionsWithTagsAsync(
-        IEnumerable<long> tagIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> tagIds, CancellationToken cancellationToken = default)
     {
         var groupedQuestions = await tagRepository.GetAll()
+            .AsNoTracking()
             .Where(x => tagIds.Contains(x.Id))
             .Include(x => x.Questions)
             .Select(x => new KeyValuePair<long, IEnumerable<Question>>(x.Id, x.Questions))
@@ -58,9 +51,10 @@ public class GetQuestionService(
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Question>>>> GetUsersQuestionsAsync(
-        IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var questions = (await questionRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => userIds.Contains(x.UserId))
                 .GroupBy(x => x.UserId)
                 .ToArrayAsync(cancellationToken))

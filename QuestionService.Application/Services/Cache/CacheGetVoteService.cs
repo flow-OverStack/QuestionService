@@ -1,4 +1,5 @@
-using QuestionService.Application.Enum;
+using QuestionService.Application.Enums;
+using QuestionService.Application.Extensions;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
@@ -10,32 +11,28 @@ namespace QuestionService.Application.Services.Cache;
 
 public class CacheGetVoteService(IVoteCacheRepository cacheRepository, IGetVoteService inner) : IGetVoteService
 {
-    public Task<QueryableResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        inner.GetAllAsync(cancellationToken);
+    public QueryableResult<Vote> GetAll()
+    {
+        return inner.GetAll();
+    }
 
-    public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<VoteDto> dtos,
+    public async Task<CollectionResult<Vote>> GetByUserAndQuestionAsync(IReadOnlyCollection<VoteKey> keys,
         CancellationToken cancellationToken = default)
     {
-        var dtosArray = dtos.ToArray();
-        var votes = (await cacheRepository.GetByDtosAsync(dtosArray,
-            async (dtosToFetch, ct) => (await inner.GetByDtosAsync(dtosToFetch, ct)).Data ?? [],
+        var votes = (await cacheRepository.GetByUserAndQuestionAsync(keys,
+            async (keysToFetch, ct) => (await inner.GetByUserAndQuestionAsync(keysToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (votes.Length == 0)
-            return dtosArray.Length switch
-            {
-                <= 1 => CollectionResult<Vote>.Failure(ErrorMessage.VoteNotFound, (int)ErrorCodes.VoteNotFound),
-                > 1 => CollectionResult<Vote>.Failure(ErrorMessage.VotesNotFound, (int)ErrorCodes.VotesNotFound)
-            };
+        if (votes.Length == 0) return CollectionResult<Vote>.VotesNotFound(keys.Count);
 
         return CollectionResult<Vote>.Success(votes);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
-        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> questionIds, CancellationToken cancellationToken = default)
     {
         var groupedVotes = (await cacheRepository.GetQuestionsVotesAsync(questionIds,
-            async (idsToFetch, ct) => (await inner.GetQuestionsVotesAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetQuestionsVotesAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (groupedVotes.Length == 0)
@@ -46,11 +43,11 @@ public class CacheGetVoteService(IVoteCacheRepository cacheRepository, IGetVoteS
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
-        IEnumerable<long> userIds,
+        IReadOnlyCollection<long> userIds,
         CancellationToken cancellationToken = default)
     {
         var groupedVotes = (await cacheRepository.GetUsersVotesAsync(userIds,
-            async (idsToFetch, ct) => (await inner.GetUsersVotesAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetUsersVotesAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (groupedVotes.Length == 0)
@@ -61,10 +58,10 @@ public class CacheGetVoteService(IVoteCacheRepository cacheRepository, IGetVoteS
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
-        IEnumerable<long> voteTypeIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> voteTypeIds, CancellationToken cancellationToken = default)
     {
         var groupedVotes = (await cacheRepository.GetVoteTypesVotesAsync(voteTypeIds,
-            async (idsToFetch, ct) => (await inner.GetVoteTypesVotesAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetVoteTypesVotesAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (groupedVotes.Length == 0)

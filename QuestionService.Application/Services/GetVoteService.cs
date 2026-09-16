@@ -1,6 +1,7 @@
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using QuestionService.Application.Enum;
+using QuestionService.Application.Enums;
+using QuestionService.Application.Extensions;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Vote;
 using QuestionService.Domain.Entities;
@@ -12,45 +13,38 @@ namespace QuestionService.Application.Services;
 
 public class GetVoteService(IBaseRepository<Vote> voteRepository) : IGetVoteService
 {
-    public Task<QueryableResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<Vote> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        var votes = voteRepository.GetAll().AsNoTracking();
 
-        var votes = voteRepository.GetAll();
-
-        // Since there can be no votes, it is not an exception to have no votes 
-        return Task.FromResult(QueryableResult<Vote>.Success(votes));
+        // Since there can be no votes, it is not an exception to have no votes
+        return QueryableResult<Vote>.Success(votes);
     }
 
-    public async Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<VoteDto> dtos,
+    public async Task<CollectionResult<Vote>> GetByUserAndQuestionAsync(IReadOnlyCollection<VoteKey> keys,
         CancellationToken cancellationToken = default)
     {
-        var keys = dtos.ToArray();
-
         var predicate = PredicateBuilder.New<Vote>();
         predicate = keys.Aggregate(predicate,
             (current, local) =>
                 current.Or(x => x.QuestionId == local.QuestionId && x.UserId == local.UserId));
 
         var votes = await voteRepository.GetAll()
+            .AsNoTracking()
             .AsExpandable()
             .Where(predicate)
             .ToArrayAsync(cancellationToken);
 
-        if (votes.Length == 0)
-            return keys.Length switch
-            {
-                <= 1 => CollectionResult<Vote>.Failure(ErrorMessage.VoteNotFound, (int)ErrorCodes.VoteNotFound),
-                > 1 => CollectionResult<Vote>.Failure(ErrorMessage.VotesNotFound, (int)ErrorCodes.VotesNotFound)
-            };
+        if (votes.Length == 0) return CollectionResult<Vote>.VotesNotFound(keys.Count);
 
         return CollectionResult<Vote>.Success(votes);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
-        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> questionIds, CancellationToken cancellationToken = default)
     {
         var votes = (await voteRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => questionIds.Contains(x.QuestionId))
                 .GroupBy(x => x.QuestionId)
                 .ToArrayAsync(cancellationToken))
@@ -66,9 +60,10 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository) : IGetVoteServ
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
-        IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var votes = (await voteRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => userIds.Contains(x.UserId))
                 .GroupBy(x => x.UserId)
                 .ToArrayAsync(cancellationToken))
@@ -83,9 +78,10 @@ public class GetVoteService(IBaseRepository<Vote> voteRepository) : IGetVoteServ
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
-        IEnumerable<long> voteTypeIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> voteTypeIds, CancellationToken cancellationToken = default)
     {
         var votes = (await voteRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => voteTypeIds.Contains(x.VoteTypeId))
                 .GroupBy(x => x.VoteTypeId)
                 .ToArrayAsync(cancellationToken))

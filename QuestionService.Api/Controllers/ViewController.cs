@@ -1,8 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using QuestionService.Api.Controllers.Base;
+using QuestionService.Api.Extensions;
 using QuestionService.Domain.Dtos.View;
+using QuestionService.Domain.Extensions;
 using QuestionService.Domain.Interfaces.Service;
 using QuestionService.Domain.Results;
 
@@ -18,21 +19,13 @@ public class ViewController(IViewService viewService) : BaseController
     /// <summary>
     ///     Increments views of a question by its id
     /// </summary>
-    /// <param name="questionId"></param>
-    /// <param name="fingerprint"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <remarks>
-    /// Request to increment views of a question
-    ///
-    ///     POST {questionId}
-    /// </remarks>
     /// <response code="204">Views were incremented successfully</response>
     /// <response code="400">Invalid data format</response>
     [HttpPost("{questionId:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<BaseResult>> IncrementViews(long questionId, CancellationToken cancellationToken,
+    public async Task<ActionResult<BaseResult>> IncrementViewsAsync(long questionId,
+        CancellationToken cancellationToken,
         [FromHeader(Name = FingerprintHeaderName)]
         string? fingerprint = null)
     {
@@ -45,16 +38,12 @@ public class ViewController(IViewService viewService) : BaseController
 
         var result = await viewService.IncrementViewsAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 
     private long? GetUserIdIfExists()
     {
-        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!long.TryParse(userIdClaim, out var userId)) return null;
-
-        return userId;
+        return User.TryGetUserId(out var userId) ? userId : null;
     }
 
     /// <summary>

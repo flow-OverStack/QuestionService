@@ -1,4 +1,5 @@
-using QuestionService.Application.Enum;
+using QuestionService.Application.Enums;
+using QuestionService.Application.Extensions;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Repository.Cache;
@@ -9,33 +10,29 @@ namespace QuestionService.Application.Services.Cache;
 
 public class CacheGetViewService(IViewCacheRepository cacheRepository, IGetViewService inner) : IGetViewService
 {
-    public Task<QueryableResult<View>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        inner.GetAllAsync(cancellationToken);
+    public QueryableResult<View> GetAll()
+    {
+        return inner.GetAll();
+    }
 
-    public async Task<CollectionResult<View>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<View>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var idsArray = ids.ToArray();
-        var views = (await cacheRepository.GetByIdsAsync(idsArray,
-            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+        var views = (await cacheRepository.GetByIdsAsync(ids,
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (views.Length == 0)
-            return idsArray.Length switch
-            {
-                <= 1 => CollectionResult<View>.Failure(ErrorMessage.ViewNotFound, (int)ErrorCodes.ViewNotFound),
-                > 1 => CollectionResult<View>.Failure(ErrorMessage.ViewsNotFound, (int)ErrorCodes.ViewsNotFound)
-            };
+        if (views.Length == 0) return CollectionResult<View>.ViewsNotFound(ids.Count);
 
         return CollectionResult<View>.Success(views);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetUsersViewsAsync(
-        IEnumerable<long> userIds,
+        IReadOnlyCollection<long> userIds,
         CancellationToken cancellationToken = default)
     {
         var groupedViews = (await cacheRepository.GetUsersViewsAsync(userIds,
-            async (idsToFetch, ct) => (await inner.GetUsersViewsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetUsersViewsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (groupedViews.Length == 0)
@@ -46,10 +43,10 @@ public class CacheGetViewService(IViewCacheRepository cacheRepository, IGetViewS
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<View>>>> GetQuestionsViewsAsync(
-        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> questionIds, CancellationToken cancellationToken = default)
     {
         var groupedViews = (await cacheRepository.GetQuestionsViewsAsync(questionIds,
-            async (idsToFetch, ct) => (await inner.GetQuestionsViewsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetQuestionsViewsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (groupedViews.Length == 0)

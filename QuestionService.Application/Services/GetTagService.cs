@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using QuestionService.Application.Enum;
+using QuestionService.Application.Enums;
+using QuestionService.Application.Extensions;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Repository;
@@ -11,36 +12,31 @@ namespace QuestionService.Application.Services;
 public class GetTagService(IBaseRepository<Tag> tagRepository, IBaseRepository<Question> questionRepository)
     : IGetTagService
 {
-    public Task<QueryableResult<Tag>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<Tag> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        var tags = tagRepository.GetAll().AsNoTracking();
 
-        var tags = tagRepository.GetAll();
-
-        return Task.FromResult(QueryableResult<Tag>.Success(tags));
+        return QueryableResult<Tag>.Success(tags);
     }
 
-    public async Task<CollectionResult<Tag>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<Tag>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var tags = await tagRepository.GetAll()
+            .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
-        if (tags.Length == 0)
-            return ids.Count() switch
-            {
-                <= 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagNotFound, (int)ErrorCodes.TagNotFound),
-                > 1 => CollectionResult<Tag>.Failure(ErrorMessage.TagsNotFound, (int)ErrorCodes.TagsNotFound)
-            };
+        if (tags.Length == 0) return CollectionResult<Tag>.TagsNotFound(ids.Count);
 
         return CollectionResult<Tag>.Success(tags);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Tag>>>> GetQuestionsTagsAsync(
-        IEnumerable<long> questionIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> questionIds, CancellationToken cancellationToken = default)
     {
         var groupedTags = await questionRepository.GetAll()
+            .AsNoTracking()
             .Where(x => questionIds.Contains(x.Id))
             .Include(x => x.Tags)
             .Select(x => new KeyValuePair<long, IEnumerable<Tag>>(x.Id, x.Tags))

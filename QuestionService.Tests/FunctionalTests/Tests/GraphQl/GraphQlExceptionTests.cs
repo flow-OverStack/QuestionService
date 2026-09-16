@@ -4,17 +4,18 @@ using Newtonsoft.Json;
 using QuestionService.Application.Resources;
 using QuestionService.Tests.FunctionalTests.Base.Exception.GraphQl;
 using QuestionService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
-using QuestionService.Tests.FunctionalTests.Helper;
+using QuestionService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using QuestionService.Tests.Traits;
 
 namespace QuestionService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class GraphQlExceptionTests(GraphQlExceptionFunctionalTestWebAppFactory factory)
-    : GraphQlExceptionFunctionalTest(factory)
+[FunctionalTest]
+public class GraphQlExceptionTests(ExceptionGraphQlFunctionalTestWebAppFactory factory)
+    : ExceptionGraphQlFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_ServerError()
+    public async Task GetAll_RepositoryThrows_ReturnsServerError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestAllQuery };

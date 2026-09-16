@@ -9,17 +9,16 @@ public interface IGetVoteService
     /// <summary>
     ///     Gets all votes
     /// </summary>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<QueryableResult<Vote>> GetAllAsync(CancellationToken cancellationToken = default);
+    QueryableResult<Vote> GetAll();
 
     /// <summary>
     ///     Gets vote of questions by pairs of question id and user id
     /// </summary>
-    /// <param name="dtos"></param>
+    /// <param name="keys"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<Vote>> GetByDtosAsync(IEnumerable<VoteDto> dtos,
+    Task<CollectionResult<Vote>> GetByUserAndQuestionAsync(IReadOnlyCollection<VoteKey> keys,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -28,8 +27,8 @@ public interface IGetVoteService
     /// <param name="questionIds"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(IEnumerable<long> questionIds,
-        CancellationToken cancellationToken = default);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetQuestionsVotesAsync(
+        IReadOnlyCollection<long> questionIds, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets votes of users by their ids
@@ -37,8 +36,8 @@ public interface IGetVoteService
     /// <param name="userIds"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(IEnumerable<long> userIds,
-        CancellationToken cancellationToken = default);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetUsersVotesAsync(
+        IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets votes of vote types by their ids
@@ -46,6 +45,6 @@ public interface IGetVoteService
     /// <param name="voteTypeIds"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(IEnumerable<long> voteTypeIds,
-        CancellationToken cancellationToken = default);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Vote>>>> GetVoteTypesVotesAsync(
+        IReadOnlyCollection<long> voteTypeIds, CancellationToken cancellationToken = default);
 }

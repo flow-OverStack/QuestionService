@@ -1,61 +1,60 @@
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.Vote;
-using QuestionService.Tests.UnitTests.Factories;
+using QuestionService.Tests.UnitTests.Sut;
 using Xunit;
+using QuestionService.Tests.Traits;
 
 namespace QuestionService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class GetVoteServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAll_ShouldBe_Success()
+    public void GetAll_ExistingVotes_ReturnsSuccess()
     {
         //Arrange
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
-        var result = await getVoteService.GetAllAsync();
+        var result = getVoteService.GetAll();
 
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByDtos_ShouldBe_Success()
+    public async Task GetByUserAndQuestionAsync_ExistingKeys_ReturnsSuccess()
     {
         //Arrange
-        var dtos = new List<VoteDto>
+        var keys = new List<VoteKey>
         {
             new(1, 2),
             new(2, 3),
             new(0, 0),
         };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
-        var result = await getVoteService.GetByDtosAsync(dtos);
+        var result = await getVoteService.GetByUserAndQuestionAsync(keys);
 
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByDtos_ShouldBe_VoteNotFound()
+    public async Task GetByUserAndQuestionAsync_SingleNonExistentKey_ReturnsVoteNotFound()
     {
         //Arrange
-        var dtos = new List<VoteDto>
+        var keys = new List<VoteKey>
         {
             new(0, 0)
         };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
-        var result = await getVoteService.GetByDtosAsync(dtos);
+        var result = await getVoteService.GetByUserAndQuestionAsync(keys);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -63,20 +62,19 @@ public class GetVoteServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByDtos_ShouldBe_VotesNotFound()
+    public async Task GetByUserAndQuestionAsync_MultipleNonExistentKeys_ReturnsVotesNotFound()
     {
         //Arrange
-        var dtos = new List<VoteDto>
+        var keys = new List<VoteKey>
         {
             new(0, 0),
             new(0, 0)
         };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
-        var result = await getVoteService.GetByDtosAsync(dtos);
+        var result = await getVoteService.GetByUserAndQuestionAsync(keys);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -84,13 +82,12 @@ public class GetVoteServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionsVotes_ShouldBe_Success()
+    public async Task GetQuestionsVotesAsync_ExistingQuestionIds_ReturnsSuccess()
     {
         //Arrange
         var questionIds = new List<long> { 1, 2, 0 };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
         var result = await getVoteService.GetQuestionsVotesAsync(questionIds);
@@ -100,13 +97,12 @@ public class GetVoteServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetQuestionsVotes_ShouldBe_VotesNotFound()
+    public async Task GetQuestionsVotesAsync_NonExistentQuestionId_ReturnsVotesNotFound()
     {
         //Arrange
         var questionIds = new List<long> { 0 };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
         var result = await getVoteService.GetQuestionsVotesAsync(questionIds);
@@ -117,13 +113,12 @@ public class GetVoteServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersVotes_ShouldBe_Success()
+    public async Task GetUsersVotesAsync_ExistingUserIds_ReturnsSuccess()
     {
         //Arrange
         var userIds = new List<long> { 1, 2, 0 };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
         var result = await getVoteService.GetUsersVotesAsync(userIds);
@@ -133,13 +128,12 @@ public class GetVoteServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersVotes_ShouldBe_VotesNotFound()
+    public async Task GetUsersVotesAsync_NonExistentUserId_ReturnsVotesNotFound()
     {
         //Arrange
         var userIds = new List<long> { 0 };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         //Act
         var result = await getVoteService.GetUsersVotesAsync(userIds);
@@ -150,13 +144,12 @@ public class GetVoteServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetVoteTypesVotes_ShouldBe_Success()
+    public async Task GetVoteTypesVotesAsync_ExistingVoteTypeIds_ReturnsSuccess()
     {
         // Arrange
         var voteTypeIds = new List<long> { 1, 2, 0 };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         // Act
         var result = await getVoteService.GetVoteTypesVotesAsync(voteTypeIds);
@@ -166,13 +159,12 @@ public class GetVoteServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetVoteTypesVotes_ShouldBe_VotesNotFound()
+    public async Task GetVoteTypesVotesAsync_NonExistentVoteTypeId_ReturnsVotesNotFound()
     {
         // Arrange
         var voteTypeIds = new List<long> { 0 };
-        var getVoteService = new CacheGetVoteServiceFactory().GetService();
+        var getVoteService = new CacheGetVoteServiceSut().GetService();
 
         // Act
         var result = await getVoteService.GetVoteTypesVotesAsync(voteTypeIds);

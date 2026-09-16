@@ -1,17 +1,17 @@
 using AutoMapper;
 using Grpc.Core;
-using QuestionService.Application.Enum;
+using QuestionService.Application.Enums;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Dtos.ExternalEntity;
 using QuestionService.GrpcClient;
 using QuestionService.GrpcClient.Mappings;
-using QuestionService.Tests.Configurations;
+using QuestionService.Tests.TestData;
 
 namespace QuestionService.Tests.FunctionalTests.Configurations.TestServices;
 
 internal class GrpcTestUserService : UserService.UserServiceClient
 {
-    private static readonly IEnumerable<UserDto> Users = MockEntityProvidersGetters.GetUserDtos();
+    private static readonly IEnumerable<UserDto> Users = UserDtoMother.GetUserDtos();
 
     private static readonly IMapper Mapper =
         new MapperConfiguration(cfg => cfg.AddMaps(typeof(GrpcMapping))).CreateMapper();

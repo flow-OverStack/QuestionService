@@ -8,9 +8,8 @@ public interface IGetService<T> where T : IEntityId<long>
     /// <summary>
     ///     Gets all of T
     /// </summary>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<QueryableResult<T>> GetAllAsync(CancellationToken cancellationToken = default);
+    QueryableResult<T> GetAll();
 
     /// <summary>
     ///     Gets multiple T's by their ids
@@ -18,5 +17,6 @@ public interface IGetService<T> where T : IEntityId<long>
     /// <param name="ids"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<T>> GetByIdsAsync(IEnumerable<long> ids, CancellationToken cancellationToken = default);
+    Task<CollectionResult<T>> GetByIdsAsync(IReadOnlyCollection<long> ids,
+        CancellationToken cancellationToken = default);
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using QuestionService.Application.Enum;
+using QuestionService.Application.Enums;
+using QuestionService.Application.Extensions;
 using QuestionService.Application.Resources;
 using QuestionService.Domain.Entities;
 using QuestionService.Domain.Interfaces.Repository;
@@ -10,30 +11,22 @@ namespace QuestionService.Application.Services;
 
 public class GetVoteTypeService(IBaseRepository<VoteType> voteTypeRepository) : IGetVoteTypeService
 {
-    public Task<QueryableResult<VoteType>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<VoteType> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        var voteTypes = voteTypeRepository.GetAll().AsNoTracking();
 
-        var voteTypes = voteTypeRepository.GetAll();
-
-        return Task.FromResult(QueryableResult<VoteType>.Success(voteTypes));
+        return QueryableResult<VoteType>.Success(voteTypes);
     }
 
-    public async Task<CollectionResult<VoteType>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<VoteType>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var voteTypes = await voteTypeRepository.GetAll()
+            .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
-        if (voteTypes.Length == 0)
-            return ids.Count() switch
-            {
-                <= 1 => CollectionResult<VoteType>.Failure(ErrorMessage.VoteTypeNotFound,
-                    (int)ErrorCodes.VoteTypeNotFound),
-                > 1 => CollectionResult<VoteType>.Failure(ErrorMessage.VoteTypesNotFound,
-                    (int)ErrorCodes.VoteTypesNotFound)
-            };
+        if (voteTypes.Length == 0) return CollectionResult<VoteType>.VoteTypesNotFound(ids.Count);
 
         return CollectionResult<VoteType>.Success(voteTypes);
     }
